@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  ▼▼ SITE URL ▼▼  公開URL: https://rakkoapps.com/
+  変更する場合は次をまとめて書き換える:
+  この下の canonical / og:url / og:image / twitter:image、build.mjs の BASE、
+  robots.txt の Sitemap 行、CNAME ファイル。
+-->
+
+<title>らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ</title>
+<meta name="description" content="らっこアプリは、個人開発の無料iPhoneアプリをまとめた一覧サイト。かわいいゲームからオンライン対戦、便利ツールまで、App Storeで配信中のアプリをカテゴリと検索でさくっと探せます。">
+<meta name="keywords" content="iPhoneアプリ,無料ゲーム,iOSアプリ,個人開発,アプリ一覧,オンライン対戦,パズル,便利アプリ,App Store">
+<link rel="canonical" href="https://rakkoapps.com/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#f2694b">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="らっこアプリ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ">
+<meta property="og:description" content="個人開発の無料iPhoneアプリまとめ。かわいいゲームからオンライン対戦、便利ツールまで、App Storeで配信中のアプリをカテゴリと検索で探せます。">
+<meta property="og:url" content="https://rakkoapps.com/">
+<meta property="og:image" content="https://rakkoapps.com/assets/og/cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ">
+<meta name="twitter:description" content="個人開発の無料iPhoneアプリまとめ。App Storeで配信中のアプリをカテゴリと検索で探せます。">
+<meta name="twitter:image" content="https://rakkoapps.com/assets/og/cover.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<!-- JSON-LD: 構造化データ（検索エンジン向け。実データ差込） -->
+<!-- JSONLD -->
+</head>
+<body>
+<a class="skip" href="#apps">アプリ一覧へスキップ</a>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="#top" aria-label="らっこアプリ ホーム">
+      <span class="wordmark__mark" aria-hidden="true"><span>🦦</span></span>
+      らっこアプリ
+    </a>
+    <nav class="nav__links" aria-label="メイン">
+      <a class="nav__link" href="#featured">注目</a>
+      <a class="nav__link" href="#apps">アプリ一覧</a>
+      <a class="nav__link" href="#about">このサイトについて</a>
+      <a class="nav__link nav__cta btn btn--ghost" href="#apps">探す</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero__badge">🦦 個人開発のiPhoneアプリを <b>&nbsp;{{APP_COUNT}}本&nbsp;</b> 公開中</p>
+      <h1 class="hero__title"><span class="ln ln--sp">無料で遊べる</span><span class="ln">iPhoneゲーム＆</span><span class="ln"><span class="accent">便利アプリ</span>。</span></h1>
+      <p class="hero__lede">らっこアプリは、個人でつくったiPhone向けのゲームとツールをまとめた一覧サイト。気になったらそのままApp Storeへ。ぜんぶ無料でダウンロードできます。</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#apps">アプリを探す
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--ghost" href="#featured">注目のアプリを見る</a>
+      </div>
+      <dl class="hero__stats">
+        <div><dd class="stat__num">{{APP_COUNT}}</dd><dt class="stat__label">配信中のアプリ</dt></div>
+        <div><dd class="stat__num">{{CAT_COUNT}}</dd><dt class="stat__label">カテゴリ</dt></div>
+        <div><dd class="stat__num">¥0</dd><dt class="stat__label">ダウンロード無料</dt></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ Featured ============ -->
+  <section class="section" id="featured">
+    <div class="wrap">
+      <header class="section__head reveal">
+        <p class="section__eyebrow">PICK UP</p>
+        <h2 class="section__title">注目のアプリ</h2>
+        <p class="section__lede">まずはここから。人気・イチオシをピックアップしました。</p>
+      </header>
+      <div class="featured-grid reveal">
+        <!-- FEATURED -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ All apps ============ -->
+  <section class="section section--tint" id="apps">
+    <div class="wrap">
+      <header class="section__head reveal">
+        <p class="section__eyebrow">ALL APPS</p>
+        <h2 class="section__title">すべてのアプリ</h2>
+        <p class="section__lede">カテゴリで絞り込み、キーワードで検索できます。</p>
+      </header>
+
+      <div class="toolbar reveal">
+        <label class="search">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 12l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="app-search" type="search" placeholder="アプリ名・ジャンルで検索…" aria-label="アプリを検索" autocomplete="off">
+        </label>
+        <div class="chips" role="group" aria-label="カテゴリで絞り込み">
+          <!-- CHIPS -->
+        </div>
+      </div>
+
+      <p class="result-count"><b id="result-count-num">–</b> 件のアプリ</p>
+
+      <div class="app-grid" id="app-grid">
+        <!-- CARDS -->
+      </div>
+
+      <div class="empty" id="empty">
+        <div class="empty__emoji" aria-hidden="true">🦦</div>
+        <p>該当するアプリが見つかりませんでした。<br>キーワードやカテゴリを変えてみてください。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ About ============ -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="about__card reveal">
+        <div>
+          <h2 class="about__title">らっこアプリについて</h2>
+          <p class="about__text">個人でアプリをつくっています。かわいくてちょっと変わったゲームから、毎日の生活に役立つツールまで。「つくって、公開して、また次へ」を合言葉に、コツコツ増やしています。</p>
+          <ul class="about__list">
+            <li>掲載アプリはすべてApp Storeで配信中</li>
+            <li>ダウンロードは無料（アプリ内課金がある場合あり）</li>
+            <li>iPhoneに対応</li>
+          </ul>
+        </div>
+        <aside class="about__aside">
+          <h3>お問い合わせ</h3>
+          <p>ご感想・不具合のご連絡はこちらまで。</p>
+          <p><a href="mailto:rakko9924@gmail.com">rakko9924@gmail.com</a></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer__statement">つくって、公開して、また next。<br>らっこアプリ。</p>
+    <div class="footer__row">
+      <nav class="footer__links" aria-label="フッター">
+        <a href="#featured">注目のアプリ</a>
+        <a href="#apps">アプリ一覧</a>
+        <a href="#about">このサイトについて</a>
+        <a href="mailto:rakko9924@gmail.com">お問い合わせ</a>
+      </nav>
+      <p class="footer__copy">© 2026 らっこアプリ</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  ▼▼ SITE URL ▼▼  公開URL: https://rakkoapps.com/
+  変更する場合は次をまとめて書き換える:
+  この下の canonical / og:url / og:image / twitter:image、build.mjs の BASE、
+  robots.txt の Sitemap 行、CNAME ファイル。
+-->
+
+<title>らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ</title>
+<meta name="description" content="らっこアプリは、個人開発の無料iPhoneアプリをまとめた一覧サイト。かわいいゲームからオンライン対戦、便利ツールまで、App Storeで配信中のアプリをカテゴリと検索でさくっと探せます。">
+<meta name="keywords" content="iPhoneアプリ,無料ゲーム,iOSアプリ,個人開発,アプリ一覧,オンライン対戦,パズル,便利アプリ,App Store">
+<link rel="canonical" href="https://rakkoapps.com/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#f2694b">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="らっこアプリ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ">
+<meta property="og:description" content="個人開発の無料iPhoneアプリまとめ。かわいいゲームからオンライン対戦、便利ツールまで、App Storeで配信中のアプリをカテゴリと検索で探せます。">
+<meta property="og:url" content="https://rakkoapps.com/">
+<meta property="og:image" content="https://rakkoapps.com/assets/og/cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="らっこアプリ｜無料のiPhoneゲーム・便利アプリまとめ">
+<meta name="twitter:description" content="個人開発の無料iPhoneアプリまとめ。App Storeで配信中のアプリをカテゴリと検索で探せます。">
+<meta name="twitter:image" content="https://rakkoapps.com/assets/og/cover.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/tokens.css?v=mry2v3l0">
+<link rel="stylesheet" href="/css/styles.css?v=mry2v3l0">
+
+<!-- JSON-LD: 構造化データ（検索エンジン向け。実データ差込） -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://rakkoapps.com/#website",
+      "url": "https://rakkoapps.com/",
+      "name": "らっこアプリ",
+      "description": "個人開発の無料iPhoneゲーム・便利アプリまとめ",
+      "inLanguage": "ja",
+      "publisher": {
+        "@id": "https://rakkoapps.com/#publisher"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://rakkoapps.com/#publisher",
+      "name": "らっこアプリ",
+      "url": "https://rakkoapps.com/",
+      "email": "rakko9924@gmail.com",
+      "logo": "https://rakkoapps.com/assets/og/apple-touch-icon.png"
+    },
+    {
+      "@type": "ItemList",
+      "name": "らっこアプリ 配信中アプリ一覧",
+      "description": "App Storeで配信中のiPhoneアプリ一覧",
+      "numberOfItems": 34,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "url": "https://rakkoapps.com/apps/anakui/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "穴喰いバトル",
+            "url": "https://rakkoapps.com/apps/anakui/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6790614376",
+            "image": "https://rakkoapps.com/assets/icons/anakui.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "url": "https://rakkoapps.com/apps/orochi-battle/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "大蛇バトル",
+            "url": "https://rakkoapps.com/apps/orochi-battle/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6790615872",
+            "image": "https://rakkoapps.com/assets/icons/orochi-battle.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "url": "https://rakkoapps.com/apps/oekaki-online/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "らくがきオンライン",
+            "url": "https://rakkoapps.com/apps/oekaki-online/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6783932279",
+            "image": "https://rakkoapps.com/assets/icons/oekaki-online.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "url": "https://rakkoapps.com/apps/super-tap-battle/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "スーパータップ対戦",
+            "url": "https://rakkoapps.com/apps/super-tap-battle/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784173258",
+            "image": "https://rakkoapps.com/assets/icons/super-tap-battle.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "url": "https://rakkoapps.com/apps/issen/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ISSEN 一閃",
+            "url": "https://rakkoapps.com/apps/issen/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6781177113",
+            "image": "https://rakkoapps.com/assets/icons/issen.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "url": "https://rakkoapps.com/apps/PineappleOFC/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "チャイポオンライン",
+            "url": "https://rakkoapps.com/apps/PineappleOFC/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6781688872",
+            "image": "https://rakkoapps.com/assets/icons/PineappleOFC.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "url": "https://rakkoapps.com/apps/pika-tensei/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ピカピカ転生",
+            "url": "https://rakkoapps.com/apps/pika-tensei/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6793157994",
+            "image": "https://rakkoapps.com/assets/icons/pika-tensei.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "url": "https://rakkoapps.com/apps/hero30/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "30秒の勇者",
+            "url": "https://rakkoapps.com/apps/hero30/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784219090",
+            "image": "https://rakkoapps.com/assets/icons/hero30.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 9,
+          "url": "https://rakkoapps.com/apps/dekoboko-rider/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "デコボコライダー",
+            "url": "https://rakkoapps.com/apps/dekoboko-rider/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6785051153",
+            "image": "https://rakkoapps.com/assets/icons/dekoboko-rider.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 10,
+          "url": "https://rakkoapps.com/apps/rakugaki-oukoku/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "おえかきモンスターバトル",
+            "url": "https://rakkoapps.com/apps/rakugaki-oukoku/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784171825",
+            "image": "https://rakkoapps.com/assets/icons/rakugaki-oukoku.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 11,
+          "url": "https://rakkoapps.com/apps/escape-room/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "密室100",
+            "url": "https://rakkoapps.com/apps/escape-room/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6785661257",
+            "image": "https://rakkoapps.com/assets/icons/escape-room.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 12,
+          "url": "https://rakkoapps.com/apps/aqualux/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "AQUALUX",
+            "url": "https://rakkoapps.com/apps/aqualux/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6780931848",
+            "image": "https://rakkoapps.com/assets/icons/aqualux.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 13,
+          "url": "https://rakkoapps.com/apps/quadle/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "Quadle",
+            "url": "https://rakkoapps.com/apps/quadle/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6780867060",
+            "image": "https://rakkoapps.com/assets/icons/quadle.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 14,
+          "url": "https://rakkoapps.com/apps/leadtheway/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "Lead the Way",
+            "url": "https://rakkoapps.com/apps/leadtheway/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6780805979",
+            "image": "https://rakkoapps.com/assets/icons/leadtheway.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 15,
+          "url": "https://rakkoapps.com/apps/mochiusa/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "もちうさ うさぎ育成",
+            "url": "https://rakkoapps.com/apps/mochiusa/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784304463",
+            "image": "https://rakkoapps.com/assets/icons/mochiusa.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 16,
+          "url": "https://rakkoapps.com/apps/auto-factory/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "オートファクトリー",
+            "url": "https://rakkoapps.com/apps/auto-factory/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6785677430",
+            "image": "https://rakkoapps.com/assets/icons/auto-factory.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 17,
+          "url": "https://rakkoapps.com/apps/maou-inc/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "魔王株式会社",
+            "url": "https://rakkoapps.com/apps/maou-inc/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784162519",
+            "image": "https://rakkoapps.com/assets/icons/maou-inc.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 18,
+          "url": "https://rakkoapps.com/apps/horihori/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ほりほり魔王",
+            "url": "https://rakkoapps.com/apps/horihori/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6784198043",
+            "image": "https://rakkoapps.com/assets/icons/horihori.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 19,
+          "url": "https://rakkoapps.com/apps/ojisan-farm/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "おじさん畑",
+            "url": "https://rakkoapps.com/apps/ojisan-farm/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6792156972",
+            "image": "https://rakkoapps.com/assets/icons/ojisan-farm.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 20,
+          "url": "https://rakkoapps.com/apps/deck-hime/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "デッキ姫 〜王国カード戦記〜",
+            "url": "https://rakkoapps.com/apps/deck-hime/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6787432448",
+            "image": "https://rakkoapps.com/assets/icons/deck-hime.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 21,
+          "url": "https://rakkoapps.com/apps/wordwolf/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ワードウルフ - 嘘つきは誰だ？",
+            "url": "https://rakkoapps.com/apps/wordwolf/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6781790636",
+            "image": "https://rakkoapps.com/assets/icons/wordwolf.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 22,
+          "url": "https://rakkoapps.com/apps/insider/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "インサイダーを暴け",
+            "url": "https://rakkoapps.com/apps/insider/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6787274172",
+            "image": "https://rakkoapps.com/assets/icons/insider.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 23,
+          "url": "https://rakkoapps.com/apps/bomb-defuse/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "サイレント・ボム",
+            "url": "https://rakkoapps.com/apps/bomb-defuse/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6783998499",
+            "image": "https://rakkoapps.com/assets/icons/bomb-defuse.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 24,
+          "url": "https://rakkoapps.com/apps/hoshizora/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ほしぞら探検隊",
+            "url": "https://rakkoapps.com/apps/hoshizora/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6792155109",
+            "image": "https://rakkoapps.com/assets/icons/hoshizora.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 25,
+          "url": "https://rakkoapps.com/apps/money-clicker/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "マネークリッカー",
+            "url": "https://rakkoapps.com/apps/money-clicker/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6783945758",
+            "image": "https://rakkoapps.com/assets/icons/money-clicker.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 26,
+          "url": "https://rakkoapps.com/apps/shark-clicker/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "Shark Clicker",
+            "url": "https://rakkoapps.com/apps/shark-clicker/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6791277136",
+            "image": "https://rakkoapps.com/assets/icons/shark-clicker.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 27,
+          "url": "https://rakkoapps.com/apps/god-gacha/",
+          "item": {
+            "@type": "MobileApplication",
+            "name": "ゴッドガチャ∞",
+            "url": "https://rakkoapps.com/apps/god-gacha/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6787273550",
+            "image": "https://rakkoapps.com/assets/icons/god-gacha.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "GameApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 28,
+          "url": "https://rakkoapps.com/apps/pill-asmr-ios/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "おくすりプチプチ",
+            "url": "https://rakkoapps.com/apps/pill-asmr-ios/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6783921551",
+            "image": "https://rakkoapps.com/assets/icons/pill-asmr-ios.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 29,
+          "url": "https://rakkoapps.com/apps/koyaku-counter/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "ShareHistory 収支共有&子役カウント",
+            "url": "https://rakkoapps.com/apps/koyaku-counter/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6790613177",
+            "image": "https://rakkoapps.com/assets/icons/koyaku-counter.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 30,
+          "url": "https://rakkoapps.com/apps/blindflow/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "BlindFlow",
+            "url": "https://rakkoapps.com/apps/blindflow/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6786809043",
+            "image": "https://rakkoapps.com/assets/icons/blindflow.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 31,
+          "url": "https://rakkoapps.com/apps/gto-draw/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "72＆バドゥーギ GTO道場",
+            "url": "https://rakkoapps.com/apps/gto-draw/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6787277262",
+            "image": "https://rakkoapps.com/assets/icons/gto-draw.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 32,
+          "url": "https://rakkoapps.com/apps/ofc-solver/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "チャイポEVアシスト",
+            "url": "https://rakkoapps.com/apps/ofc-solver/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6783852074",
+            "image": "https://rakkoapps.com/assets/icons/ofc-solver.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 33,
+          "url": "https://rakkoapps.com/apps/poker-shot-clock/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "ポーカーショットクロック",
+            "url": "https://rakkoapps.com/apps/poker-shot-clock/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6787194138",
+            "image": "https://rakkoapps.com/assets/icons/poker-shot-clock.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 34,
+          "url": "https://rakkoapps.com/apps/PokerEquityCalc/",
+          "item": {
+            "@type": "SoftwareApplication",
+            "name": "Poker Equity Calc",
+            "url": "https://rakkoapps.com/apps/PokerEquityCalc/",
+            "downloadUrl": "https://apps.apple.com/jp/app/id6781158293",
+            "image": "https://rakkoapps.com/assets/icons/PokerEquityCalc.png",
+            "operatingSystem": "iOS",
+            "applicationCategory": "UtilitiesApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "JPY"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#apps">アプリ一覧へスキップ</a>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="#top" aria-label="らっこアプリ ホーム">
+      <span class="wordmark__mark" aria-hidden="true"><span>🦦</span></span>
+      らっこアプリ
+    </a>
+    <nav class="nav__links" aria-label="メイン">
+      <a class="nav__link" href="#featured">注目</a>
+      <a class="nav__link" href="#apps">アプリ一覧</a>
+      <a class="nav__link" href="#about">このサイトについて</a>
+      <a class="nav__link nav__cta btn btn--ghost" href="#apps">探す</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero__badge">🦦 個人開発のiPhoneアプリを <b>&nbsp;34本&nbsp;</b> 公開中</p>
+      <h1 class="hero__title"><span class="ln ln--sp">無料で遊べる</span><span class="ln">iPhoneゲーム＆</span><span class="ln"><span class="accent">便利アプリ</span>。</span></h1>
+      <p class="hero__lede">らっこアプリは、個人でつくったiPhone向けのゲームとツールをまとめた一覧サイト。気になったらそのままApp Storeへ。ぜんぶ無料でダウンロードできます。</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#apps">アプリを探す
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--ghost" href="#featured">注目のアプリを見る</a>
+      </div>
+      <dl class="hero__stats">
+        <div><dd class="stat__num">34</dd><dt class="stat__label">配信中のアプリ</dt></div>
+        <div><dd class="stat__num">7</dd><dt class="stat__label">カテゴリ</dt></div>
+        <div><dd class="stat__num">¥0</dd><dt class="stat__label">ダウンロード無料</dt></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ============ Featured ============ -->
+  <section class="section" id="featured">
+    <div class="wrap">
+      <header class="section__head reveal">
+        <p class="section__eyebrow">PICK UP</p>
+        <h2 class="section__title">注目のアプリ</h2>
+        <p class="section__lede">まずはここから。人気・イチオシをピックアップしました。</p>
+      </header>
+      <div class="featured-grid reveal">
+        <article class="app-card" data-cat="online" data-search="穴喰いバトル anakui オンライン対戦 オンライン対戦 hole.io ホール 穴 対戦 街ごと吸い込む「穴」になって競うオンライン対戦。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/anakui.png" width="256" height="256" loading="lazy" decoding="async" alt="穴喰いバトルのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/anakui/">穴喰いバトル</a></h3>
+            <p class="app-card__desc">街ごと吸い込む「穴」になって競うオンライン対戦。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="action" data-search="ピカピカ転生 pika-tensei アクション アクション 掃除 そうじ こすり ASMR 転生 指でこする物理演算のおそうじ×転生ゲーム。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/pika-tensei.png" width="256" height="256" loading="lazy" decoding="async" alt="ピカピカ転生のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/pika-tensei/">ピカピカ転生</a></h3>
+            <p class="app-card__desc">指でこする物理演算のおそうじ×転生ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="puzzle" data-search="密室100 escape-room パズル・脱出 パズル 脱出 escape 謎解き 密室 100室すべてが別コンセプトの本格脱出ゲーム。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/escape-room.png" width="256" height="256" loading="lazy" decoding="async" alt="密室100のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/escape-room/">密室100</a></h3>
+            <p class="app-card__desc">100室すべてが別コンセプトの本格脱出ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="もちうさ うさぎ育成 mochiusa 育成・戦略 育成・戦略 うさぎ 育成 癒し かわいい raise 自分だけのうさぎを育てる、癒しの育成ゲーム。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/mochiusa.png" width="256" height="256" loading="lazy" decoding="async" alt="もちうさ うさぎ育成のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/mochiusa/">もちうさ うさぎ育成</a></h3>
+            <p class="app-card__desc">自分だけのうさぎを育てる、癒しの育成ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="party" data-search="ワードウルフ - 嘘つきは誰だ？ wordwolf パーティー・推理 パーティー 人狼 word wolf 正体隠し パーティー スマホ1台で盛り上がる正体隠しトークゲーム。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/wordwolf.png" width="256" height="256" loading="lazy" decoding="async" alt="ワードウルフ - 嘘つきは誰だ？のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/wordwolf/">ワードウルフ - 嘘つきは誰だ？</a></h3>
+            <p class="app-card__desc">スマホ1台で盛り上がる正体隠しトークゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="casual" data-search="マネークリッカー money-clicker カジュアル・放置 カジュアル clicker 放置 お金 idle タップ タップでお金の帝国を築く放置クリッカー。">
+          <span class="badge-featured">注目</span>
+          <div class="app-card__icon"><img src="/assets/icons/money-clicker.png" width="256" height="256" loading="lazy" decoding="async" alt="マネークリッカーのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/money-clicker/">マネークリッカー</a></h3>
+            <p class="app-card__desc">タップでお金の帝国を築く放置クリッカー。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ All apps ============ -->
+  <section class="section section--tint" id="apps">
+    <div class="wrap">
+      <header class="section__head reveal">
+        <p class="section__eyebrow">ALL APPS</p>
+        <h2 class="section__title">すべてのアプリ</h2>
+        <p class="section__lede">カテゴリで絞り込み、キーワードで検索できます。</p>
+      </header>
+
+      <div class="toolbar reveal">
+        <label class="search">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 12l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="app-search" type="search" placeholder="アプリ名・ジャンルで検索…" aria-label="アプリを検索" autocomplete="off">
+        </label>
+        <div class="chips" role="group" aria-label="カテゴリで絞り込み">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">すべて <span class="chip__count">34</span></button>
+          <button class="chip" type="button" data-filter="online" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦 <span class="chip__count">6</span></button>
+          <button class="chip" type="button" data-filter="action" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション <span class="chip__count">4</span></button>
+          <button class="chip" type="button" data-filter="puzzle" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル・脱出 <span class="chip__count">4</span></button>
+          <button class="chip" type="button" data-filter="sim" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略 <span class="chip__count">6</span></button>
+          <button class="chip" type="button" data-filter="party" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー・推理 <span class="chip__count">4</span></button>
+          <button class="chip" type="button" data-filter="casual" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル・放置 <span class="chip__count">4</span></button>
+          <button class="chip" type="button" data-filter="utility" aria-pressed="false"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>実用・ツール <span class="chip__count">6</span></button>
+        </div>
+      </div>
+
+      <p class="result-count"><b id="result-count-num">–</b> 件のアプリ</p>
+
+      <div class="app-grid" id="app-grid">
+        <article class="app-card" data-cat="online" data-search="穴喰いバトル anakui オンライン対戦 オンライン対戦 hole.io ホール 穴 対戦 街ごと吸い込む「穴」になって競うオンライン対戦。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/anakui.png" width="256" height="256" loading="lazy" decoding="async" alt="穴喰いバトルのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/anakui/">穴喰いバトル</a></h3>
+            <p class="app-card__desc">街ごと吸い込む「穴」になって競うオンライン対戦。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="online" data-search="大蛇バトル orochi-battle オンライン対戦 オンライン対戦 slither スリザリオ ヘビ 蛇 玉を食べて大蛇を育て、相手を狩るオンライン対戦。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/orochi-battle.png" width="256" height="256" loading="lazy" decoding="async" alt="大蛇バトルのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/orochi-battle/">大蛇バトル</a></h3>
+            <p class="app-card__desc">玉を食べて大蛇を育て、相手を狩るオンライン対戦。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="online" data-search="らくがきオンライン oekaki-online オンライン対戦 オンライン対戦 お絵かきの森 drawing お絵描き みんなで遊ぶリアルタイムお絵かき当てゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/oekaki-online.png" width="256" height="256" loading="lazy" decoding="async" alt="らくがきオンラインのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/oekaki-online/">らくがきオンライン</a></h3>
+            <p class="app-card__desc">みんなで遊ぶリアルタイムお絵かき当てゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="online" data-search="スーパータップ対戦 super-tap-battle オンライン対戦 オンライン対戦 タップ 早押し reaction 現れるボールを割るだけ。超シンプル早押し対戦。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/super-tap-battle.png" width="256" height="256" loading="lazy" decoding="async" alt="スーパータップ対戦のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/super-tap-battle/">スーパータップ対戦</a></h3>
+            <p class="app-card__desc">現れるボールを割るだけ。超シンプル早押し対戦。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="online" data-search="ISSEN 一閃 issen オンライン対戦 オンライン対戦 居合 早撃ち reaction 反射 コンマ数秒の反応速度を競う早撃ちオンライン対戦。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/issen.png" width="256" height="256" loading="lazy" decoding="async" alt="ISSEN 一閃のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/issen/">ISSEN 一閃</a></h3>
+            <p class="app-card__desc">コンマ数秒の反応速度を競う早撃ちオンライン対戦。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="online" data-search="チャイポオンライン PineappleOFC オンライン対戦 オンライン対戦 OFC ポーカー poker pineapple チャイニーズ 十三張パイナップルOFCをオンラインで手軽に。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/PineappleOFC.png" width="256" height="256" loading="lazy" decoding="async" alt="チャイポオンラインのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/PineappleOFC/">チャイポオンライン</a></h3>
+            <p class="app-card__desc">十三張パイナップルOFCをオンラインで手軽に。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-online)"></span>オンライン対戦</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="action" data-search="ピカピカ転生 pika-tensei アクション アクション 掃除 そうじ こすり ASMR 転生 指でこする物理演算のおそうじ×転生ゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/pika-tensei.png" width="256" height="256" loading="lazy" decoding="async" alt="ピカピカ転生のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/pika-tensei/">ピカピカ転生</a></h3>
+            <p class="app-card__desc">指でこする物理演算のおそうじ×転生ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="action" data-search="30秒の勇者 hero30 アクション アクション RPG 勇者 魔王 ドット 制限時間30秒で魔王を討つドット絵スピードRPG。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/hero30.png" width="256" height="256" loading="lazy" decoding="async" alt="30秒の勇者のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/hero30/">30秒の勇者</a></h3>
+            <p class="app-card__desc">制限時間30秒で魔王を討つドット絵スピードRPG。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="action" data-search="デコボコライダー dekoboko-rider アクション アクション バイク 物理 happy wheels レース バイクで丘を駆け抜けるかんたん物理アクション。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/dekoboko-rider.png" width="256" height="256" loading="lazy" decoding="async" alt="デコボコライダーのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/dekoboko-rider/">デコボコライダー</a></h3>
+            <p class="app-card__desc">バイクで丘を駆け抜けるかんたん物理アクション。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="action" data-search="おえかきモンスターバトル rakugaki-oukoku アクション アクション お絵かき モンスター バトル 落書き 描いた絵が3Dモンスターになって戦う。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/rakugaki-oukoku.png" width="256" height="256" loading="lazy" decoding="async" alt="おえかきモンスターバトルのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/rakugaki-oukoku/">おえかきモンスターバトル</a></h3>
+            <p class="app-card__desc">描いた絵が3Dモンスターになって戦う。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-action)"></span>アクション</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="puzzle" data-search="密室100 escape-room パズル・脱出 パズル 脱出 escape 謎解き 密室 100室すべてが別コンセプトの本格脱出ゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/escape-room.png" width="256" height="256" loading="lazy" decoding="async" alt="密室100のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/escape-room/">密室100</a></h3>
+            <p class="app-card__desc">100室すべてが別コンセプトの本格脱出ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="puzzle" data-search="AQUALUX aqualux パズル・脱出 パズル water sort 水 仕分け パズル 色の水をびんに仕分ける爽快ソートパズル。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/aqualux.png" width="256" height="256" loading="lazy" decoding="async" alt="AQUALUXのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/aqualux/">AQUALUX</a></h3>
+            <p class="app-card__desc">色の水をびんに仕分ける爽快ソートパズル。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="puzzle" data-search="Quadle quadle パズル・脱出 パズル 2048 merge 数字 マージ スワイプで数字を合体、2048を目指すパズル。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/quadle.png" width="256" height="256" loading="lazy" decoding="async" alt="Quadleのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/quadle/">Quadle</a></h3>
+            <p class="app-card__desc">スワイプで数字を合体、2048を目指すパズル。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="puzzle" data-search="Lead the Way leadtheway パズル・脱出 パズル 矢印 arrow 道 パズル えんぴつ描き風のやさしい矢印パズル。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/leadtheway.png" width="256" height="256" loading="lazy" decoding="async" alt="Lead the Wayのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/leadtheway/">Lead the Way</a></h3>
+            <p class="app-card__desc">えんぴつ描き風のやさしい矢印パズル。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-puzzle)"></span>パズル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="もちうさ うさぎ育成 mochiusa 育成・戦略 育成・戦略 うさぎ 育成 癒し かわいい raise 自分だけのうさぎを育てる、癒しの育成ゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/mochiusa.png" width="256" height="256" loading="lazy" decoding="async" alt="もちうさ うさぎ育成のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/mochiusa/">もちうさ うさぎ育成</a></h3>
+            <p class="app-card__desc">自分だけのうさぎを育てる、癒しの育成ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="オートファクトリー auto-factory 育成・戦略 育成・戦略 factorio 工場 自動化 生産 採掘から自動化する本格工場づくり（Factorio系）。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/auto-factory.png" width="256" height="256" loading="lazy" decoding="async" alt="オートファクトリーのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/auto-factory/">オートファクトリー</a></h3>
+            <p class="app-card__desc">採掘から自動化する本格工場づくり（Factorio系）。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="魔王株式会社 maou-inc 育成・戦略 育成・戦略 plague inc 魔王 侵略 戦略 瘴気で異世界を侵略する戦略シミュレーション。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/maou-inc.png" width="256" height="256" loading="lazy" decoding="async" alt="魔王株式会社のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/maou-inc/">魔王株式会社</a></h3>
+            <p class="app-card__desc">瘴気で異世界を侵略する戦略シミュレーション。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="ほりほり魔王 horihori 育成・戦略 育成・戦略 掘る 魔王 ディフェンス 育成 地面を掘って魔物を育てる育成ディフェンス。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/horihori.png" width="256" height="256" loading="lazy" decoding="async" alt="ほりほり魔王のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/horihori/">ほりほり魔王</a></h3>
+            <p class="app-card__desc">地面を掘って魔物を育てる育成ディフェンス。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="おじさん畑 ojisan-farm 育成・戦略 育成・戦略 なめこ 栽培 収穫 おじさん コレクション おじさんを育てて収穫する、のんびり栽培コレクション。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/ojisan-farm.png" width="256" height="256" loading="lazy" decoding="async" alt="おじさん畑のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/ojisan-farm/">おじさん畑</a></h3>
+            <p class="app-card__desc">おじさんを育てて収穫する、のんびり栽培コレクション。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="sim" data-search="デッキ姫 〜王国カード戦記〜 deck-hime 育成・戦略 育成・戦略 ドミニオン デッキ構築 カード deckbuilding 10枚から最強デッキを育てるデッキ構築カード。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/deck-hime.png" width="256" height="256" loading="lazy" decoding="async" alt="デッキ姫 〜王国カード戦記〜のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/deck-hime/">デッキ姫 〜王国カード戦記〜</a></h3>
+            <p class="app-card__desc">10枚から最強デッキを育てるデッキ構築カード。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>育成・戦略</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="party" data-search="ワードウルフ - 嘘つきは誰だ？ wordwolf パーティー・推理 パーティー 人狼 word wolf 正体隠し パーティー スマホ1台で盛り上がる正体隠しトークゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/wordwolf.png" width="256" height="256" loading="lazy" decoding="async" alt="ワードウルフ - 嘘つきは誰だ？のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/wordwolf/">ワードウルフ - 嘘つきは誰だ？</a></h3>
+            <p class="app-card__desc">スマホ1台で盛り上がる正体隠しトークゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="party" data-search="インサイダーを暴け insider パーティー・推理 パーティー インサイダー 推理 ワード party 答えを操る内通者を探すワード推理ゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/insider.png" width="256" height="256" loading="lazy" decoding="async" alt="インサイダーを暴けのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/insider/">インサイダーを暴け</a></h3>
+            <p class="app-card__desc">答えを操る内通者を探すワード推理ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="party" data-search="サイレント・ボム bomb-defuse パーティー・推理 パーティー KTANE 爆弾 協力 解除 co-op 声を頼りに時限爆弾を解除する協力ゲーム。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/bomb-defuse.png" width="256" height="256" loading="lazy" decoding="async" alt="サイレント・ボムのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/bomb-defuse/">サイレント・ボム</a></h3>
+            <p class="app-card__desc">声を頼りに時限爆弾を解除する協力ゲーム。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="party" data-search="ほしぞら探検隊 hoshizora パーティー・推理 パーティー the crew クルー 協力 トリテ カード 声を出さずに夜空を旅する協力トリックテイキング。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/hoshizora.png" width="256" height="256" loading="lazy" decoding="async" alt="ほしぞら探検隊のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/hoshizora/">ほしぞら探検隊</a></h3>
+            <p class="app-card__desc">声を出さずに夜空を旅する協力トリックテイキング。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>パーティー</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="casual" data-search="マネークリッカー money-clicker カジュアル・放置 カジュアル clicker 放置 お金 idle タップ タップでお金の帝国を築く放置クリッカー。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/money-clicker.png" width="256" height="256" loading="lazy" decoding="async" alt="マネークリッカーのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/money-clicker/">マネークリッカー</a></h3>
+            <p class="app-card__desc">タップでお金の帝国を築く放置クリッカー。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="casual" data-search="Shark Clicker shark-clicker カジュアル・放置 カジュアル サメ shark clicker 進化 放置 タップで育てて海を制覇するサメ進化クリッカー。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/shark-clicker.png" width="256" height="256" loading="lazy" decoding="async" alt="Shark Clickerのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/shark-clicker/">Shark Clicker</a></h3>
+            <p class="app-card__desc">タップで育てて海を制覇するサメ進化クリッカー。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="casual" data-search="ゴッドガチャ∞ god-gacha カジュアル・放置 カジュアル ガチャ gacha コレクション 神 神々を引き集めるコレクションガチャ。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/god-gacha.png" width="256" height="256" loading="lazy" decoding="async" alt="ゴッドガチャ∞のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/god-gacha/">ゴッドガチャ∞</a></h3>
+            <p class="app-card__desc">神々を引き集めるコレクションガチャ。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="casual" data-search="おくすりプチプチ pill-asmr-ios カジュアル・放置 カジュアル ASMR プチプチ 暇つぶし 薬 pop 薬のシートをプチッと押し出す気持ちいいASMR。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/pill-asmr-ios.png" width="256" height="256" loading="lazy" decoding="async" alt="おくすりプチプチのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/pill-asmr-ios/">おくすりプチプチ</a></h3>
+            <p class="app-card__desc">薬のシートをプチッと押し出す気持ちいいASMR。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-casual)"></span>カジュアル</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="ShareHistory 収支共有&amp;子役カウント koyaku-counter 実用・ツール ツール パチスロ 収支 子役 カウント 共有 パチスロ収支を仲間と共有＆子役カウント。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/koyaku-counter.png" width="256" height="256" loading="lazy" decoding="async" alt="ShareHistory 収支共有&amp;子役カウントのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/koyaku-counter/">ShareHistory 収支共有&amp;子役カウント</a></h3>
+            <p class="app-card__desc">パチスロ収支を仲間と共有＆子役カウント。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="BlindFlow blindflow 実用・ツール ツール 会員 ポーカー 店舗 amusement アミューズメントポーカー店舗の会員向け公式アプリ。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/blindflow.png" width="256" height="256" loading="lazy" decoding="async" alt="BlindFlowのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/blindflow/">BlindFlow</a></h3>
+            <p class="app-card__desc">アミューズメントポーカー店舗の会員向け公式アプリ。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="72＆バドゥーギ GTO道場 gto-draw 実用・ツール ツール GTO ポーカー ドロー badugi 学習 2-7＆バドゥーギのGTO戦略を学ぶトレーニング。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/gto-draw.png" width="256" height="256" loading="lazy" decoding="async" alt="72＆バドゥーギ GTO道場のアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/gto-draw/">72＆バドゥーギ GTO道場</a></h3>
+            <p class="app-card__desc">2-7＆バドゥーギのGTO戦略を学ぶトレーニング。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="チャイポEVアシスト ofc-solver 実用・ツール ツール OFC EV solver チャイポ 計算 チャイポのEVを計算するアシストツール。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/ofc-solver.png" width="256" height="256" loading="lazy" decoding="async" alt="チャイポEVアシストのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/ofc-solver/">チャイポEVアシスト</a></h3>
+            <p class="app-card__desc">チャイポのEVを計算するアシストツール。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="ポーカーショットクロック poker-shot-clock 実用・ツール ツール ポーカー タイマー shot clock 時間 ライブポーカーの持ち時間を管理するタイマー。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/poker-shot-clock.png" width="256" height="256" loading="lazy" decoding="async" alt="ポーカーショットクロックのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/poker-shot-clock/">ポーカーショットクロック</a></h3>
+            <p class="app-card__desc">ライブポーカーの持ち時間を管理するタイマー。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+        <article class="app-card" data-cat="utility" data-search="Poker Equity Calc PokerEquityCalc 実用・ツール ツール equity 勝率 poker calc 計算 NLHの勝率（エクイティ）を計算するツール。">
+          
+          <div class="app-card__icon"><img src="/assets/icons/PokerEquityCalc.png" width="256" height="256" loading="lazy" decoding="async" alt="Poker Equity Calcのアプリアイコン"></div>
+          <div class="app-card__body">
+            <h3 class="app-card__name"><a href="/apps/PokerEquityCalc/">Poker Equity Calc</a></h3>
+            <p class="app-card__desc">NLHの勝率（エクイティ）を計算するツール。</p>
+            <div class="app-card__meta">
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-utility)"></span>ツール</span>
+              <span class="app-card__go">くわしく <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty" id="empty">
+        <div class="empty__emoji" aria-hidden="true">🦦</div>
+        <p>該当するアプリが見つかりませんでした。<br>キーワードやカテゴリを変えてみてください。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ About ============ -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="about__card reveal">
+        <div>
+          <h2 class="about__title">らっこアプリについて</h2>
+          <p class="about__text">個人でアプリをつくっています。かわいくてちょっと変わったゲームから、毎日の生活に役立つツールまで。「つくって、公開して、また次へ」を合言葉に、コツコツ増やしています。</p>
+          <ul class="about__list">
+            <li>掲載アプリはすべてApp Storeで配信中</li>
+            <li>ダウンロードは無料（アプリ内課金がある場合あり）</li>
+            <li>iPhoneに対応</li>
+          </ul>
+        </div>
+        <aside class="about__aside">
+          <h3>お問い合わせ</h3>
+          <p>ご感想・不具合のご連絡はこちらまで。</p>
+          <p><a href="mailto:rakko9924@gmail.com">rakko9924@gmail.com</a></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer__statement">つくって、公開して、また next。<br>らっこアプリ。</p>
+    <div class="footer__row">
+      <nav class="footer__links" aria-label="フッター">
+        <a href="#featured">注目のアプリ</a>
+        <a href="#apps">アプリ一覧</a>
+        <a href="#about">このサイトについて</a>
+        <a href="mailto:rakko9924@gmail.com">お問い合わせ</a>
+      </nav>
+      <p class="footer__copy">© 2026 らっこアプリ</p>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/app.js?v=mry2v3l0" defer></script>
+</body>
+</html>

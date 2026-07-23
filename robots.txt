@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# ▼ SITE URL — 独自ドメイン確定時にここも書き換える
+Sitemap: https://rakkoapps.com/sitemap.xml

@@ -1,0 +1,14 @@
+{
+  "name": "らっこアプリ",
+  "short_name": "らっこアプリ",
+  "description": "個人開発の無料iPhoneゲーム・便利アプリまとめ",
+  "lang": "ja",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#fbf7f2",
+  "theme_color": "#f2694b",
+  "icons": [
+    { "src": "assets/og/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "favicon.svg", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
