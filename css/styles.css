@@ -99,10 +99,8 @@ strong { font-weight: 700; color: var(--color-ink); }
 .wordmark { display: inline-flex; align-items: center; gap: 0.5em; font-family: var(--font-display); font-weight: 700; font-size: var(--text-md); color: var(--color-ink); letter-spacing: 0.01em; }
 .wordmark__mark {
   width: 2rem; height: 2rem; border-radius: 10px; flex: none;
-  background: radial-gradient(120% 120% at 30% 25%, var(--color-pear), var(--color-accent) 78%);
-  display: grid; place-items: center; box-shadow: var(--shadow-card);
+  object-fit: cover; box-shadow: var(--shadow-card);
 }
-.wordmark__mark span { font-size: 1.1rem; line-height: 1; filter: saturate(1.1); }
 .nav__links { display: flex; align-items: center; gap: clamp(0.5rem, 1.5vw, 1.5rem); margin-left: auto; }
 .nav__link { font-size: var(--text-sm); font-weight: 500; color: var(--color-muted); padding: 0.4rem 0.2rem; transition: color var(--dur) var(--ease-out); white-space: nowrap; }
 .nav__link:hover { color: var(--color-ink); }
@@ -127,6 +125,7 @@ strong { font-weight: 700; color: var(--color-ink); }
   padding: 0.35em 0.85em; border-radius: var(--radius-pill); margin-bottom: var(--space-md);
 }
 .hero__badge b { font-weight: 700; }
+.badge__icon { width: 1.25rem; height: 1.25rem; border-radius: 5px; flex: none; object-fit: cover; }
 .hero h1 { font-size: var(--text-display); max-width: 14em; letter-spacing: 0.005em; line-height: 1.32; }
 .hero h1 .accent { color: var(--color-accent); }
 /* 見出しは「意味のまとまり」単位で折り返す。語中では折らない（keep-all）が、
@@ -204,7 +203,7 @@ strong { font-weight: 700; color: var(--color-ink); }
 /* Empty state for search */
 .empty { display: none; padding: var(--space-2xl) var(--space-md); text-align: center; color: var(--color-muted); }
 .empty.is-shown { display: block; }
-.empty__emoji { font-size: 2.5rem; }
+.empty__icon { width: 76px; height: 76px; border-radius: 20px; object-fit: cover; margin: 0 auto var(--space-sm); box-shadow: var(--shadow-card); }
 
 .result-count { font-size: var(--text-sm); color: var(--color-muted); margin-bottom: var(--space-md); }
 .result-count b { color: var(--color-ink); font-variant-numeric: tabular-nums; }
@@ -219,7 +218,10 @@ strong { font-weight: 700; color: var(--color-ink); }
 .about__text { margin-top: var(--space-sm); color: var(--color-body); max-width: 48ch; }
 .about__list { margin-top: var(--space-md); display: grid; gap: 0.5rem; }
 .about__list li { display: flex; gap: 0.6em; align-items: flex-start; font-size: var(--text-sm); color: var(--color-body); }
-.about__list li::before { content: "🦦"; flex: none; }
+.about__list li::before {
+  content: ""; flex: none; width: 1.15rem; height: 1.15rem; margin-top: 0.15em;
+  border-radius: 5px; background: url("/assets/brand/icon-48.png") center/cover no-repeat;
+}
 .about__aside { background: var(--color-paper-2); border-radius: var(--radius-lg); padding: var(--space-lg); }
 .about__aside h3 { font-size: var(--text-md); margin-bottom: var(--space-xs); }
 .about__aside a { color: var(--color-accent-ink); font-weight: 700; }

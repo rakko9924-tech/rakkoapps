@@ -112,7 +112,7 @@ const homeJsonld = {
 const navHtml = `<header class="nav">
   <div class="wrap nav__inner">
     <a class="wordmark" href="/" aria-label="らっこアプリ ホーム">
-      <span class="wordmark__mark" aria-hidden="true"><span>🦦</span></span>
+      <img class="wordmark__mark" src="/assets/brand/icon-96.png" width="96" height="96" alt="" aria-hidden="true">
       らっこアプリ
     </a>
     <nav class="nav__links" aria-label="メイン">
@@ -212,7 +212,7 @@ function detailPage(app) {
 <meta name="twitter:title" content="${esc(app.name)}｜らっこアプリ">
 <meta name="twitter:description" content="${esc(app.desc)}">
 <meta name="twitter:image" content="${img}">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
