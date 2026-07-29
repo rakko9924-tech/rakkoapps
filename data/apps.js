@@ -37,7 +37,7 @@ export const apps = [
 
   // ---- 育成・戦略 ----
   { folder: "mochiusa",        name: "もちうさ うさぎ育成",      id: "6784304463", cat: "sim",     game: true,  featured: true,  desc: "自分だけのうさぎを育てる、癒しの育成ゲーム。", kw: "うさぎ 育成 癒し かわいい raise" },
-  { folder: "auto-factory",    name: "オートファクトリー",       id: "6785677430", cat: "sim",     game: true,  featured: false, desc: "採掘から自動化する本格工場づくり（Factorio系）。", kw: "factorio 工場 自動化 生産" },
+  { folder: "auto-factory",    name: "オートファクトリー",       id: "6785677430", cat: "sim",     game: true,  featured: false, desc: "採掘から自動化する本格工場づくり。", kw: "工場 自動化 生産 ベルト 資源" },
   { folder: "maou-inc",        name: "魔王株式会社",             id: "6784162519", cat: "sim",     game: true,  featured: false, desc: "瘴気で異世界を侵略する戦略シミュレーション。", kw: "plague inc 魔王 侵略 戦略" },
   { folder: "horihori",        name: "ほりほり魔王",             id: "6784198043", cat: "sim",     game: true,  featured: false, desc: "地面を掘って魔物を育てる育成ディフェンス。", kw: "掘る 魔王 ディフェンス 育成" },
   { folder: "ojisan-farm",     name: "おじさん畑",               id: "6792156972", cat: "sim",     game: true,  featured: false, desc: "おじさんを育てて収穫する、のんびり栽培コレクション。", kw: "なめこ 栽培 収穫 おじさん コレクション" },
