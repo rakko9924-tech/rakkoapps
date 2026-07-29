@@ -16,9 +16,9 @@ export const categories = [
 // id = App Store の数値ID。game=false のものは非ゲーム（構造化データで区別）。
 export const apps = [
   // ---- オンライン対戦 ----
-  { folder: "anakui",          name: "穴喰いバトル",             id: "6790614376", cat: "online",  game: true,  featured: true,  desc: "街ごと吸い込む「穴」になって競うオンライン対戦。", kw: "hole.io ホール 穴 対戦" },
-  { folder: "orochi-battle",   name: "大蛇バトル",               id: "6790615872", cat: "online",  game: true,  featured: false, desc: "玉を食べて大蛇を育て、相手を狩るオンライン対戦。", kw: "slither スリザリオ ヘビ 蛇" },
-  { folder: "oekaki-online",   name: "らくがきオンライン",       id: "6783932279", cat: "online",  game: true,  featured: false, desc: "みんなで遊ぶリアルタイムお絵かき当てゲーム。", kw: "お絵かきの森 drawing お絵描き" },
+  { folder: "anakui",          name: "穴喰いバトル",             id: "6790614376", cat: "online",  game: true,  featured: true,  desc: "街ごと吸い込む「穴」になって競うオンライン対戦。", kw: "穴 吸い込む 街 対戦 オンライン" },
+  { folder: "orochi-battle",   name: "大蛇バトル",               id: "6790615872", cat: "online",  game: true,  featured: false, desc: "玉を食べて大蛇を育て、相手を狩るオンライン対戦。", kw: "ヘビ 蛇 成長 対戦 オンライン" },
+  { folder: "oekaki-online",   name: "らくがきオンライン",       id: "6783932279", cat: "online",  game: true,  featured: false, desc: "みんなで遊ぶリアルタイムお絵かき当てゲーム。", kw: "お絵かき drawing お絵描き 当てっこ" },
   { folder: "super-tap-battle",name: "スーパータップ対戦",       id: "6784173258", cat: "online",  game: true,  featured: false, desc: "現れるボールを割るだけ。超シンプル早押し対戦。", kw: "タップ 早押し reaction" },
   { folder: "issen",           name: "ISSEN 一閃",               id: "6781177113", cat: "online",  game: true,  featured: false, desc: "コンマ数秒の反応速度を競う早撃ちオンライン対戦。", kw: "居合 早撃ち reaction 反射" },
   { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: false, desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
@@ -26,7 +26,7 @@ export const apps = [
   // ---- アクション ----
   { folder: "pika-tensei",     name: "ピカピカ転生",             id: "6793157994", cat: "action",  game: true,  featured: true,  desc: "指でこする物理演算のおそうじ×転生ゲーム。", kw: "掃除 そうじ こすり ASMR 転生" },
   { folder: "hero30",          name: "30秒の勇者",               id: "6784219090", cat: "action",  game: true,  featured: false, desc: "制限時間30秒で魔王を討つドット絵スピードRPG。", kw: "RPG 勇者 魔王 ドット" },
-  { folder: "dekoboko-rider",  name: "デコボコライダー",         id: "6785051153", cat: "action",  game: true,  featured: false, desc: "バイクで丘を駆け抜けるかんたん物理アクション。", kw: "バイク 物理 happy wheels レース" },
+  { folder: "dekoboko-rider",  name: "デコボコライダー",         id: "6785051153", cat: "action",  game: true,  featured: false, desc: "バイクで丘を駆け抜けるかんたん物理アクション。", kw: "バイク 物理 レース 丘 アクション" },
   { folder: "rakugaki-oukoku", name: "おえかきモンスターバトル", id: "6784171825", cat: "action",  game: true,  featured: false, desc: "描いた絵が3Dモンスターになって戦う。", kw: "お絵かき モンスター バトル 落書き" },
 
   // ---- パズル・脱出 ----
@@ -38,16 +38,16 @@ export const apps = [
   // ---- 育成・戦略 ----
   { folder: "mochiusa",        name: "もちうさ うさぎ育成",      id: "6784304463", cat: "sim",     game: true,  featured: true,  desc: "自分だけのうさぎを育てる、癒しの育成ゲーム。", kw: "うさぎ 育成 癒し かわいい raise" },
   { folder: "auto-factory",    name: "オートファクトリー",       id: "6785677430", cat: "sim",     game: true,  featured: false, desc: "採掘から自動化する本格工場づくり。", kw: "工場 自動化 生産 ベルト 資源" },
-  { folder: "maou-inc",        name: "魔王株式会社",             id: "6784162519", cat: "sim",     game: true,  featured: false, desc: "瘴気で異世界を侵略する戦略シミュレーション。", kw: "plague inc 魔王 侵略 戦略" },
+  { folder: "maou-inc",        name: "魔王株式会社",             id: "6784162519", cat: "sim",     game: true,  featured: false, desc: "瘴気で異世界を侵略する戦略シミュレーション。", kw: "魔王 侵略 戦略 シミュレーション 異世界" },
   { folder: "horihori",        name: "ほりほり魔王",             id: "6784198043", cat: "sim",     game: true,  featured: false, desc: "地面を掘って魔物を育てる育成ディフェンス。", kw: "掘る 魔王 ディフェンス 育成" },
-  { folder: "ojisan-farm",     name: "おじさん畑",               id: "6792156972", cat: "sim",     game: true,  featured: false, desc: "おじさんを育てて収穫する、のんびり栽培コレクション。", kw: "なめこ 栽培 収穫 おじさん コレクション" },
-  { folder: "deck-hime",       name: "デッキ姫 〜王国カード戦記〜", id: "6787432448", cat: "sim",  game: true,  featured: false, desc: "10枚から最強デッキを育てるデッキ構築カード。", kw: "ドミニオン デッキ構築 カード deckbuilding" },
+  { folder: "ojisan-farm",     name: "おじさん畑",               id: "6792156972", cat: "sim",     game: true,  featured: false, desc: "おじさんを育てて収穫する、のんびり栽培コレクション。", kw: "栽培 収穫 おじさん コレクション のんびり" },
+  { folder: "deck-hime",       name: "デッキ姫 〜王国カード戦記〜", id: "6787432448", cat: "sim",  game: true,  featured: false, desc: "10枚から最強デッキを育てるデッキ構築カード。", kw: "デッキ構築 カード deckbuilding 王国" },
 
   // ---- パーティー・推理 ----
   { folder: "wordwolf",        name: "ワードウルフ - 嘘つきは誰だ？", id: "6781790636", cat: "party", game: true, featured: true, desc: "スマホ1台で盛り上がる正体隠しトークゲーム。", kw: "人狼 word wolf 正体隠し パーティー" },
   { folder: "insider",         name: "インサイダーを暴け",       id: "6787274172", cat: "party",   game: true,  featured: false, desc: "答えを操る内通者を探すワード推理ゲーム。", kw: "インサイダー 推理 ワード party" },
-  { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "KTANE 爆弾 協力 解除 co-op" },
-  { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "the crew クルー 協力 トリテ カード" },
+  { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
+  { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
 
   // ---- カジュアル・放置 ----
   { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: true,  desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },
