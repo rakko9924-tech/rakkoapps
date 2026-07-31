@@ -493,17 +493,17 @@
     return `<div class="card ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>`;
   }
   // スクイーズ用カード（実際のライブポーカーの覗き方を再現）。
-  // 伏せたカードの手前＝左下の角を親指で押し上げると、その角だけが折り返る。
-  // 折り返った部分は「カードの表」なので白くなり、そこにランク／スートが見える。
-  // 角があった場所はカードが退いた状態＝卓が見える（白を残すと別のカードが
-  // 下に敷いてあるように見えてしまう）。
+  // 折り返る側(.sq-fold)は「カードの表」そのもの。ランク／スートも中央のスートも
+  // 実物どおり固定の位置・固定の大きさで刷ってあり、折り返した分だけ見えていく。
+  // 折り返っていない部分は裏面(.sq-back)のまま、紙が退いた部分は卓が透ける。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
     const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
         <div class="card back sq-back"></div>
         <div class="card sq-fold ${P.SUIT_COLOR[c.s]}">
-          <span class="fold-idx"><b>${r}</b><i>${s}</i></span>
+          <span class="idx bl"><b>${r}</b><i>${s}</i></span>
+          <span class="pip">${s}</span>
         </div>
       </div>`;
   }
@@ -576,7 +576,7 @@
       const peekBlock = `
         <div class="peek" data-player="${p}">
           <div class="hole big squeeze">${squeezeCardHTML(p, 0, !!rot)}${squeezeCardHTML(p, 1, !!rot)}</div>
-          <div class="peek-hint">左下の角を押し上げてスクイーズ</div>
+          <div class="peek-hint">角や辺を指で押し上げてスクイーズ</div>
           <div class="peek-eval myhand" style="visibility:hidden">&nbsp;</div>
         </div>`;
       return `<div class="seat seat-${p} ${rot} ${isActor ? 'actor' : 'idle'}">
@@ -616,7 +616,11 @@
 
     wireHomeBtn();
 
-    // GGポーカー風スクイーズ。手札エリアをスワイプすると2枚同時に角がめくれる。指を離すと自動で伏せる。
+    // スクイーズ。指を置いた点を動かした先へ紙を折り返す、という物理どおりのモデルで扱う。
+    //   折り目＝始点 p0 と現在地 p1 の垂直二等分線（p0 が p1 に重なるように折るため）
+    //   裏面   ＝カード ∩ p1 側の半平面
+    //   折り返り＝カード ∩ p0 側の半平面 を折り目で鏡映したもの（＝表が見える）
+    // 角からでも下辺からでも横からでも同じ式で成立するので、絞る向きを選ばない。
     document.querySelectorAll('.peek').forEach((peek) => {
       const p = parseInt(peek.dataset.player, 10);
       const evalEl = peek.querySelector('.peek-eval');
@@ -625,7 +629,6 @@
         card,
         back: card.querySelector('.sq-back'),
         fold: card.querySelector('.sq-fold'),
-        idx: card.querySelector('.fold-idx'),
       }));
       if (!cards.length) return;
       const refreshEval = () => {
@@ -633,59 +636,91 @@
         if (open && evName) { evalEl.textContent = evName; evalEl.style.visibility = 'visible'; }
         else { evalEl.style.visibility = 'hidden'; }
       };
-      let dragging = false, flipped = false, sx0 = 0, sy0 = 0;
-      let W = 0, Hh = 0, maxL = 0, rot = false;
-      // 同じ L を両カードに適用（各カードはローカル座標の左下角からめくる）。
-      // 折り目は (L,Hh)-(0,Hh-L) の対角線。裏面はその手前の三角を切り取って卓を見せ、
-      // 切り取った分は折り目の向こう側へ折り返る＝表(白)の三角として現れる。
-      // 折り返り三角の頂点は (L,Hh) (0,Hh-L) (L,Hh-L)（左下角を折り目で鏡映した位置）。
-      const applyAll = (L) => {
-        L = Math.max(0, Math.min(maxL, L));
-        const open = L >= 1;
-        cards.forEach(({ card, back, fold, idx }) => {
-          if (!open) {
-            back.style.clipPath = ''; fold.style.clipPath = ''; fold.style.opacity = '0';
-            idx.style.opacity = '0';
-            card.classList.remove('open');
-          } else {
-            back.style.clipPath = `polygon(0 0, ${W}px 0, ${W}px ${Hh}px, ${L}px ${Hh}px, 0 ${Hh - L}px)`;
-            fold.style.clipPath = `polygon(${L}px ${Hh}px, 0 ${Hh - L}px, ${L}px ${Hh - L}px)`;
-            fold.style.opacity = '1';
-            // ランク／スートは折り返り三角の重心に置き、めくるほど大きくはっきり出す。
-            idx.style.left = (L * 2 / 3) + 'px';
-            idx.style.bottom = (L * 2 / 3) + 'px';
-            idx.style.fontSize = (L * 0.30) + 'px';
-            idx.style.opacity = String(Math.max(0, Math.min(1, (L - 20) / 18)));
-            card.classList.add('open');
+
+      // 凸多角形を半平面 (x-Q)·n >= 0 で切る（Sutherland–Hodgman）。
+      const clipHalf = (poly, qx, qy, nx, ny) => {
+        const out = [];
+        const side = (pt) => (pt[0] - qx) * nx + (pt[1] - qy) * ny;
+        for (let i = 0; i < poly.length; i++) {
+          const a = poly[i], b = poly[(i + 1) % poly.length];
+          const sa = side(a), sb = side(b);
+          if (sa >= 0) out.push(a);
+          if ((sa >= 0) !== (sb >= 0)) {
+            const t = sa / (sa - sb);
+            out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
           }
+        }
+        return out;
+      };
+      const toPolygon = (poly) =>
+        'polygon(' + poly.map(([x, y]) => `${x.toFixed(2)}px ${y.toFixed(2)}px`).join(',') + ')';
+
+      let dragging = false, flipped = false;
+      let p0 = null, W = 0, Hh = 0, maxDepth = 0, rot = false;
+      // 画面座標をカードのローカル座標へ。上席は席ごと180°回転しているので反転させる。
+      const toLocal = (e) => {
+        const r = cards[0].card.getBoundingClientRect();
+        return rot
+          ? [r.right - e.clientX, r.bottom - e.clientY]
+          : [e.clientX - r.left, e.clientY - r.top];
+      };
+
+      const clearFold = () => {
+        cards.forEach(({ card, back, fold }) => {
+          back.style.clipPath = '';
+          fold.style.clipPath = ''; fold.style.transform = ''; fold.style.opacity = '0';
+          card.classList.remove('open');
         });
         refreshEval();
       };
-      // スワイプ量でめくり量を決める。左下の角を親指で押し上げる動き＝右上へ動かすとめくれる。
-      // 上席は席ごと180°回転しているため符号を反転。
-      const peelLen = (e) => {
-        const d = rot ? ((sx0 - e.clientX) + (e.clientY - sy0)) : ((e.clientX - sx0) + (sy0 - e.clientY));
-        return d;
+
+      const applyFold = (p1) => {
+        let dx = p1[0] - p0[0], dy = p1[1] - p0[1];
+        const dist = Math.hypot(dx, dy);
+        if (dist < 2) { clearFold(); return 0; }
+        // 折り返しの深さ＝移動距離の半分。折り過ぎると「半分めくり」になるので頭打ちにする。
+        const depth = Math.min(dist / 2, maxDepth);
+        const nx = dx / dist, ny = dy / dist;              // 折り目の法線＝ドラッグ方向
+        const qx = p0[0] + nx * depth, qy = p0[1] + ny * depth; // 折り目上の1点
+        const rect = [[0, 0], [W, 0], [W, Hh], [0, Hh]];
+        const backPoly = clipHalf(rect, qx, qy, nx, ny);    // p1 側＝伏せたまま残る部分
+        const flapPoly = clipHalf(rect, qx, qy, -nx, -ny);  // p0 側＝折り返る部分
+        if (backPoly.length < 3 || flapPoly.length < 3) { clearFold(); return 0; }
+        // 折り目に対する鏡映行列 M = I - 2nnᵀ（平行移動込み）。clip-path は transform より
+        // 先に効くので、折り返り前の形で切ってから M をかければ折り返した見た目になる。
+        const a = 1 - 2 * nx * nx, b = -2 * nx * ny, d = 1 - 2 * ny * ny;
+        const k = 2 * (qx * nx + qy * ny);
+        const mtx = `matrix(${a},${b},${b},${d},${k * nx},${k * ny})`;
+        cards.forEach(({ card, back, fold }) => {
+          back.style.clipPath = toPolygon(backPoly);
+          fold.style.clipPath = toPolygon(flapPoly);
+          fold.style.transform = mtx;
+          fold.style.opacity = '1';
+          card.classList.add('open');
+        });
+        refreshEval();
+        return depth;
       };
+
       const onDown = (e) => {
         e.preventDefault();
+        rot = cards[0].card.classList.contains('rot');
         const r = cards[0].card.getBoundingClientRect();
         W = r.width; Hh = r.height;
-        // 折るのはあくまで「角」。カード幅いっぱいまで折れると半分めくった見た目になる。
-        maxL = W * 0.75;
-        rot = cards[0].card.classList.contains('rot');
-        dragging = true; flipped = false; sx0 = e.clientX; sy0 = e.clientY;
+        maxDepth = W * 0.5;
+        p0 = toLocal(e);
+        dragging = true; flipped = false;
         if (peek.setPointerCapture) { try { peek.setPointerCapture(e.pointerId); } catch (_) {} }
-        applyAll(0);
+        clearFold();
       };
       const onMove = (e) => {
         if (!dragging) return; e.preventDefault();
-        const L = peelLen(e); applyAll(L);
-        if (!flipped && L > maxL * 0.45) { flipped = true; sfx('flip'); }
+        const depth = applyFold(toLocal(e));
+        if (!flipped && depth > maxDepth * 0.45) { flipped = true; sfx('flip'); }
       };
-      const onUp = (e) => {
+      const onUp = () => {
         if (!dragging) return; dragging = false;
-        applyAll(0);
+        clearFold();
       };
       peek.addEventListener('pointerdown', onDown);
       peek.addEventListener('pointermove', onMove);

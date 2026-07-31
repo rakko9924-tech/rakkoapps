@@ -217,22 +217,18 @@ h1,h2{ margin:.2em 0; }
 .sqcard .card{ position:absolute; inset:0; width:100%; height:100%; }
 .sqcard .sq-back{ transition:clip-path .22s ease; }
 .sqcard.dragging .sq-back{ transition:none; }
-/* 折り返った角＝カードの「表」。白地にランク／スートが出る。
-   折り目(左下側)を明るく、先端(右上)にかけてわずかに陰を落として、
-   板ではなく曲がって返っているように見せる。影はカード面へ落とす。 */
-.sqcard .sq-fold{ opacity:0; background:#fff; border-radius:8px;
-  background-image:linear-gradient(45deg,
-    rgba(255,255,255,1) 0%, rgba(255,255,255,1) 6%,
-    rgba(0,0,0,.02) 34%, rgba(0,0,0,.10) 72%, rgba(0,0,0,.17) 100%);
-  filter:drop-shadow(1px -1px 3px rgba(0,0,0,.5));
-  transition:clip-path .22s ease, opacity .22s ease; }
-.sqcard.dragging .sq-fold{ transition:none; }
-/* 折り返り三角の重心に置くランク／スート。位置とサイズは JS が L に応じて更新する。 */
-.sqcard .fold-idx{ position:absolute; opacity:0; line-height:1;
-  display:flex; flex-direction:column; align-items:center;
-  transform:translate(-50%,50%); white-space:nowrap; font-weight:800; }
-.sqcard .fold-idx b{ font-size:1em; line-height:1; }
-.sqcard .fold-idx i{ font-style:normal; font-size:.88em; line-height:1; margin-top:.08em; }
+/* 折り返る側＝カードの「表」。JS が折り目に対する鏡映行列を transform に入れるので、
+   transform-origin はカード左上（＝ローカル座標の原点）に固定する。
+   clip-path は transform より先に効くため、折り返す前の形で切ってよい。 */
+.sqcard .sq-fold{ opacity:0; background:#fff; transform-origin:0 0;
+  filter:drop-shadow(0 0 3px rgba(0,0,0,.45));
+  transition:opacity .18s ease; }
+/* 折り返った紙は反転して見えるので、文字とスートだけ反転を打ち消して読めるようにする。
+   結果として折り目の角度に沿って回った向きになる（＝斜めに折れば斜めに出る）。 */
+.sqcard .sq-fold .idx{ transform:scaleY(-1); }
+.sqcard .sq-fold .pip{ transform:translate(-50%,-50%) scaleY(-1); }
+/* 覗いたときのランク／スートは実物どおり手前の左下に、固定サイズで刷ってある。 */
+.card .idx.bl{ bottom:4px; left:5px; }
 
 /* ---- アクション（各席の右側に縦並び） ---- */
 .action-col{ width:118px; flex:0 0 auto; }
