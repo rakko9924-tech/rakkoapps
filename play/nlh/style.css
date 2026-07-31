@@ -60,7 +60,7 @@ h1,h2{ margin:.2em 0; }
 .home{ text-align:center; gap:10px; display:flex; flex-direction:column; }
 .logo{ font-size:24px; font-weight:900; line-height:1.05; letter-spacing:1px; margin-top:6px; }
 .logo span{ color:var(--gold); font-size:15px; }
-.tag{ color:var(--muted); margin-top:-4px; font-size:13px; }
+.tag{ color:var(--muted); font-size:13px; }
 .panel{ background:rgba(0,0,0,.22); border:1px solid var(--line);
   border-radius:14px; padding:13px; text-align:left; }
 .settings label{ display:block; font-size:12px; color:var(--muted); margin-bottom:9px; }
@@ -392,22 +392,24 @@ h1,h2{ margin:.2em 0; }
 .rakko-link{
   display:flex; align-items:center; gap:11px; text-decoration:none;
   background:rgba(0,0,0,.22); border:1px solid var(--line);
-  border-radius:14px; padding:11px 13px; color:var(--txt);
+  border-radius:14px; padding:9px 12px; color:var(--txt);
 }
 .rakko-link:active{ filter:brightness(1.15); }
-.rakko-link img{ width:34px; height:34px; border-radius:9px; flex:0 0 auto; }
+.rakko-link img{ width:30px; height:30px; border-radius:9px; flex:0 0 auto; }
 .rakko-link__text{ display:flex; flex-direction:column; flex:1; text-align:left; min-width:0; }
 .rakko-link__text b{ font-size:14px; }
 .rakko-link__text small{ font-size:11px; color:var(--muted); margin-top:2px; }
 .rakko-link__arrow{ color:var(--muted); font-size:20px; line-height:1; flex:0 0 auto; }
 
 /* ---- ホームを1画面に収めるための詰め ---- */
-.home{ gap:8px; }
-.logo{ font-size:21px; margin-top:2px; }
+.home{ gap:6px; }
+/* p の既定マージンが flex の gap に足し算されて縦が伸びるので消す。 */
+.home > p{ margin:0; }
+.logo{ font-size:20px; margin-top:0; }
 .logo span{ font-size:14px; }
 .tag{ font-size:12px; }
-.panel{ padding:11px; }
-.settings label{ margin-bottom:7px; }
+.panel{ padding:10px; }
+.settings label{ margin-bottom:5px; }
 .settings label.paid{ margin-bottom:10px; }
 /* 詳細設定は既定で畳んでおく（開くと中身が伸びるぶんは #app 内でスクロール）。 */
 .adv{ margin-top:8px; }
@@ -415,4 +417,17 @@ h1,h2{ margin:.2em 0; }
   padding:6px 0 2px; letter-spacing:.5px; }
 .adv[open] > summary{ margin-bottom:6px; }
 .rules summary{ font-size:14px; }
-.rules.panel{ padding:11px 13px; }
+.rules.panel{ padding:9px 12px; }
+
+/* ---- 手札の見え方の切り替え ---- */
+.seg-row{ display:flex; align-items:center; gap:10px; margin-bottom:2px; }
+.seg-label{ font-size:14px; color:var(--txt); flex:0 0 auto; }
+.seg{ display:flex; flex:1; background:rgba(0,0,0,.28); border:1px solid var(--line);
+  border-radius:10px; padding:2px; gap:2px; }
+.seg button{ flex:1; appearance:none; border:0; background:transparent; color:var(--muted);
+  font-size:12px; font-weight:700; padding:6px 4px; border-radius:8px; cursor:pointer; }
+.seg button.on{ background:linear-gradient(#e8c873,#cfa84f); color:#3a2c00; }
+
+/* 絞らない見え方: 押しているあいだだけ裏を消して手札全体を見せる。
+   フェードさせると指を離した瞬間に中身が透けて見えるので、切り替えは即時にする。 */
+.sqcard.simple.open .sq-back{ opacity:0; }

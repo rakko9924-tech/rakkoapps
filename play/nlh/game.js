@@ -17,6 +17,7 @@
     ante: 200,           // BBアンティ（BBプレイヤーが支払う）
     rotateP2: true,      // 席2の画面を180°回転
     sound: true,         // 効果音（無料）
+    squeeze: true,       // 手札の見え方: true=角を絞る / false=長押しで全体を表示
     // 課金で解放される設定（解放されていない間は既定値に固定）
     bbDisplay: false,    // 金額をBB表示
     anteOff: false,      // アンティ無し
@@ -534,6 +535,13 @@
   // 折り返っていない部分は裏面(.sq-back)のまま、紙が退いた部分は卓が透ける。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
+    // 絞らない見え方: 表を下に敷いて裏で覆うだけ。押しているあいだ裏を消して全体を見せる。
+    if (!settings.squeeze) {
+      return `<div class="sqcard simple ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
+          <div class="card sq-face ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>
+          <div class="card back sq-back"></div>
+        </div>`;
+    }
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
         <div class="card back sq-back"></div>
         <div class="card sq-fold ${P.SUIT_COLOR[c.s]}">${faceInner(c, true)}</div>
@@ -608,7 +616,7 @@
       const peekBlock = `
         <div class="peek" data-player="${p}">
           <div class="hole big squeeze">${squeezeCardHTML(p, 0, !!rot)}${squeezeCardHTML(p, 1, !!rot)}</div>
-          <div class="peek-hint">角や辺を指で押し上げてスクイーズ</div>
+          <div class="peek-hint">${settings.squeeze ? '角や辺を指で押し上げてスクイーズ' : '長押しで手札を確認'}</div>
           <div class="peek-eval myhand" style="visibility:hidden">&nbsp;</div>
         </div>`;
       return `<div class="seat seat-${p} ${rot} ${isActor ? 'actor' : 'idle'}">
@@ -668,6 +676,27 @@
         if (open && evName) { evalEl.textContent = evName; evalEl.style.visibility = 'visible'; }
         else { evalEl.style.visibility = 'hidden'; }
       };
+
+      // 絞らない見え方: 押しているあいだ裏を消して手札全体を見せるだけ。
+      if (!settings.squeeze) {
+        let shown = false;
+        const show = (on) => {
+          if (on === shown) return;
+          shown = on;
+          cards.forEach(({ card }) => card.classList.toggle('open', on));
+          if (on) sfx('flip');
+          refreshEval();
+        };
+        peek.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          if (peek.setPointerCapture) { try { peek.setPointerCapture(e.pointerId); } catch (_) {} }
+          show(true);
+        });
+        ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) =>
+          peek.addEventListener(ev, () => show(false)));
+        peek.addEventListener('contextmenu', (ev) => ev.preventDefault());
+        return;
+      }
 
       // 凸多角形を半平面 (x-Q)·n >= 0 で切る（Sutherland–Hodgman）。
       const clipHalf = (poly, qx, qy, nx, ny) => {
@@ -1036,6 +1065,13 @@
             <input id="snd" type="checkbox" ${settings.sound ? 'checked' : ''}>
             <span class="pt-label">効果音</span>
           </label>
+          <div class="seg-row">
+            <span class="seg-label">手札の見え方</span>
+            <div class="seg" role="group">
+              <button type="button" class="${settings.squeeze ? 'on' : ''}" data-sq="1">絞る</button>
+              <button type="button" class="${settings.squeeze ? '' : 'on'}" data-sq="0">長押しで表示</button>
+            </div>
+          </div>
           <details class="adv">
             <summary>詳細設定（開始スタック・BB表示・トーナメント）</summary>
             <label>
@@ -1055,7 +1091,7 @@
           <div class="rules-body">
             <p>1台のスマホを2人で挟み、向かい合って遊ぶヘッズアップ（1対1）の No Limit Texas Hold'em です。完全オフラインで動作します。</p>
             <ul>
-              <li>手番のプレイヤーの手札を長押し（左手で隠して右手で捲る感覚）すると自分の手札を確認できます。</li>
+              <li>手番のプレイヤーは自分の手札を押して確認します。見え方は「絞る（角を押し上げてめくる）」と「長押しで表示」から選べます。</li>
               <li>フォールド／チェック／コール／ベット・レイズ／オールインから選びます。</li>
               <li>各ハンド終了でボタン（🔘＝ディーラー兼SB）が交代します。</li>
               <li>どちらかのスタックが0になるとゲーム終了です。</li>
@@ -1077,6 +1113,17 @@
       </div>`;
 
     wireInstallButton();
+
+    document.querySelectorAll('[data-sq]').forEach((b) => {
+      b.onclick = () => {
+        const on = b.dataset.sq === '1';
+        if (on === settings.squeeze) return;
+        settings.squeeze = on;
+        sfx('click');
+        saveSettings(settings);
+        renderHome();
+      };
+    });
 
     $('#start').onclick = () => {
       settings.names[0] = ($('#n0').value || 'プレイヤー1').trim();
