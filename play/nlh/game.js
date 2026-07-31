@@ -493,19 +493,18 @@
     return `<div class="card ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>`;
   }
   // スクイーズ用カード（実際のライブポーカーの覗き方を再現）。
-  // 伏せたカードは表が左右反転するので、ランク／スートは手前の「左下」に来る。
-  // その左下の角を親指で押し上げると、めくれた部分だけが曲がりながら返り、
-  // 下に隠れていたインデックスが左下に現れる。
-  // 表向きカード(cardHTML)は実物どおり左上・右下だが、こちらは覗く用なので左下に1つだけ置く。
+  // 伏せたカードの手前＝左下の角を親指で押し上げると、その角だけが折り返る。
+  // 折り返った部分は「カードの表」なので白くなり、そこにランク／スートが見える。
+  // 角があった場所はカードが退いた状態＝卓が見える（白を残すと別のカードが
+  // 下に敷いてあるように見えてしまう）。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
     const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
-        <div class="card sq-face ${P.SUIT_COLOR[c.s]}">
-          <span class="idx bl"><b>${r}</b><i>${s}</i></span>
+        <div class="card back sq-back"></div>
+        <div class="card sq-fold ${P.SUIT_COLOR[c.s]}">
+          <span class="fold-idx"><b>${r}</b><i>${s}</i></span>
         </div>
-        <div class="card sq-back"></div>
-        <div class="card back sq-fold"></div>
       </div>`;
   }
 
@@ -626,6 +625,7 @@
         card,
         back: card.querySelector('.sq-back'),
         fold: card.querySelector('.sq-fold'),
+        idx: card.querySelector('.fold-idx'),
       }));
       if (!cards.length) return;
       const refreshEval = () => {
@@ -636,19 +636,26 @@
       let dragging = false, flipped = false, sx0 = 0, sy0 = 0;
       let W = 0, Hh = 0, maxL = 0, rot = false;
       // 同じ L を両カードに適用（各カードはローカル座標の左下角からめくる）。
-      // 裏面は左下の三角を切り取って下のインデックスを見せ、切り取った分は
-      // 折り返しの三角(sq-fold)として斜めの折り目の向こう側＝斜め上に返す。
+      // 折り目は (L,Hh)-(0,Hh-L) の対角線。裏面はその手前の三角を切り取って卓を見せ、
+      // 切り取った分は折り目の向こう側へ折り返る＝表(白)の三角として現れる。
+      // 折り返り三角の頂点は (L,Hh) (0,Hh-L) (L,Hh-L)（左下角を折り目で鏡映した位置）。
       const applyAll = (L) => {
         L = Math.max(0, Math.min(maxL, L));
         const open = L >= 1;
-        cards.forEach(({ card, back, fold }) => {
+        cards.forEach(({ card, back, fold, idx }) => {
           if (!open) {
             back.style.clipPath = ''; fold.style.clipPath = ''; fold.style.opacity = '0';
+            idx.style.opacity = '0';
             card.classList.remove('open');
           } else {
             back.style.clipPath = `polygon(0 0, ${W}px 0, ${W}px ${Hh}px, ${L}px ${Hh}px, 0 ${Hh - L}px)`;
             fold.style.clipPath = `polygon(${L}px ${Hh}px, 0 ${Hh - L}px, ${L}px ${Hh - L}px)`;
             fold.style.opacity = '1';
+            // ランク／スートは折り返り三角の重心に置き、めくるほど大きくはっきり出す。
+            idx.style.left = (L * 2 / 3) + 'px';
+            idx.style.bottom = (L * 2 / 3) + 'px';
+            idx.style.fontSize = (L * 0.30) + 'px';
+            idx.style.opacity = String(Math.max(0, Math.min(1, (L - 20) / 18)));
             card.classList.add('open');
           }
         });
@@ -663,7 +670,9 @@
       const onDown = (e) => {
         e.preventDefault();
         const r = cards[0].card.getBoundingClientRect();
-        W = r.width; Hh = r.height; maxL = Math.min(W, Hh);
+        W = r.width; Hh = r.height;
+        // 折るのはあくまで「角」。カード幅いっぱいまで折れると半分めくった見た目になる。
+        maxL = W * 0.75;
         rot = cards[0].card.classList.contains('rot');
         dragging = true; flipped = false; sx0 = e.clientX; sy0 = e.clientY;
         if (peek.setPointerCapture) { try { peek.setPointerCapture(e.pointerId); } catch (_) {} }
