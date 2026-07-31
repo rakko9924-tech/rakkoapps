@@ -219,9 +219,9 @@ h1,h2{ margin:.2em 0; }
   border:2px solid #fff; border-radius:8px;
   transition:clip-path .22s ease; }
 .sqcard.dragging .sq-back{ transition:none; }
-/* めくれた角（裏面が折れ上がった三角）。影で浮き上がりを表現。 */
+/* めくれた角（裏面が折れ上がった三角）。影で浮き上がりを表現。左上角を剥がすので影は右下方向へ。 */
 .sqcard .sq-fold{ opacity:0; border:2px solid #fff; border-radius:8px;
-  filter:drop-shadow(-2px -2px 3px rgba(0,0,0,.55));
+  filter:drop-shadow(2px 2px 3px rgba(0,0,0,.55));
   transition:clip-path .22s ease, opacity .22s ease; }
 .sqcard.dragging .sq-fold{ transition:none; }
 

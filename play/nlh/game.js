@@ -492,7 +492,8 @@
     if (!faceUp) return `<div class="card back"></div>`;
     return `<div class="card ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>`;
   }
-  // GGポーカー風スクイーズ用カード。裏面の右下角をスワイプでめくって表面（右下のインデックス）を覗く。
+  // スクイーズ用カード。裏面の左上角をスワイプでめくり、実物のトランプと同じ
+  // 左上のインデックス（ランク＋スート）を覗く。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
@@ -570,7 +571,7 @@
       const peekBlock = `
         <div class="peek" data-player="${p}">
           <div class="hole big squeeze">${squeezeCardHTML(p, 0, !!rot)}${squeezeCardHTML(p, 1, !!rot)}</div>
-          <div class="peek-hint">右下角をスワイプしてスクイーズ</div>
+          <div class="peek-hint">左上の角をスワイプしてスクイーズ</div>
           <div class="peek-eval myhand" style="visibility:hidden">&nbsp;</div>
         </div>`;
       return `<div class="seat seat-${p} ${rot} ${isActor ? 'actor' : 'idle'}">
@@ -628,7 +629,8 @@
       };
       let dragging = false, flipped = false, sx0 = 0, sy0 = 0;
       let W = 0, Hh = 0, maxL = 0, rot = false;
-      // 同じ L を両カードに適用（各カードはローカル座標の右下角からめくる）。
+      // 同じ L を両カードに適用（各カードはローカル座標の左上角からめくる）。
+      // 実物のトランプはランク＋スートが左上に刷られているので、そこが見えるように剥がす。
       const applyAll = (L) => {
         L = Math.max(0, Math.min(maxL, L));
         const open = L >= 1;
@@ -637,17 +639,18 @@
             back.style.clipPath = ''; fold.style.clipPath = ''; fold.style.opacity = '0';
             card.classList.remove('open');
           } else {
-            back.style.clipPath = `polygon(0 0, ${W}px 0, ${W}px ${Hh - L}px, ${W - L}px ${Hh}px, 0 ${Hh}px)`;
-            fold.style.clipPath = `polygon(${W - L}px ${Hh}px, ${W}px ${Hh - L}px, ${W - L}px ${Hh - L}px)`;
+            back.style.clipPath = `polygon(${L}px 0, ${W}px 0, ${W}px ${Hh}px, 0 ${Hh}px, 0 ${L}px)`;
+            fold.style.clipPath = `polygon(0 ${L}px, ${L}px 0, ${L}px ${L}px)`;
             fold.style.opacity = '1';
             card.classList.add('open');
           }
         });
         refreshEval();
       };
-      // スワイプ量（開始点からの移動距離）でめくり量を決める。上席は回転しているため符号を反転。
+      // スワイプ量（開始点からの移動距離）でめくり量を決める。左上角を右下へ引くとめくれる。
+      // 上席は席ごと180°回転しているため符号を反転。
       const peelLen = (e) => {
-        const d = rot ? ((e.clientX - sx0) + (e.clientY - sy0)) : ((sx0 - e.clientX) + (sy0 - e.clientY));
+        const d = rot ? ((sx0 - e.clientX) + (sy0 - e.clientY)) : ((e.clientX - sx0) + (e.clientY - sy0));
         return d;
       };
       const onDown = (e) => {
