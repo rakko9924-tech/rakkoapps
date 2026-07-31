@@ -10,7 +10,7 @@
 (function () {
   const CONFIG = {
     enabled: false,                     // ← AdSense のサイト審査が通ったら true
-    client: '',                         // ← 例 'ca-pub-1975437480047330'
+    client: 'ca-pub-1975437480047330',  // siosen323@gmail.com の発行者ID（AdMobと共通）
     startSlot: '',                      // ← ゲーム開始前に出す枠のスロットID
   };
 
