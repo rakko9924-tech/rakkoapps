@@ -364,6 +364,14 @@
           <li>距離ルール（隣接頂点に建物があると建設不可）を満たす頂点のみ表示。</li>
         </ul>
         <p>重み付けの係数（0.04, 8%, 0.45, 逓減定数6）は理論値ではなく、実戦則を透明化したヒューリスティックです。素のピップ合計も常に併記します。</p>
+        <h4>手番の有利不利（先攻・後攻）</h4>
+        <p>スネークドラフト（2人: 1→2→2→1、4人: 1→2→3→4→4→3→2→1）は手番の格差を抑える設計ですが、レースモデルで測ると差は残ります。ソルバータブの「手番の有利不利」で、現在の盤面での各手番の均衡到達Tを2〜4人分比較できます。参考値（標準初心者盤面・港プリセットあり）:</p>
+        <ul>
+          <li><b>2人（厳密）:</b> 先手 58.1T vs 後手 59.5T — <b>先手が+1.4T有利</b>。</li>
+          <li><b>3人（ビーム近似・拡幅安定）:</b> 58.1 / 59.2 / 59.9T — 1番手有利、3番手が−1.8T。</li>
+          <li><b>4人（ビーム近似）:</b> 58.3 / 59.2 / 61.0 / 62.9T — 1・2番手はほぼ互角（探索幅により順位が入れ替わることがある）、<b>3番手−2.7T・4番手−4.6Tと後ろの手番ほど明確に不利</b>。</li>
+        </ul>
+        <p>ただしこれは盤面依存です。良スポットの数・質・港との組合せ次第で後手有利にもなります（実際、ランダム盤面では2人で先手が−2.3T不利になる例も観測されます。後手は2連続ピックで最良の相補ペアを確保できるため）。一般論としてではなく、その都度この盤面で計算してください。</p>
         <h4>生産力</h4>
         <p>1ロールあたりの期待獲得 <code>E[r] = Σ(隣接ヘクス) P(出目) × 建物係数</code>（入植地=1、都市=2）。盗賊が乗ったヘクスは生産しません（トグルで考慮/無視を切替）。</p>
         <h4>建設速度（モンテカルロ）</h4>
@@ -961,7 +969,10 @@ function solveDraft(board, n, opts) {
       const next = beam + 2;
       // 次の拡幅の所要見積り。キャッシュ再利用と並べ替え効果で実際は指数より軽いため指数を2つ緩める
       const est = dt * Math.pow(next / beam, Math.max(2, slots.length - 2));
-      if (next > 24 || (now() - t0) + est > budget) break;
+      const spent = now() - t0;
+      if (next > 24) break;
+      // 初回(幅4)はコールドスタートで見積りが過大になりがち。予算の15%未満なら1段だけ強制拡幅
+      if (spent + est > budget && !(beam === 4 && spent < budget * 0.15)) break;
       beam = next;
     }
     result = last;
@@ -1192,7 +1203,7 @@ function initState() {
   } catch (e) { /* 破損データは無視して標準盤面 */ }
   ui = { mode: "inspect", player: 0, tab: "solver", paintRes: "wood", paintNum: 6,
          nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false, showVLabels: true,
-         numMode: "spiral", trFirst: 0, trOpp: "gto", tr: null,
+         numMode: "spiral", trFirst: 0, trOpp: "gto", tr: null, seatAdv: null,
          strategy: "balanced", useScarcity: true, useDimin: true, usePorts: true,
          placeRobber: false, prodRobber: true,
          hand: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
@@ -1204,7 +1215,7 @@ function persistBoard() {
   try { localStorage.setItem("catan-gto-v1", JSON.stringify(board)); } catch (e) { /* 容量超過等は無視 */ }
 }
 function save() {
-  ui.solverRes = null; ui.solverPicks = null; // 盤面が変わったら均衡解は無効
+  ui.solverRes = null; ui.solverPicks = null; ui.seatAdv = null; // 盤面が変わったら解析結果は無効
   if (ui.tr && ui.tr.active) ui.tr = null;     // 盤面編集でトレーニング中断
   persistBoard();
 }
@@ -1573,15 +1584,53 @@ function renderSolver() {
       ${ui.solverRes ? `<span class="note">計算時間 ${ui.solverRes.ms.toFixed(0)}ms / ${ui.solverRes.exact ? "厳密解"
         : `ビーム近似（幅${ui.solverRes.beamUsed}${ui.solverRes.converged ? "・拡幅安定" : ""}）`}</span>` : ""}
     </div>
-    <div id="solver-out"></div>`;
+    <div id="solver-out"></div>
+    <h3 style="margin-top:18px">手番の有利不利<span class="m">この盤面での2〜4人それぞれの均衡比較</span></h3>
+    <div class="opts">
+      <button id="btn-seats" ${ui.seatAdv && ui.seatAdv.running ? "disabled" : ""}>${ui.seatAdv && !ui.seatAdv.running ? "再計算" : "2〜4人分を計算（数秒）"}</button>
+      ${ui.seatAdv && ui.seatAdv.running ? `<span class="note">計算中… ${ui.seatAdv.rows.length}/3</span>` : ""}
+    </div>
+    <div id="seats-out">${ui.seatAdv && ui.seatAdv.rows.length ? seatTableHTML(ui.seatAdv) : ""}</div>`;
   el.querySelectorAll("[data-np]").forEach(b => b.addEventListener("click", () => {
     ui.nPlayers = +b.dataset.np; ui.solverRes = null; ui.solverPicks = null; renderAll();
   }));
   $("#btn-solve").addEventListener("click", () => { runSolver(); });
   const deep = $("#ck-deep");
   if (deep) deep.addEventListener("change", e => { ui.deepSearch = e.target.checked; });
+  $("#btn-seats").addEventListener("click", runSeatAdvantage);
   if (!ui.solverRes && cheap && slots.length > 0) runSolver();
   else renderSolverOut();
+}
+function seatTableHTML(job) {
+  return `<div class="tscroll"><table>
+    <thead><tr><th>人数</th>${[1, 2, 3, 4].map(i => `<th class="num">${i}番手</th>`).join("")}<th>最有利</th><th>精度</th></tr></thead>
+    <tbody>${job.rows.map(r => {
+      const best = r.ts.indexOf(Math.min(...r.ts));
+      return `<tr><td class="num">${r.n}人</td>${[0, 1, 2, 3].map(i => {
+        if (i >= r.n) return '<td class="num">—</td>';
+        const d = r.ts[i] - r.ts[best];
+        const v = r.ts[i] >= 9999 ? "—" : r.ts[i].toFixed(1);
+        return `<td class="num">${i === best ? `<b>${v}</b> ★` : v}${d > 0.05 ? `<br><span style="color:var(--bad);font-size:10.5px">+${d.toFixed(1)}T</span>` : ""}</td>`;
+      }).join("")}<td><b>${best + 1}番手</b></td>
+      <td>${r.exact ? "厳密" : `ビーム幅${r.beamUsed || "—"}${r.converged ? "・安定" : ""}`}</td></tr>`;
+    }).join("")}</tbody></table></div>
+    <p class="note">値は各手番の10VP到達ターン（小さいほど有利）。+x.xT は最有利手番との差。スネークドラフト（例: 4人は 1→2→3→4→4→3→2→1）を前提に、2人は厳密解、3〜4人は反復拡幅ビームの近似（各自が自分の到達Tを最大化する max^n）。盤面を編集すると結果はクリアされます。</p>`;
+}
+function runSeatAdvantage() {
+  const job = { rows: [], running: true };
+  ui.seatAdv = job;
+  renderAll();
+  const ns = [2, 3, 4];
+  const step = i => {
+    if (ui.seatAdv !== job) return; // 盤面変更などで中断
+    if (i >= ns.length) { job.running = false; renderAll(); return; }
+    const res = solveDraft(board, ns[i], { budgetMs: ns[i] === 2 ? 1500 : ns[i] === 3 ? 2600 : 6500 });
+    job.rows.push({ n: ns[i], ts: res.turns.map(t => t.turns), exact: res.exact,
+                    beamUsed: res.beamUsed, converged: res.converged });
+    renderAll();
+    setTimeout(() => step(i + 1), 30);
+  };
+  setTimeout(() => step(0), 30);
 }
 function runSolver() {
   const n = ui.nPlayers;
@@ -2153,4 +2202,5 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
