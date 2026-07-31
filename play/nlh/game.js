@@ -991,30 +991,40 @@
     startHand();
   }
 
-  // 広告画面。読み込めなかった場合は待たせず即開始する。
+  // 広告画面。広告が実際に配信されたときだけ待ち時間を設ける。
+  // 未配信（審査中・在庫なし・ブロッカー）なら空の枠で待たせずそのまま開始する。
   const AD_WAIT_SEC = 5;
   function renderStartAd() {
     $('#app').innerHTML = `
       <div class="adscreen">
         <div class="ad-label">広告</div>
-        <div class="ad-slot" id="adslot"></div>
+        <div class="ad-slot" id="adslot"><span class="ad-loading">読み込み中…</span></div>
         <div class="ad-foot">
-          <button class="btn big primary" id="adgo" disabled>まもなく開始（<span id="adcount">${AD_WAIT_SEC}</span>）</button>
+          <button class="btn big primary" id="adgo" disabled>まもなく開始</button>
         </div>
       </div>`;
-    const begin = () => { sfx('click'); newMatch(); startHand(); };
-    if (!window.ADS.render($('#adslot'))) { begin(); return; }
+    let started = false;
+    const begin = () => { if (started) return; started = true; sfx('click'); newMatch(); startHand(); };
 
-    const go = $('#adgo');
-    let left = AD_WAIT_SEC;
-    const timer = setInterval(() => {
-      left -= 1;
-      if (left > 0) { $('#adcount').textContent = left; return; }
-      clearInterval(timer);
-      go.disabled = false;
-      go.textContent = 'ゲームを始める';
-    }, 1000);
-    go.onclick = () => { if (!go.disabled) begin(); };
+    window.ADS.render($('#adslot')).then((filled) => {
+      if (started) return;
+      if (!filled) { begin(); return; }
+      const loading = document.querySelector('.ad-loading');
+      if (loading) loading.remove();
+
+      const go = $('#adgo');
+      let left = AD_WAIT_SEC;
+      const tick = () => { go.innerHTML = `まもなく開始（<span>${left}</span>）`; };
+      tick();
+      const timer = setInterval(() => {
+        left -= 1;
+        if (left > 0) { tick(); return; }
+        clearInterval(timer);
+        go.disabled = false;
+        go.textContent = 'ゲームを始める';
+      }, 1000);
+      go.onclick = () => { if (!go.disabled) begin(); };
+    });
   }
 
   function clampInt(v, lo, hi, dflt) {
