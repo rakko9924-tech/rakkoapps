@@ -11,11 +11,20 @@
 }
 *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html,body{ margin:0; height:100%; }
+/* 背景は必ず html に塗ること。body は position:fixed で固定しているが、WebKit は
+   position:fixed な body の背景をキャンバスへ伝播しないので、ホーム画面から起動した
+   （スタンドアロン）時にホームインジケータ側が白い帯として残る。Chromium は伝播する
+   ので手元のブラウザでは再現しない＝実機でしか出ない類のズレ。
+   ルート要素に塗ればキャンバス全体（セーフエリア・ラバーバンド分を含む）が塗られる。 */
+html{
+  background:radial-gradient(120% 120% at 50% 0%, #14533b 0%, var(--felt) 45%, var(--felt2) 100%);
+  background-color:var(--felt2);
+}
 /* ページ自体は動かさない。スクロールが要る画面は #app の中だけで完結させる。
    こうしないと対局中に上下スワイプで画面がずれたり、iOSでラバーバンドして卓が跳ねる。 */
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
-  background:radial-gradient(120% 120% at 50% 0%, #14533b 0%, var(--felt) 45%, var(--felt2) 100%);
+  background:transparent;
   color:var(--txt);
   -webkit-user-select:none; user-select:none;
   position:fixed; inset:0; overflow:hidden; overscroll-behavior:none;
@@ -162,12 +171,12 @@ h1,h2{ margin:.2em 0; }
   display:flex; flex-direction:column; align-items:center; justify-content:space-between;
   border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 /* ホームに戻る。回転しない中央帯の左端に置くので、どちら側の席からも押せる。 */
-.homebtn{ position:absolute; left:0; top:50%; transform:translateY(-50%); z-index:3;
+.homebtn{ position:absolute; left:0; bottom:0; z-index:3;
   appearance:none; border:1px solid var(--line); background:rgba(0,0,0,.28);
   color:var(--muted); cursor:pointer;
-  width:38px; height:38px; border-radius:12px; padding:0;
+  width:34px; height:34px; border-radius:11px; padding:0;
   display:flex; align-items:center; justify-content:center; }
-.homebtn svg{ width:19px; height:19px; }
+.homebtn svg{ width:18px; height:18px; }
 .go-trophy{ vertical-align:-6px; }
 .homebtn:active{ filter:brightness(1.3); }
 .center-mid{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
@@ -189,23 +198,23 @@ h1,h2{ margin:.2em 0; }
 
 /* ---- カード ---- */
 .card{
-  width:46px; height:64px; border-radius:8px; background:#fff; color:#111;
+  width:54px; height:76px; border-radius:8px; background:#fff; color:#111;
   font-weight:800; box-shadow:0 2px 5px rgba(0,0,0,.35); position:relative; overflow:hidden;
 }
 /* 角インデックス（ランク＋スート）。左上と右下に表示。 */
 .card .idx{ position:absolute; display:flex; flex-direction:column; align-items:center;
   line-height:1; font-weight:900; }
-.card .idx b{ font-size:13px; line-height:1; }
-.card .idx i{ font-style:normal; font-size:11px; line-height:1; margin-top:1px; }
-.card .idx.tl{ top:3px; left:4px; }
-.card .idx.br{ bottom:3px; right:4px; }
+.card .idx b{ font-size:10px; line-height:1; }
+.card .idx i{ font-style:normal; font-size:8px; line-height:1; margin-top:1px; }
+.card .idx.tl{ top:2px; left:3px; }
+.card .idx.br{ bottom:2px; right:3px; }
 /* 伏せたカードを透かした状態は左右反転なので、右上と左下に来る。 */
-.card .idx.tr{ top:3px; right:4px; }
-.card .idx.bl{ bottom:3px; left:4px; }
+.card .idx.tr{ top:2px; right:3px; }
+.card .idx.bl{ bottom:2px; left:3px; }
 /* 数札のスートの並び。位置は JS が実物どおりの配置で出す。下半分は180°回す。 */
 .card .pips{ position:absolute; inset:0; }
 .card .pips .pi{ position:absolute; transform:translate(-50%,-50%);
-  font-style:normal; font-size:11px; line-height:1; }
+  font-style:normal; font-size:9px; line-height:1; }
 .card .pips .pi.flip{ transform:translate(-50%,-50%) rotate(180deg); }
 /* A は中央に大きく1つ。 */
 .card .pip{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -220,11 +229,8 @@ h1,h2{ margin:.2em 0; }
 .card .court i{ font-style:normal; font-size:12px; line-height:1; }
 .card.red{ color:var(--red); }
 .card.black{ color:#111; }
-.hole.big .card .idx b{ font-size:16px; }
-.hole.big .card .idx i{ font-size:14px; }
 .hole.big .card .pip{ font-size:30px; }
 .hole.big .card .pip.ace{ font-size:34px; }
-.hole.big .card .pips .pi{ font-size:14px; }
 .hole.big .card .court b{ font-size:21px; }
 .hole.big .card .court i{ font-size:16px; }
 .card.back{ background:repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
@@ -319,11 +325,10 @@ h1,h2{ margin:.2em 0; }
 @media (max-width:374px){
   #app{ padding-left:10px; padding-right:10px; }
   .action-col{ width:104px; }
-  .card{ width:42px; height:58px; }
-  .card .idx b{ font-size:11px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:18px; }
-  .card .pips .pi{ font-size:9px; } .card .court b{ font-size:13px; } .card .court i{ font-size:10px; }
+  .card{ width:48px; height:67px; }
+  .card .idx b{ font-size:9px; } .card .idx i{ font-size:7px; } .card .pip{ font-size:18px; }
+  .card .pips .pi{ font-size:8px; } .card .court b{ font-size:13px; } .card .court i{ font-size:10px; }
   .sqcard{ width:54px; height:76px; }
-  .hole.big .card .idx b{ font-size:14px; } .hole.big .card .idx i{ font-size:12px; }
   .hole.big .card .pip{ font-size:26px; }
   .actions .btn{ padding:11px 6px; font-size:13px; }
 }
@@ -333,12 +338,10 @@ h1,h2{ margin:.2em 0; }
   #app{ max-width:760px; padding-left:24px; padding-right:24px; }
   .logo{ font-size:32px; } .logo span{ font-size:19px; }
   .card{ width:60px; height:84px; }
-  .card .idx b{ font-size:16px; } .card .idx i{ font-size:14px; } .card .pip{ font-size:30px; }
-  .card .pips .pi{ font-size:15px; } .card .court b{ font-size:21px; } .card .court i{ font-size:16px; }
+  .card .idx b{ font-size:11px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:30px; }
+  .card .pips .pi{ font-size:10px; } .card .court b{ font-size:21px; } .card .court i{ font-size:16px; }
   .sqcard{ width:80px; height:112px; }
-  .hole.big .card .idx b{ font-size:20px; } .hole.big .card .idx i{ font-size:17px; }
   .hole.big .card .pip{ font-size:40px; } .hole.big .card .pip.ace{ font-size:46px; }
-  .hole.big .card .pips .pi{ font-size:19px; }
   .hole.big .card .court b{ font-size:28px; } .hole.big .card .court i{ font-size:21px; }
   .action-col{ width:160px; }
   .actions .btn{ padding:15px 10px; font-size:16px; }
