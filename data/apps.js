@@ -54,6 +54,7 @@ export const apps = [
   { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
   { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を2人で回して遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
+  { folder: "drink-game",      name: "のみゲー ルーレット",      play: "/play/drink-game/", cat: "party", game: true, featured: false, desc: "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。", kw: "飲みゲー のみゲー ルーレット 罰ゲーム 飲み会 合コン 二次会 王様ゲーム" },
 
   // ---- カジュアル・放置 ----
   { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: true,  desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },

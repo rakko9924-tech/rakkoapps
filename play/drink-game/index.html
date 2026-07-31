@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a0033">
+<meta name="description" content="のみゲー ルーレット — ボタンを長押しして離すと罰ゲーム/お題がランダムで決まる、飲み会・パーティーで盛り上がる無料ルーレットゲーム。インストール不要、ブラウザですぐ遊べる。">
+
+<!-- ===== SEO ===== -->
+<meta name="keywords" content="飲みゲー,のみゲー,ルーレット,罰ゲーム,飲み会,パーティーゲーム,合コン,二次会,宴会,王様ゲーム,お題,無料,ブラウザゲーム,インストール不要">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="のみゲー ルーレット">
+<link rel="canonical" href="https://rakkoapps.com/play/drink-game/">
+
+<!-- ===== Open Graph（Facebook / LINE 等）===== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="のみゲー ルーレット">
+<meta property="og:title" content="のみゲー ルーレット🍻 | 飲み会・パーティーが盛り上がる無料ルーレット">
+<meta property="og:description" content="長押しで回して離すと罰ゲーム/お題がランダムで決定。飲み会・合コン・二次会で盛り上がる無料ルーレット。インストール不要、ブラウザで今すぐ遊べる。">
+<meta property="og:url" content="https://rakkoapps.com/play/drink-game/">
+<meta property="og:image" content="https://rakkoapps.com/play/drink-game/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="のみゲー ルーレット — 飲み会・パーティーが盛り上がる無料ルーレット">
+<meta property="og:locale" content="ja_JP">
+
+<!-- ===== Twitter Card ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="のみゲー ルーレット🍻 | 飲み会・パーティーが盛り上がる無料ルーレット">
+<meta name="twitter:description" content="長押しで回して離すと罰ゲーム/お題がランダムで決定。飲み会・合コン・二次会で盛り上がる無料ルーレット。インストール不要、ブラウザで今すぐ。">
+<meta name="twitter:image" content="https://rakkoapps.com/play/drink-game/og-image.png">
+
+<!-- ===== 構造化データ（JSON-LD）===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "のみゲー ルーレット",
+  "url": "https://rakkoapps.com/play/drink-game/",
+  "image": "https://rakkoapps.com/play/drink-game/og-image.png",
+  "description": "ボタンを長押しして離すと罰ゲーム/お題がランダムで決まる、飲み会・パーティー向けの無料ルーレットゲーム。インストール不要、ブラウザですぐ遊べる。",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any (Web browser)",
+  "browserRequirements": "Requires JavaScript",
+  "inLanguage": "ja",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+}
+</script>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>のみゲー ルーレット🍻 | 飲み会・パーティーが盛り上がる無料ルーレット</title>
+<style>
+  :root{
+    --bg1:#1a0033;
+    --bg2:#3d0066;
+    --accent:#ff3d7f;
+    --accent2:#ffd23d;
+    --safe:#3ddc97;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+  html,body{ margin:0; height:100%; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Helvetica Neue",sans-serif; }
+  body{
+    background:radial-gradient(circle at 50% 0%, var(--bg2), var(--bg1) 70%);
+    color:#fff;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    touch-action:none;
+  }
+
+  /* ===== 画面切り替え ===== */
+  .screen{ position:fixed; inset:0; display:none; flex-direction:column; align-items:center;
+           padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+  .screen.active{ display:flex; }
+
+  /* ===== 共通ボタン ===== */
+  .big-btn{
+    border:none; cursor:pointer; border-radius:18px; color:#fff; font-weight:900;
+    font-size:20px; letter-spacing:1px; padding:18px 0; width:min(74vw,320px);
+    background:linear-gradient(160deg,#ff6fa3,var(--accent));
+    box-shadow:0 10px 26px rgba(255,61,127,.5);
+    transition:transform .08s ease;
+  }
+  .big-btn:active{ transform:scale(.96); }
+  .ghost-btn{
+    border:2px solid rgba(255,255,255,.4); background:transparent; color:#fff;
+    border-radius:18px; cursor:pointer; font-size:17px; font-weight:700;
+    padding:14px 0; width:min(74vw,320px);
+  }
+  .ghost-btn:active{ background:rgba(255,255,255,.1); }
+  .topbar{ width:100%; display:flex; align-items:center; justify-content:space-between; padding:14px 18px; flex-shrink:0; }
+  .topbar button{ background:none; border:none; color:#fff; font-size:16px; font-weight:700; cursor:pointer; opacity:.85; padding:6px; }
+  .topbar h2{ margin:0; font-size:18px; }
+
+  /* ===== ホーム ===== */
+  #home{ justify-content:center; gap:18px; text-align:center; padding:0 20px; }
+  #home .logo{ font-size:64px; }
+  #home h1{ margin:6px 0 0; font-size:30px; text-shadow:0 2px 12px rgba(255,61,127,.6); }
+  #home p{ margin:0 0 14px; font-size:13px; opacity:.7; line-height:1.6; }
+
+  /* ===== らっこアプリへの導線 ===== */
+  .rakko-link{
+    display:flex; align-items:center; gap:11px; text-decoration:none;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22);
+    border-radius:14px; padding:11px 13px; color:#fff;
+    width:min(74vw,320px); box-sizing:border-box; margin-top:6px;
+  }
+  .rakko-link:active{ background:rgba(255,255,255,.16); }
+  .rakko-link img{ width:34px; height:34px; border-radius:9px; flex:0 0 auto; }
+  .rakko-link__text{ display:flex; flex-direction:column; flex:1; text-align:left; min-width:0; }
+  .rakko-link__text b{ font-size:14px; }
+  .rakko-link__text small{ font-size:11px; opacity:.7; margin-top:2px; }
+  .rakko-link__arrow{ opacity:.6; font-size:20px; line-height:1; flex:0 0 auto; }
+
+  /* ===== ゲーム ===== */
+  .card-stage{ flex:1; width:100%; display:flex; align-items:center; justify-content:center; perspective:900px; min-height:0; }
+  .card{
+    width:min(78vw,330px); aspect-ratio:3/4.1; max-height:50vh; border-radius:26px;
+    background:linear-gradient(160deg,#fff,#f0f0ff); color:#1a0033;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    box-shadow:0 18px 50px rgba(0,0,0,.55), inset 0 0 0 6px rgba(255,255,255,.6);
+    position:relative; overflow:hidden; transition:transform .12s ease;
+  }
+  .card .emoji{ font-size:clamp(56px,17vw,104px); line-height:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.2)); }
+  .card .label{ font-size:clamp(24px,7vw,40px); font-weight:900; margin-top:14px; text-align:center; padding:0 12px; }
+  .card .desc{ font-size:clamp(12px,3.6vw,16px); margin-top:10px; opacity:.7; text-align:center; padding:0 22px; line-height:1.4; }
+  .card .tier{ position:absolute; top:14px; right:16px; font-size:11px; font-weight:800; padding:4px 10px; border-radius:20px; letter-spacing:1px; }
+  .card.spinning{ animation:wobble .25s linear infinite; }
+  @keyframes wobble{ 0%{transform:rotate(-1.2deg) scale(1.01)} 50%{transform:rotate(1.2deg) scale(1.03)} 100%{transform:rotate(-1.2deg) scale(1.01)} }
+  .card.result{ animation:pop .5s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes pop{ 0%{transform:scale(.6) rotate(-8deg)} 60%{transform:scale(1.08) rotate(3deg)} 100%{transform:scale(1) rotate(0)} }
+
+  .tier-soft{ background:var(--safe); color:#00351f; }
+  .tier-mid{ background:var(--accent2); color:#4d3a00; }
+  .tier-hard{ background:var(--accent); color:#fff; }
+  .tier-chaos{ background:#9b51e0; color:#fff; }
+  .tier-extreme{ background:#ff1744; color:#fff; }
+  .tier-hell{ background:#ff3d00; color:#fff; }
+  .tier-spicy{ background:#ff5fa2; color:#fff; }
+  .tier-spicy2{ background:#ff2d78; color:#fff; }
+  .tier-ero{ background:#ff1e6f; color:#fff; }
+  .tier-booze{ background:#b71c1c; color:#fff; }
+  .age-badge{ display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#c2185b; border-radius:8px; padding:1px 6px; margin-left:6px; vertical-align:middle; }
+  .card.extreme{ background:linear-gradient(160deg,#fff,#ffe3e8); }
+  .card.extreme.result{ animation:pop .5s cubic-bezier(.2,1.4,.4,1), flash .6s ease 3; }
+  @keyframes flash{ 0%,100%{ box-shadow:0 18px 50px rgba(0,0,0,.55), inset 0 0 0 6px #ff1744 } 50%{ box-shadow:0 0 60px 10px rgba(255,23,68,.9), inset 0 0 0 8px #ff1744 } }
+  .card.spicy{ background:linear-gradient(160deg,#fff,#ffe6f1); }
+
+  .btn-zone{ flex-shrink:0; padding:12px 0 26px; text-align:center; }
+  .hold-btn{
+    width:150px; height:150px; border-radius:50%; border:none; cursor:pointer; position:relative;
+    background:radial-gradient(circle at 50% 35%, #ff6fa3, var(--accent) 70%);
+    box-shadow:0 12px 30px rgba(255,61,127,.55), inset 0 -6px 14px rgba(0,0,0,.25);
+    color:#fff; font-size:20px; font-weight:900; letter-spacing:1px;
+    transition:transform .08s ease, box-shadow .08s ease; touch-action:none;
+  }
+  .hold-btn:active, .hold-btn.down{ transform:scale(.92); box-shadow:0 6px 16px rgba(255,61,127,.5), inset 0 -3px 10px rgba(0,0,0,.3); }
+  .hold-btn .sub{ display:block; font-size:11px; font-weight:600; opacity:.85; margin-top:4px; }
+  .hint{ font-size:13px; opacity:.6; margin-top:12px; height:16px; }
+  .ring{ position:absolute; inset:-10px; border-radius:50%; border:3px solid rgba(255,255,255,.35); animation:ring 1s linear infinite; display:none; }
+  .hold-btn.down .ring{ display:block; }
+  @keyframes ring{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+  /* ===== 設定 ===== */
+  #settings .scroll{ flex:1; width:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:6px 18px 40px; }
+  .sec-title{ font-size:13px; font-weight:800; opacity:.6; letter-spacing:1px; margin:22px 4px 8px; }
+  .row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:rgba(255,255,255,.07); border-radius:14px; padding:14px 16px; margin-bottom:10px;
+  }
+  .row .info{ min-width:0; }
+  .row .name{ font-size:16px; font-weight:700; }
+  .row .meta{ font-size:11px; opacity:.6; margin-top:3px; line-height:1.4; }
+  /* スイッチ */
+  .sw{ position:relative; width:52px; height:30px; flex-shrink:0; }
+  .sw input{ display:none; }
+  .sw label{ position:absolute; inset:0; background:rgba(255,255,255,.2); border-radius:30px; cursor:pointer; transition:.2s; }
+  .sw label::after{ content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; transition:.2s; }
+  .sw input:checked + label{ background:var(--safe); }
+  .sw input:checked + label::after{ transform:translateX(22px); }
+
+  .pack{ background:linear-gradient(160deg,#ff5fa2,#b3005e); border-radius:18px; padding:18px; margin-bottom:10px; }
+  .pack h3{ margin:0 0 6px; font-size:18px; }
+  .pack .lead{ font-size:12px; opacity:.92; line-height:1.6; margin-bottom:14px; }
+  .pack .price-btn{ width:100%; border:none; border-radius:14px; padding:14px 0; font-size:16px; font-weight:900; cursor:pointer; background:#fff; color:#b3005e; }
+  .pack .price-btn:active{ transform:scale(.97); }
+  .pack .price-btn[disabled]{ opacity:.6; }
+  .pack .owned-row{ display:flex; align-items:center; justify-content:space-between; }
+  .pack .owned-tag{ font-size:13px; font-weight:800; }
+  .restore{ background:none; border:none; color:#fff; opacity:.7; font-size:13px; text-decoration:underline; cursor:pointer; display:block; margin:6px auto 0; }
+  .danger-title{ color:#ff5252; opacity:1; margin-top:28px; }
+  .danger-note{ background:rgba(255,23,68,.12); border:1px solid rgba(255,82,82,.5); border-radius:14px; padding:12px 14px; font-size:12px; line-height:1.75; margin:0 0 12px; }
+  .danger-note b{ color:#ff8a80; }
+  .row-danger{ background:rgba(255,23,68,.1); border:1px solid rgba(255,82,82,.35); }
+  .age{ font-size:11px; opacity:.55; text-align:center; margin-top:14px; line-height:1.5; }
+  .toast{ position:fixed; bottom:40px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#fff;
+          padding:12px 20px; border-radius:30px; font-size:14px; opacity:0; pointer-events:none; transition:.3s; z-index:50; }
+  .toast.show{ opacity:1; }
+</style>
+</head>
+<body>
+
+  <noscript>
+    <div style="padding:24px;max-width:680px;margin:0 auto;line-height:1.8;color:#fff">
+      <h1>のみゲー ルーレット🍻</h1>
+      <p>「のみゲー ルーレット」は、ボタンを長押しして離すと罰ゲームやお題がランダムで決まる、飲み会・合コン・二次会・パーティー向けの<strong>無料ルーレットゲーム</strong>です。インストール不要で、スマホやPCのブラウザですぐに遊べます。</p>
+      <p>「半気」「一気」「テキーラ」などの飲み系から、「ものまね」「告白タイム」「無言の刑」などの盛り上がりお題まで多数収録。ジャンルのON/OFFで盛り上がり度も調整できます。</p>
+      <p>※このゲームを遊ぶにはJavaScriptを有効にしてください。飲酒は20歳になってから、無理のない範囲でお楽しみください。</p>
+    </div>
+  </noscript>
+
+  <!-- ===== ホーム画面 ===== -->
+  <section class="screen active" id="home">
+    <div class="logo">🍻</div>
+    <h1>のみゲー ルーレット</h1>
+    <p>ボタンを押してる間カードが回転<br>離すと運命が決まる飲みゲー</p>
+    <button class="big-btn" id="toGame">▶ ゲームスタート</button>
+    <button class="ghost-btn" id="toSettings">⚙️ 設定</button>
+
+    <a class="rakko-link" href="https://rakkoapps.com/" rel="noopener">
+      <img src="icons/ui/rakko.png" width="96" height="96" alt="">
+      <span class="rakko-link__text">
+        <b>らっこアプリ</b>
+        <small>ほかのゲーム・アプリを見る</small>
+      </span>
+      <span class="rakko-link__arrow" aria-hidden="true">›</span>
+    </a>
+  </section>
+
+  <!-- ===== ゲーム画面 ===== -->
+  <section class="screen" id="game">
+    <div class="topbar">
+      <button id="gameBack">← ホーム</button>
+      <h2>のみゲー</h2>
+      <span style="width:44px"></span>
+    </div>
+    <div class="card-stage">
+      <div class="card" id="card">
+        <span class="tier" id="tier"></span>
+        <div class="emoji" id="emoji">🍺</div>
+        <div class="label" id="label">スタート</div>
+        <div class="desc" id="desc">下のボタンを長押し！</div>
+      </div>
+    </div>
+    <div class="btn-zone">
+      <button class="hold-btn" id="holdBtn"><span class="ring"></span>PUSH<span class="sub">押して回す</span></button>
+      <div class="hint" id="hint"></div>
+    </div>
+  </section>
+
+  <!-- ===== 設定画面 ===== -->
+  <section class="screen" id="settings">
+    <div class="topbar">
+      <button id="setBack">← 戻る</button>
+      <h2>設定</h2>
+      <span style="width:44px"></span>
+    </div>
+    <div class="scroll">
+      <div class="sec-title">出すカードのジャンル</div>
+      <div id="tierRows"></div>
+
+      <div id="dangerSection"></div>
+
+      <p class="age">💕/🔥 の大人向けパックはキス・ハグなどのスキンシップ系お題を含みます（17+/18+）。ONにする際に年齢確認があります。お題はすべて全員の同意のうえ、無理のない範囲で。<br>飲酒は20歳になってから。お酒は楽しく・無理のない範囲で。</p>
+      <p class="age" style="opacity:.6"><a href="privacy.html" style="color:#fff">プライバシーポリシー</a></p>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+</script>
+<script>
+/* ===================== カード ===================== */
+/* tier: soft / mid / hard / chaos / extreme / spicy(課金) */
+const CARDS = [
+  // soft
+  {e:"😇", l:"セーフ！", d:"何もしなくてOK。ラッキー！", t:"soft"},
+  {e:"🧃", l:"ノンアルOK", d:"お酒の代わりにソフトドリンクで乾杯", t:"soft"},
+  {e:"🛡️", l:"罰ゲーム免除", d:"このカードは次の罰を1回スキップできる", t:"soft"},
+  {e:"📸", l:"変顔で写真", d:"全員で変顔して記念撮影📷", t:"soft"},
+  {e:"🤝", l:"乾杯！", d:"全員でグラスを合わせて一口", t:"soft"},
+  {e:"🎤", l:"ものまね", d:"誰かのものまねを披露！ウケなきゃ一口", t:"soft"},
+  {e:"🎭", l:"一発ギャグ", d:"渾身の一発ギャグ。スベったら半気", t:"soft"},
+  {e:"💃", l:"ダンスタイム", d:"10秒間踊る！踊れなきゃ半気", t:"soft"},
+  {e:"👅", l:"早口言葉", d:"「生麦生米生卵」3回。噛んだら一口", t:"soft"},
+  {e:"😜", l:"変顔キープ", d:"次の人が引くまで変顔をキープ", t:"soft"},
+  // mid
+  {e:"🍺", l:"半気", d:"グラスの半分を飲む", t:"mid"},
+  {e:"🍶", l:"お酌タイム", d:"右隣の人にお酌する🍶", t:"mid"},
+  {e:"💕", l:"好きなタイプ", d:"理想のタイプを正直に告白。渋ったら半気", t:"mid"},
+  {e:"🤫", l:"秘密暴露", d:"ここだけの秘密を1つ告白。嫌なら一気", t:"mid"},
+  {e:"👉", l:"指名一気", d:"好きな人を1人指名！その人が半気", t:"mid"},
+  {e:"🎯", l:"真実 or 飲む", d:"質問に正直に答える。答えないなら半気", t:"mid"},
+  {e:"📢", l:"大声で名前", d:"店内で自分の名前をフルネームで叫ぶ", t:"mid"},
+  {e:"🔄", l:"お酒チェンジ", d:"隣の人とドリンクを交換して飲む", t:"mid"},
+  {e:"🙇", l:"感謝を伝える", d:"今日来てる人へ感謝を熱く語る。照れたら半気", t:"mid"},
+  {e:"🎲", l:"サイコロ運", d:"スマホで1〜6。偶数セーフ/奇数は半気（口頭で）", t:"mid"},
+  // hard
+  {e:"🥃", l:"一気！", d:"グラスを飲み干す！", t:"hard"},
+  {e:"🍻", l:"全員一気", d:"その場の全員で一気飲み🍻", t:"hard"},
+  {e:"🥃", l:"テキーラ", d:"テキーラショット1杯！塩とライムを添えて", t:"hard"},
+  {e:"✌️", l:"連続2杯", d:"続けて2杯飲む。覚悟を決めろ", t:"hard"},
+  {e:"🔁", l:"時計回り一気", d:"時計回りに全員ドミノで一気", t:"hard"},
+  {e:"👑", l:"王様ゲーム", d:"あなたが王様！命令を1つ下せる（飲み系）", t:"hard"},
+  {e:"🆚", l:"飲み対決", d:"隣の人と早飲み対決。負けたらもう半気", t:"hard"},
+  // chaos
+  {e:"🚬", l:"たばこ休憩", d:"吸う人はここで一服。吸わない人は深呼吸10回😤", t:"chaos"},
+  {e:"🚽", l:"トイレタイム", d:"今のうちにトイレへGO！戻るまで全員待機", t:"chaos"},
+  {e:"💘", l:"告白タイム", d:"この場で誰かに（冗談でも）告白する", t:"chaos"},
+  {e:"📱", l:"スマホ没収", d:"次に誰かが引くまでスマホを真ん中に置く", t:"chaos"},
+  {e:"🤐", l:"無言の刑", d:"次のカードまで一切しゃべれない。喋ったら一気", t:"chaos"},
+  {e:"🐔", l:"語尾にコケコッコー", d:"次のカードまで語尾に「コケコッコー」", t:"chaos"},
+  {e:"🤵", l:"敬語の刑", d:"次のカードまで全員に超敬語。タメ口出たら半気", t:"chaos"},
+  {e:"🎁", l:"奢りの刑", d:"次の1品はあなたの奢り…か、一気で回避", t:"chaos"},
+  {e:"🔀", l:"席替え", d:"くじ無しで全員時計回りに1つ席移動", t:"chaos"},
+  {e:"💀", l:"地獄の指名", d:"あなた以外の全員を指名！全員半気", t:"chaos"},
+  // extreme（やばすぎ・超低確率）
+  {e:"💄", l:"キャバ嬢", d:"次にまた「キャバ嬢」が出るまで、他の誰かが飲むたびにあなたも飲む🍷", t:"extreme"},
+  {e:"🍾", l:"ボトル一気", d:"ボトルを1本、その場の覚悟ある者で空ける🍾", t:"extreme"},
+  {e:"☠️", l:"テキーラ3連", d:"テキーラを3連発。チェイサー無し", t:"extreme"},
+  {e:"🎰", l:"ジャックポット", d:"全員一気＋あなたはテキーラ1杯。大当たり…", t:"extreme"},
+  {e:"👹", l:"悪魔の取引", d:"生贄を1人指名。その人が全部飲む or 拒否ならあなたが倍飲む", t:"extreme"},
+  {e:"🔫", l:"ロシアンルーレット", d:"全員で順に半気→最後に止まった人は一気", t:"extreme"},
+  {e:"🌪️", l:"無限ループ", d:"もう一度引く。出たカードを2回やる…運が悪いと無限", t:"extreme"},
+  {e:"🚀", l:"カウントダウン", d:"30秒以内にグラスを飲み干せ。間に合わなきゃもう1杯", t:"extreme"},
+  // hell（地獄級・やばすぎの上・超低確率／飲みは常識の範囲で、無理はソフトドリンクへ）
+  {e:"🌋", l:"地獄の水割り", d:"隣2人が“好きに”作った1杯を飲み干す（アルコールは常識の範囲で）。無理ならソフトドリンクで倍量", t:"hell"},
+  {e:"🎪", l:"全員の下僕", d:"カードが1周するまで、全員の“飲み以外”の命令に従う（常識の範囲で）", t:"hell"},
+  {e:"👑", l:"独裁者", d:"あなたが絶対王様。1つだけ全員に命令できる（飲み or 罰・常識の範囲で）", t:"hell"},
+  {e:"📢", l:"黒歴史フルオープン", d:"人生で一番の黒歴史を包み隠さず告白。ぼかしたら一気", t:"hell"},
+  {e:"🎤", l:"全力熱唱", d:"好きな曲のサビを立ち上がって全力熱唱。棒立ちなら全員一気の指名", t:"hell"},
+  {e:"🩳", l:"1点だけ交換", d:"上着・靴下など“外側の1点”を隣の人と交換してしばらく着用😳 無理なら一気", t:"hell"},
+  {e:"🔥", l:"真実の指名", d:"“この中で一番タイプ”を正直に指名。言えなきゃ一気", t:"hell"},
+  {e:"🌪️", l:"ダブル地獄", d:"もう2回引いて、出た2枚を両方やる☠️", t:"hell"},
+];
+
+/* 大人のドキドキパック（17+ / 軽いスキンシップ中心の控えめなお題・トグルでON） */
+const SPICY = [
+  {e:"💋", l:"ほっぺにキス", d:"右隣の人のほっぺにキス。恥ずかしければ一気で回避", t:"spicy"},
+  {e:"👀", l:"見つめ合い", d:"気になる人と10秒間見つめ合う。笑ったら飲み", t:"spicy"},
+  {e:"🫦", l:"耳元で囁き", d:"隣の人の耳元で名前を甘く囁く", t:"spicy"},
+  {e:"😘", l:"投げキッス", d:"一番気になる人にセクシーに投げキッス", t:"spicy"},
+  {e:"🤗", l:"10秒ハグ", d:"好きな人と10秒間ハグ。無理なら半気", t:"spicy"},
+  {e:"💆", l:"肩もみ30秒", d:"隣の人の肩を30秒マッサージ", t:"spicy"},
+  {e:"🫰", l:"お姫様抱っこ", d:"誰かをお姫様抱っこ（or されにいく）。無理なら一気", t:"spicy"},
+  {e:"📸", l:"セクシーポーズ", d:"キメ顔でセクシーポーズを披露", t:"spicy"},
+  {e:"💕", l:"隣に移動", d:"今一番ドキッとする人の隣に移動して1杯", t:"spicy"},
+  {e:"🔥", l:"ドキドキ告白", d:"その場で一番タイプな人に“ときめきポイント”を伝える", t:"spicy"},
+  {e:"👑", l:"王様（大人版）", d:"飲み or 軽いスキンシップのお題を1つ命令できる", t:"spicy"},
+  {e:"💌", l:"褒め殺し", d:"右隣の人の魅力を30秒ほめ続ける。詰まったら飲み", t:"spicy"},
+];
+
+/* 大人のプレミアムパック（ドキドキパックの上位互換・18+ / もっと大胆＝ただし全員合意&非露骨） */
+const SPICY2 = [
+  {e:"💋", l:"3秒キスの構え", d:"好きな人と顔を近づけて3秒キープ。相手がOKなら…あとはご自由に😏 NGなら一気", t:"spicy2"},
+  {e:"🫦", l:"耳たぶ攻撃", d:"隣の人の耳元で“一番言われたい言葉”を甘く囁く。照れたら飲み", t:"spicy2"},
+  {e:"👀", l:"至近距離見つめ合い", d:"顔の距離10cmで15秒見つめ合う。先に逸らしたら一気", t:"spicy2"},
+  {e:"🤝", l:"ボディタッチ指令", d:"相手の同意を得て“肩・腕・手”のどこかに10秒タッチ。断られたら一気", t:"spicy2"},
+  {e:"🍒", l:"さくらんぼの結び", d:"軸を口だけで結べるか挑戦（無ければジェスチャーで）。失敗なら飲み", t:"spicy2"},
+  {e:"💃", l:"セクシーダンス30秒", d:"色っぽく30秒踊る。棒立ちなら全員から一気の指名", t:"spicy2"},
+  {e:"🫂", l:"バックハグ20秒", d:"OKをもらえたら誰かに後ろから20秒ハグ。無理なら半気×2", t:"spicy2"},
+  {e:"💌", l:"きわどい耳打ち", d:"“実はちょっと気になってた人”を本人にだけこっそり耳打ち。しなきゃ一気", t:"spicy2"},
+  {e:"🎀", l:"膝の上10秒", d:"合意があれば10秒だけ誰かの膝の上へ（or 招く）。無理なら一気", t:"spicy2"},
+  {e:"👑", l:"王様（プレミアム）", d:"飲み or 大人のスキンシップのお題を1つ命令（全員合意のもと・常識の範囲で）", t:"spicy2"},
+];
+
+/* ===== ライン超え枠：エロ系（18+・大胆だが露骨な性行為の指示は入れない／全員同意・却下可が大前提） ===== */
+const ERO = [
+  {e:"💋", l:"ディープキス", d:"合意があれば指名した相手と10秒キス。イヤなら即やめて一気で回避", t:"ero"},
+  {e:"👕", l:"1枚脱ぐ", d:"上着・靴下など“外側の1枚”を脱ぐ（下着はNG）。無理なら一気", t:"ero"},
+  {e:"🎀", l:"膝の上で1杯", d:"相手がOKなら膝の上に座って1杯。どちらか無理なら一気", t:"ero"},
+  {e:"🫦", l:"耳もとに息", d:"合意の上で相手の耳もとに息をフーッ。イヤがられたら一気", t:"ero"},
+  {e:"🤍", l:"ボディタッチ", d:"同意を得て“肩・腕・背中”に15秒タッチ。断られたら一気", t:"ero"},
+  {e:"💃", l:"密着ダンス", d:"相手OKのとき限定で30秒、密着気味に踊る。棒立ちなら全員から一気指名", t:"ero"},
+  {e:"🔥", l:"エロ告白", d:"“この中で一番ドキッとする人”を本人に指名して理由を告白。言えなきゃ一気", t:"ero"},
+  {e:"🫂", l:"バックハグ30秒", d:"合意があれば後ろから30秒ハグ。無理なら半気×2", t:"ero"},
+  {e:"👑", l:"エロ王様", d:"スキンシップ系のお題を1つ命令（全員合意・イヤがることは絶対NG）", t:"ero"},
+  {e:"💌", l:"おねだり耳打ち", d:"隣の人の耳もとで“今されたいこと”をひとつ甘くおねだり", t:"ero"},
+];
+
+/* ===== ライン超え枠：飲酒系（ガチ飲み・ただし1枚=1杯まで／必ず水・ソフトで回避可・キツければ中断可） ===== */
+const BOOZE = [
+  {e:"🥃", l:"テキーラ1杯", d:"テキーラを1杯（塩＆ライム）。無理なら水・ソフトドリンクでOK", t:"booze"},
+  {e:"🍺", l:"グラス一気", d:"自分のグラスを一気。しんどければ途中でやめてOK", t:"booze"},
+  {e:"🍷", l:"好きな酒で乾杯", d:"飲みたいお酒を1杯選んで乾杯。飲めない人はソフトで", t:"booze"},
+  {e:"👉", l:"道連れ1杯", d:"1人指名して一緒に1杯。相手が無理なら自分だけ、それも無理なら水", t:"booze"},
+  {e:"🎯", l:"罰の1杯", d:"直前のお題を断った人がいれば、その人が1杯（or 水）", t:"booze"},
+  {e:"🍻", l:"全員で乾杯", d:"その場の全員で1杯。体調優先、無理はソフトドリンクで", t:"booze"},
+];
+
+const ALL_CARDS = CARDS.concat(SPICY, SPICY2, ERO, BOOZE);
+
+const TIER_LABEL  = { soft:"SAFE", mid:"NORMAL", hard:"HARD", chaos:"CHAOS", extreme:"YABASUGI", hell:"JIGOKU", spicy:"ADULT", spicy2:"ADULT+", ero:"EROS🔞", booze:"GACHI🥃" };
+const TIER_WEIGHT = { soft:12, mid:12, hard:8, chaos:6, extreme:1, hell:1, spicy:8, spicy2:6, ero:8, booze:8 };
+const TIER_INFO = [
+  { t:"soft",    name:"😇 ゆるめ",       meta:"セーフ・ものまね・ダンスなど" },
+  { t:"mid",     name:"🍺 ふつう",       meta:"半気・告白・お酌など" },
+  { t:"hard",    name:"🥃 ガチ飲み",     meta:"一気・テキーラ・全員一気など" },
+  { t:"chaos",   name:"🤪 カオス",       meta:"無言の刑・席替え・敬語の刑など" },
+  { t:"extreme", name:"☠️ やばすぎ",     meta:"超低確率の鬼カード（出ると大惨事）" },
+  { t:"hell",    name:"🌋 地獄級",       meta:"やばすぎのさらに上。極限の鬼カード（超低確率）" },
+  { t:"spicy",   name:"💕 大人のドキドキ",   meta:"キス・ハグなど軽いスキンシップ系（17+）", adult:true, age:"17" },
+  { t:"spicy2",  name:"🔥 大人のプレミアム", meta:"もっと大胆な大人のお題。上位互換（18+）", adult:true, age:"18" },
+  // ライン超え枠（danger）
+  { t:"ero",     name:"💋 エロ系",       meta:"ディープキス・密着など超きわどい大胆お題（18+）", adult:true, age:"18", danger:true },
+  { t:"booze",   name:"🍾 飲酒系",       meta:"テキーラ・一気などガチ飲み（水・ソフトで回避OK）", danger:true, drink:true },
+];
+
+/* ===================== 設定の保存/読込 ===================== */
+const DEFAULTS = { tiers:{soft:true,mid:true,hard:true,chaos:true,extreme:true,hell:true,spicy:false,spicy2:false,ero:false,booze:false} };
+let settings = load('dg_settings', DEFAULTS);
+// 旧バージョン互換（未定義キーは既定値で補完。大人パックは既定OFF）
+for(const k in DEFAULTS.tiers) if(settings.tiers[k]===undefined) settings.tiers[k]=DEFAULTS.tiers[k];
+
+function load(key, def){ try{ const v=localStorage.getItem(key); return v? JSON.parse(v): def; }catch(e){ return def; } }
+function save(){ try{ localStorage.setItem('dg_settings', JSON.stringify(settings)); }catch(e){} }
+
+/* ===================== 抽選プール ===================== */
+function activePool(){
+  let pool = ALL_CARDS.filter(c => settings.tiers[c.t]);
+  if(pool.length===0) pool = CARDS.filter(c => c.t==='mid'); // 全OFF時の保険
+  return pool;
+}
+function pickWeighted(pool){
+  let total=0; for(const c of pool) total += (c.w || TIER_WEIGHT[c.t] || 1);
+  let r=Math.random()*total;
+  for(let i=0;i<pool.length;i++){ r -= (pool[i].w || TIER_WEIGHT[pool[i].t] || 1); if(r<=0) return i; }
+  return pool.length-1;
+}
+
+/* ===================== 画面遷移 ===================== */
+const screens = { home:byId('home'), game:byId('game'), settings:byId('settings') };
+function show(name){
+  for(const k in screens) screens[k].classList.toggle('active', k===name);
+  if(name==='settings') renderSettings();
+}
+function byId(id){ return document.getElementById(id); }
+
+byId('toGame').onclick     = ()=> show('game');
+byId('toSettings').onclick = ()=> show('settings');
+byId('gameBack').onclick   = ()=> show('home');
+byId('setBack').onclick    = ()=> show('home');
+
+/* ===================== ゲーム ===================== */
+const card=byId('card'), emojiEl=byId('emoji'), labelEl=byId('label'), descEl=byId('desc'), tierEl=byId('tier');
+const btn=byId('holdBtn'), hint=byId('hint');
+let spinning=false, spinTimer=null, curPool=[], idx=0;
+
+function vibrate(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
+
+function applyTier(t){
+  tierEl.className='tier tier-'+t; tierEl.textContent=TIER_LABEL[t];
+  const colors={ soft:'#3ddc97', mid:'#ffd23d', hard:'#ff3d7f', chaos:'#9b51e0', extreme:'#ff1744', hell:'#ff3d00', spicy:'#ff5fa2', spicy2:'#ff2d78', ero:'#ff1e6f', booze:'#b71c1c' };
+  card.style.boxShadow=`0 18px 50px rgba(0,0,0,.55), inset 0 0 0 6px ${colors[t]||'#fff'}`;
+  card.classList.toggle('extreme', t==='extreme'||t==='hell'||t==='booze');
+  card.classList.toggle('spicy', t==='spicy'||t==='spicy2'||t==='ero');
+}
+function render(c){ emojiEl.textContent=c.e; labelEl.textContent=c.l; descEl.textContent=c.d; applyTier(c.t); }
+
+function startSpin(){
+  if(spinning) return;
+  spinning=true; curPool=activePool();
+  card.classList.remove('result'); card.classList.add('spinning'); hint.textContent=''; vibrate(10);
+  let speed=45;
+  const tick=()=>{ idx=(idx+1+Math.floor(Math.random()*3))%curPool.length; render(curPool[idx]); spinTimer=setTimeout(tick, speed); };
+  tick();
+}
+function stopSpin(){
+  if(!spinning) return; spinning=false; clearTimeout(spinTimer); card.classList.remove('spinning');
+  const finalIdx = pickWeighted(curPool);
+  let steps=6, delay=70;
+  const slow=()=>{
+    idx=(idx+1)%curPool.length; render(curPool[idx]); vibrate(12); steps--;
+    if(steps>0){ delay+=35; setTimeout(slow, delay); }
+    else{
+      render(curPool[finalIdx]); card.classList.add('result');
+      const c=curPool[finalIdx];
+      vibrate(c.t==='extreme'||c.t==='hell'||c.t==='booze' ? [120,60,120,60,250] : c.t==='hard'||c.t==='chaos' ? [80,50,160] : c.t==='soft' ? 50 : [60,40,90]);
+      hint.textContent = c.t==='hell' ? '地獄級…終わったな🌋' : c.t==='booze' ? '無理は禁物…水もアリだよ🥃' : c.t==='ero' ? '攻めすぎ注意…🔞 イヤなら却下OK' : c.t==='extreme' ? 'やばすぎ…ご愁傷さま☠️' : c.t==='spicy'||c.t==='spicy2' ? 'ドキドキ…💕' : c.t==='soft' ? 'ラッキー🎉' : c.t==='chaos' ? 'カオス…😈' : 'のんで〜🍺';
+    }
+  };
+  slow();
+}
+function onDown(e){ e.preventDefault(); btn.classList.add('down'); startSpin(); }
+function onUp(e){ e.preventDefault(); btn.classList.remove('down'); stopSpin(); }
+btn.addEventListener('pointerdown', onDown);
+btn.addEventListener('pointerup', onUp);
+btn.addEventListener('pointerleave', e=>{ if(btn.classList.contains('down')) onUp(e); });
+btn.addEventListener('pointercancel', onUp);
+window.addEventListener('keydown', e=>{ if(e.code==='Space' && !e.repeat && screens.game.classList.contains('active')){ e.preventDefault(); btn.classList.add('down'); startSpin(); }});
+window.addEventListener('keyup',   e=>{ if(e.code==='Space' && screens.game.classList.contains('active')){ e.preventDefault(); btn.classList.remove('down'); stopSpin(); }});
+hint.textContent='長押しでスタート！';
+
+/* ===================== 設定画面の描画 ===================== */
+function renderSettings(){
+  const rowHtml = info=>{
+    const on = settings.tiers[info.t] ? 'checked':'';
+    const badge = info.adult ? ` <span class="age-badge">${info.age}+</span>` : '';
+    return `<div class="row${info.danger?' row-danger':''}"><div class="info"><div class="name">${info.name}${badge}</div><div class="meta">${info.meta}</div></div>
+      <div class="sw"><input type="checkbox" id="t_${info.t}" ${on}><label for="t_${info.t}"></label></div></div>`;
+  };
+  // 通常ジャンル
+  byId('tierRows').innerHTML = TIER_INFO.filter(i=>!i.danger).map(rowHtml).join('');
+  // ライン超え枠（設定のいちばん下）
+  const dangers = TIER_INFO.filter(i=>i.danger);
+  byId('dangerSection').innerHTML =
+    `<div class="sec-title danger-title">🔞 ライン超え（超危険・自己責任）</div>
+     <div class="danger-note">
+       <b>⚠️ 本当にやばい枠です。</b>過激なお題だけが入っています。ノリより安全を優先してください。<br>
+       ・無理・イヤだと思ったお題は、<b>遠慮なく却下・パスしてOK</b>。断るのは全然アリです。<br>
+       ・スキンシップ系は<b>相手の同意が絶対</b>。イヤがることは絶対にしない。<br>
+       ・飲酒は20歳以上。<b>一気飲みは急性アルコール中毒の危険</b>。キツければ水・ソフトドリンクに切り替えを。<br>
+       ・すべて自己責任で。体調・安全・全員の合意を最優先に。
+     </div>` + dangers.map(rowHtml).join('');
+
+  TIER_INFO.forEach(info=>{
+    byId('t_'+info.t).onchange = e=>{
+      // ライン超え枠：ONで強めの確認。断ったらトグルを戻す
+      if(e.target.checked && info.danger){
+        const msg = info.drink
+          ? '【ライン超え・飲酒系】ガチ飲みのお題が入ります（1お題=1杯まで）。\n・あなたと参加者は20歳以上ですか？\n・一気飲みは急性アルコール中毒の危険があります。キツければ水・ソフトドリンクへ、イヤなお題は却下してOKです。\nそれでもONにしますか？'
+          : '【ライン超え・エロ系】ディープキス・密着などかなり大胆な大人のお題が入ります。\n・あなたと参加者は18歳以上で、全員が合意していますか？\n・イヤなお題は却下してOK。相手がイヤがることは絶対にしないでください。\nそれでもONにしますか？';
+        if(!confirm(msg)){ e.target.checked=false; return; }
+        toast('ライン超え枠ON🔞 無理は絶対NG');
+      } else if(e.target.checked && info.adult){
+        // 大人向けパックは初回ONで年齢確認。断ったらトグルを戻す
+        const ok = confirm(`「${info.name.replace(/^[^ ]+\s/, '')}」はキス・ハグなどのスキンシップ系お題を含みます（${info.age}歳以上向け）。\nあなたは${info.age}歳以上ですか？`);
+        if(!ok){ e.target.checked=false; return; }
+        toast('ONにしました💕');
+      }
+      settings.tiers[info.t]=e.target.checked; save();
+    };
+  });
+}
+
+/* ===================== トースト ===================== */
+let toastTimer=null;
+function toast(msg){
+  const t=byId('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=> t.classList.remove('show'), 1800);
+}
+</script>
+</body>
+</html>
