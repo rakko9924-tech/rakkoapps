@@ -684,10 +684,12 @@
         'polygon(' + poly.map(([x, y]) => `${x.toFixed(2)}px ${y.toFixed(2)}px`).join(',') + ')';
 
       let dragging = false, flipped = false;
-      let p0 = null, W = 0, Hh = 0, maxDepth = 0, rot = false;
-      // 画面座標をカードのローカル座標へ。上席は席ごと180°回転しているので反転させる。
+      let p0 = null, W = 0, Hh = 0, maxDepth = 0, rot = false, refCard = null;
+      // 画面座標を「触れたカード」のローカル座標へ。上席は席ごと180°回転しているので反転させる。
+      // 常に左のカード基準にすると、右のカードに触れたとき座標がカードの外に出て
+      // 折り目がカード外に落ち、右側からめくれなくなる（2026-08-01 の不具合）。
       const toLocal = (e) => {
-        const r = cards[0].card.getBoundingClientRect();
+        const r = (refCard || cards[0].card).getBoundingClientRect();
         return rot
           ? [r.right - e.clientX, r.bottom - e.clientY]
           : [e.clientX - r.left, e.clientY - r.top];
@@ -736,11 +738,17 @@
 
       const onDown = (e) => {
         e.preventDefault();
-        rot = cards[0].card.classList.contains('rot');
-        const r = cards[0].card.getBoundingClientRect();
+        // ポインタキャプチャ後の move は target が peek になるので、基準カードは
+        // 押した時点で決めて以後ずっと使う。カード外（隙間やヒント文字）なら左のカード。
+        refCard = (e.target && e.target.closest) ? e.target.closest('.sqcard') : null;
+        if (!refCard) refCard = cards[0].card;
+        rot = refCard.classList.contains('rot');
+        const r = refCard.getBoundingClientRect();
         W = r.width; Hh = r.height;
         maxDepth = W * 0.5;
-        p0 = toLocal(e);
+        // 指の位置はカードの内側に収める。隙間や余白から始めても端から折れる。
+        const q = toLocal(e);
+        p0 = [Math.max(0, Math.min(W, q[0])), Math.max(0, Math.min(Hh, q[1]))];
         dragging = true; flipped = false;
         if (peek.setPointerCapture) { try { peek.setPointerCapture(e.pointerId); } catch (_) {} }
         clearFold();
