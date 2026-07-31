@@ -199,14 +199,34 @@ h1,h2{ margin:.2em 0; }
 .card .idx i{ font-style:normal; font-size:11px; line-height:1; margin-top:1px; }
 .card .idx.tl{ top:3px; left:4px; }
 .card .idx.br{ bottom:3px; right:4px; }
-/* 中央のスート */
+/* 伏せたカードを透かした状態は左右反転なので、右上と左下に来る。 */
+.card .idx.tr{ top:3px; right:4px; }
+.card .idx.bl{ bottom:3px; left:4px; }
+/* 数札のスートの並び。位置は JS が実物どおりの配置で出す。下半分は180°回す。 */
+.card .pips{ position:absolute; inset:0; }
+.card .pips .pi{ position:absolute; transform:translate(-50%,-50%);
+  font-style:normal; font-size:11px; line-height:1; }
+.card .pips .pi.flip{ transform:translate(-50%,-50%) rotate(180deg); }
+/* A は中央に大きく1つ。 */
 .card .pip{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   font-size:22px; line-height:1; }
+.card .pip.ace{ font-size:26px; }
+/* J/Q/K は絵札。枠の中にランクとスートを収める。 */
+.card .court{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:56%; height:56%; gap:1px; border:1.5px solid currentColor; border-radius:4px;
+  box-shadow:inset 0 0 0 1.5px #fff, inset 0 0 0 2.5px currentColor; }
+.card .court b{ font-size:16px; line-height:1; }
+.card .court i{ font-style:normal; font-size:12px; line-height:1; }
 .card.red{ color:var(--red); }
 .card.black{ color:#111; }
 .hole.big .card .idx b{ font-size:16px; }
 .hole.big .card .idx i{ font-size:14px; }
 .hole.big .card .pip{ font-size:30px; }
+.hole.big .card .pip.ace{ font-size:34px; }
+.hole.big .card .pips .pi{ font-size:14px; }
+.hole.big .card .court b{ font-size:21px; }
+.hole.big .card .court i{ font-size:16px; }
 .card.back{ background:repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
   border:2px solid #fff; }
 .card.placeholder{ background:rgba(255,255,255,.06); box-shadow:none; border:1px dashed var(--line); }
@@ -221,8 +241,7 @@ h1,h2{ margin:.2em 0; }
    transform-origin はカード左上（＝ローカル座標の原点）に固定する。
    clip-path は transform より先に効くため、折り返す前の形で切ってよい。 */
 .sqcard .sq-fold{ opacity:0; background:#fff; transform-origin:0 0;
-  filter:drop-shadow(0 0 3px rgba(0,0,0,.45));
-  transition:opacity .18s ease; }
+  filter:drop-shadow(0 0 3px rgba(0,0,0,.45)); }
 /* 折り返った紙は反転して見えるので、文字とスートだけ反転を打ち消して読めるようにする。
    結果として折り目の角度に沿って回った向きになる（＝斜めに折れば斜めに出る）。 */
 .sqcard .sq-fold .idx{ transform:scaleY(-1); }
@@ -302,6 +321,7 @@ h1,h2{ margin:.2em 0; }
   .action-col{ width:104px; }
   .card{ width:42px; height:58px; }
   .card .idx b{ font-size:11px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:18px; }
+  .card .pips .pi{ font-size:9px; } .card .court b{ font-size:13px; } .card .court i{ font-size:10px; }
   .sqcard{ width:54px; height:76px; }
   .hole.big .card .idx b{ font-size:14px; } .hole.big .card .idx i{ font-size:12px; }
   .hole.big .card .pip{ font-size:26px; }
@@ -314,9 +334,12 @@ h1,h2{ margin:.2em 0; }
   .logo{ font-size:32px; } .logo span{ font-size:19px; }
   .card{ width:60px; height:84px; }
   .card .idx b{ font-size:16px; } .card .idx i{ font-size:14px; } .card .pip{ font-size:30px; }
+  .card .pips .pi{ font-size:15px; } .card .court b{ font-size:21px; } .card .court i{ font-size:16px; }
   .sqcard{ width:80px; height:112px; }
   .hole.big .card .idx b{ font-size:20px; } .hole.big .card .idx i{ font-size:17px; }
-  .hole.big .card .pip{ font-size:40px; }
+  .hole.big .card .pip{ font-size:40px; } .hole.big .card .pip.ace{ font-size:46px; }
+  .hole.big .card .pips .pi{ font-size:19px; }
+  .hole.big .card .court b{ font-size:28px; } .hole.big .card .court i{ font-size:21px; }
   .action-col{ width:160px; }
   .actions .btn{ padding:15px 10px; font-size:16px; }
   .actions .btn .amt{ font-size:13px; }
@@ -375,3 +398,19 @@ h1,h2{ margin:.2em 0; }
 .rakko-link__text b{ font-size:14px; }
 .rakko-link__text small{ font-size:11px; color:var(--muted); margin-top:2px; }
 .rakko-link__arrow{ color:var(--muted); font-size:20px; line-height:1; flex:0 0 auto; }
+
+/* ---- ホームを1画面に収めるための詰め ---- */
+.home{ gap:8px; }
+.logo{ font-size:21px; margin-top:2px; }
+.logo span{ font-size:14px; }
+.tag{ font-size:12px; }
+.panel{ padding:11px; }
+.settings label{ margin-bottom:7px; }
+.settings label.paid{ margin-bottom:10px; }
+/* 詳細設定は既定で畳んでおく（開くと中身が伸びるぶんは #app 内でスクロール）。 */
+.adv{ margin-top:8px; }
+.adv > summary{ cursor:pointer; font-size:12px; color:var(--muted); font-weight:700;
+  padding:6px 0 2px; letter-spacing:.5px; }
+.adv[open] > summary{ margin-bottom:6px; }
+.rules summary{ font-size:14px; }
+.rules.panel{ padding:11px 13px; }

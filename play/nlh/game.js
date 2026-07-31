@@ -481,12 +481,44 @@
     return { preflop: 'プリフロップ', flop: 'フロップ', turn: 'ターン', river: 'リバー', showdown: 'ショーダウン' }[s];
   }
 
-  // カード表面の中身（左上・中央・右下にランク／スート）。
-  function faceInner(c) {
+  // ---- カード表面（実物のトランプと同じスートの並び）----
+  // 各要素は [左右, 上下]（0=左/上, 1=右/下）。実物どおり、下半分のスートは180°回転する。
+  // 例) 5 は四隅＋中央、7 は6の並びに上寄りの1つ追加、10 は左右4列＋上下の中間に1つずつ。
+  const PIP_LAYOUTS = {
+    2:  [[0.5, 0], [0.5, 1]],
+    3:  [[0.5, 0], [0.5, 0.5], [0.5, 1]],
+    4:  [[0, 0], [1, 0], [0, 1], [1, 1]],
+    5:  [[0, 0], [1, 0], [0.5, 0.5], [0, 1], [1, 1]],
+    6:  [[0, 0], [1, 0], [0, 0.5], [1, 0.5], [0, 1], [1, 1]],
+    7:  [[0, 0], [1, 0], [0.5, 0.25], [0, 0.5], [1, 0.5], [0, 1], [1, 1]],
+    8:  [[0, 0], [1, 0], [0.5, 0.25], [0, 0.5], [1, 0.5], [0.5, 0.75], [0, 1], [1, 1]],
+    9:  [[0, 0], [1, 0], [0, 1 / 3], [1, 1 / 3], [0.5, 0.5], [0, 2 / 3], [1, 2 / 3], [0, 1], [1, 1]],
+    10: [[0, 0], [1, 0], [0.5, 1 / 6], [0, 1 / 3], [1, 1 / 3], [0, 2 / 3], [1, 2 / 3], [0.5, 5 / 6], [0, 1], [1, 1]],
+  };
+  // スートを並べる領域（カード内の割合）。角のインデックスと重ならない範囲。
+  const PIP_AREA = { x0: 25, x1: 75, y0: 17, y1: 83 };
+  function pipsHTML(c) {
+    const s = P.SUIT_SYMBOL[c.s];
+    if (c.r === 14) return `<span class="pip ace">${s}</span>`;           // A は大きく1つ
+    if (c.r >= 11) {                                                       // J/Q/K は絵札の枠
+      return `<span class="court"><b>${P.RANK_LABEL[c.r]}</b><i>${s}</i></span>`;
+    }
+    const layout = PIP_LAYOUTS[c.r] || [];
+    return `<span class="pips">` + layout.map(([fx, fy]) => {
+      const x = PIP_AREA.x0 + fx * (PIP_AREA.x1 - PIP_AREA.x0);
+      const y = PIP_AREA.y0 + fy * (PIP_AREA.y1 - PIP_AREA.y0);
+      const flip = fy > 0.5 ? ' flip' : '';
+      return `<i class="pi${flip}" style="left:${x}%;top:${y}%">${s}</i>`;
+    }).join('') + `</span>`;
+  }
+  // カード表面の中身。mirror=true は伏せたカードを裏から透かした状態＝左右反転なので、
+  // 角のインデックスは右上と左下に来る（スートの並びは左右対称なのでそのまま）。
+  function faceInner(c, mirror) {
     const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
-    return `<span class="idx tl"><b>${r}</b><i>${s}</i></span>`
-         + `<span class="pip">${s}</span>`
-         + `<span class="idx br"><b>${r}</b><i>${s}</i></span>`;
+    const idx = mirror
+      ? `<span class="idx tr"><b>${r}</b><i>${s}</i></span><span class="idx bl"><b>${r}</b><i>${s}</i></span>`
+      : `<span class="idx tl"><b>${r}</b><i>${s}</i></span><span class="idx br"><b>${r}</b><i>${s}</i></span>`;
+    return idx + pipsHTML(c);
   }
   function cardHTML(c, faceUp) {
     if (!faceUp) return `<div class="card back"></div>`;
@@ -498,13 +530,9 @@
   // 折り返っていない部分は裏面(.sq-back)のまま、紙が退いた部分は卓が透ける。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
-    const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
         <div class="card back sq-back"></div>
-        <div class="card sq-fold ${P.SUIT_COLOR[c.s]}">
-          <span class="idx bl"><b>${r}</b><i>${s}</i></span>
-          <span class="pip">${s}</span>
-        </div>
+        <div class="card sq-fold ${P.SUIT_COLOR[c.s]}">${faceInner(c, true)}</div>
       </div>`;
   }
 
@@ -676,6 +704,10 @@
 
       const applyFold = (p1) => {
         let dx = p1[0] - p0[0], dy = p1[1] - p0[1];
+        // 手前（下）や真横からは絞れるが、上や斜め上からはめくれない。
+        // 水平よりはっきり下向き（約8°以上）なら折らない。わずかな下ブレは真横として扱う。
+        if (dy > Math.abs(dx) * 0.15) { clearFold(); return 0; }
+        if (dy > 0) dy = 0;
         const dist = Math.hypot(dx, dy);
         if (dist < 2) { clearFold(); return 0; }
         // 折り返しの深さ＝移動距離の半分。折り過ぎると「半分めくり」になるので頭打ちにする。
@@ -992,14 +1024,16 @@
             <input id="snd" type="checkbox" ${settings.sound ? 'checked' : ''}>
             <span class="pt-label">効果音</span>
           </label>
-          <div class="panel-title" style="margin-top:6px">詳細設定</div>
-          <label>
-            <span class="pt-label">開始スタック</span>
-            <input id="ss" type="number" value="${settings.startStack}" min="200" step="100">
-          </label>
-          ${optToggle('bbDisplay', 'BB表示', 'スタックやポットをBB単位で表示')}
-          ${optToggle('anteOff', 'ante無しモード', 'アンティを無しにして対戦')}
-          ${optToggle('tournament', 'トーナメントモード', 'ハンドが進むとブラインドが上昇')}
+          <details class="adv">
+            <summary>詳細設定（開始スタック・BB表示・トーナメント）</summary>
+            <label>
+              <span class="pt-label">開始スタック</span>
+              <input id="ss" type="number" value="${settings.startStack}" min="200" step="100">
+            </label>
+            ${optToggle('bbDisplay', 'BB表示', 'スタックやポットをBB単位で表示')}
+            ${optToggle('anteOff', 'ante無しモード', 'アンティを無しにして対戦')}
+            ${optToggle('tournament', 'トーナメントモード', 'ハンドが進むとブラインドが上昇')}
+          </details>
         </div>
 
         <button class="btn big primary" id="start">ゲーム開始</button>
