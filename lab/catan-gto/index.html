@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>カタン戦略計算機｜交渉なしEV・確率エンジン - らっこアプリ攻略ラボ</title>
-<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトの均衡ソルバー、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
+<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に配置を練習できるトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
 <link rel="canonical" href="https://rakkoapps.com/lab/catan-gto/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#f2694b">
@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="らっこアプリ">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="カタン戦略計算機｜交渉なしEV・確率エンジン">
-<meta property="og:description" content="初期配置の均衡ソルバー、生産力、建設速度、盗賊EV、発展カード確率。ブラウザで動く無料のカタン計算機。">
+<meta property="og:description" content="初期配置のGTOソルバーとトレーニングモード、生産力、建設速度、盗賊EV、発展カード確率。ブラウザで動く無料のカタン計算機。">
 <meta property="og:url" content="https://rakkoapps.com/lab/catan-gto/">
 <meta property="og:image" content="https://rakkoapps.com/assets/og/cover.png">
 <meta name="twitter:card" content="summary">
@@ -32,7 +32,7 @@
     {
       "@type": "WebApplication",
       "name": "カタン戦略計算機",
-      "description": "交渉なしカタンのEV・確率エンジン。初期配置の均衡ソルバー、生産力評価、建設速度、盗賊EV、発展カード確率。",
+      "description": "交渉なしカタンのEV・確率エンジン。初期配置のGTOソルバー、トレーニングモード、生産力評価、建設速度、盗賊EV、発展カード確率。",
       "url": "https://rakkoapps.com/lab/catan-gto/",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Web browser",
@@ -94,7 +94,8 @@
   .site-footer a{ font-size: var(--text-sm); color: var(--color-muted); text-decoration: none; }
   .site-footer a:hover{ color: var(--color-ink); }
   .site-footer__copy{ margin: 0; font-size: var(--text-xs); color: var(--color-muted); }
-  .ad-box{ max-width: 900px; margin: 2.2rem auto 0; padding: 0 20px; }
+  .ad-box{ max-width: 900px; margin: 2.2rem auto 0; padding: 0 20px; overflow-x: hidden; }
+  .ad-box ins{ max-width: 100%; }
   .ad-box__label{ font-family: var(--font-body); font-size: 10px; letter-spacing: .14em; color: var(--color-muted); text-align: center; margin-bottom: 4px; }
   ins.adsbygoogle[data-ad-status="unfilled"]{ display: none; }
   .ad-box:has(ins.adsbygoogle[data-ad-status="unfilled"]){ display: none; }
@@ -208,6 +209,10 @@
   .vdot { fill: var(--ink); opacity: .16; cursor: pointer; }
   .vdot:hover { opacity: .6; }
   .vring { fill: none; stroke: var(--accent); stroke-width: 2.5; pointer-events: none; }
+  .vlab rect { fill: var(--surface); opacity: .85; stroke: var(--line); }
+  .vlab text { font: 700 7.5px var(--mono); fill: var(--sub); }
+  #hover-hex { fill: none; stroke: var(--accent); stroke-width: 3; pointer-events: none; }
+  #hover-ring text { font: 700 9px var(--mono); fill: var(--accent); stroke: var(--surface); stroke-width: 3; paint-order: stroke; }
   .rankb circle { stroke: var(--surface); stroke-width: 1.5; }
   .rankb text { font: 700 10px var(--mono); fill: #fff; }
   .bld { stroke: var(--surface); stroke-width: 1.6; pointer-events: none; }
@@ -294,18 +299,27 @@
       <div class="paintbar" id="paintbar" hidden></div>
       <div class="toolbar" id="playerbar"></div>
       <p class="mode-hint" id="modehint"></p>
-      <div class="board-wrap"><svg id="board" viewBox="-218 -208 436 416" role="img" aria-label="カタン盤面"></svg></div>
+      <div class="board-wrap"><svg id="board" viewBox="-244 -232 488 464" role="img" aria-label="カタン盤面"></svg></div>
       <div class="legend" id="hexlegend"></div>
       <div class="toolbar" style="margin-top:8px">
+        <button id="btn-vlabels">頂点名を表示</button>
         <button id="btn-standard">標準盤面に戻す</button>
         <button id="btn-random">ランダム盤面</button>
         <button id="btn-clearb" class="ghost">建物を全消去</button>
+      </div>
+      <div class="toolbar" style="margin-top:6px; align-items:center">
+        <span style="font-size:11.5px;color:var(--sub)">ランダム時の数字:</span>
+        <span class="seg">
+          <button data-nm="spiral" title="公式の可変セットアップ。数字トークンはA〜Rの固定数列を外周の角から反時計回りにスパイラル配置（砂漠は飛ばす）">公式スパイラル</button>
+          <button data-nm="random" title="数字も完全シャッフル（6/8の隣接は回避）">完全ランダム</button>
+        </span>
       </div>
     </section>
 
     <section class="panel">
       <nav class="tabs" id="tabs" role="tablist"></nav>
       <div class="tabpane" id="pane-solver" role="tabpanel"></div>
+      <div class="tabpane" id="pane-train" role="tabpanel"></div>
       <div class="tabpane" id="pane-place" role="tabpanel"></div>
       <div class="tabpane" id="pane-prod" role="tabpanel"></div>
       <div class="tabpane" id="pane-build" role="tabpanel"></div>
@@ -338,6 +352,8 @@
         <p><b>この均衡が「厳密」なのは評価関数の内側の話です。</b>残る限界: 街道の具体的な位置取り、盗賊・騎士による妨害、最大騎士力・最長交易路の他家との競争、サイコロの分散（分散は建設速度タブのモンテカルロで確認できます）、相手の拡張による将来スポットの競合は含みません。</p>
         <h4>基本確率</h4>
         <p>2個のサイコロで出目 n が出る確率は <code>P(n) = (6 − |7 − n|) / 36</code>。「ピップ」はその分子（36分率）で、6と8が5ピップ、2と12が1ピップです。</p>
+        <h4>盤面生成</h4>
+        <p>「ランダム盤面」は既定で公式の可変セットアップに従います: 地形タイルのみをシャッフルし、数字トークンは裏のアルファベット順の固定数列 <code>5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11</code>（A〜R）を、外周の任意の角から反時計回りに、砂漠を飛ばしてスパイラル配置します。つまり数字の並び自体は固定で、変わるのは地形と開始角だけです。設定で「完全ランダム」（数字もシャッフル・6/8隣接回避つき）にも切替できます。なお「標準盤面」はルールブック記載の初心者用固定配置で、これはスパイラルとは別物です。数字は「数字」モードで手動編集もできます。</p>
         <h4>入植地候補スコア</h4>
         <p><code>スコア = (Σ_r ピップ_r × w_r × 逓減_r) × 多様性 + 港ボーナス</code></p>
         <ul>
@@ -457,15 +473,58 @@ function standardBoard() {
   };
 }
 
-function randomBoard(rand) {
+// 公式の可変セットアップ: 数字トークンは裏のアルファベット順 A..R の固定数列
+const NUMBER_SPIRAL = [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11];
+// 外周の角から指定方向に外周12→中間6→中心の順で回るスパイラル経路（連続するヘクスは必ず隣接）
+function spiralPath(cornerIdx, dir) { // dir=-1: 反時計回り(公式), +1: 時計回り
+  const distC = h => Math.max(Math.abs(h.q), Math.abs(h.r), Math.abs(h.q + h.r));
+  const ang = h => Math.atan2(h.cy, h.cx);
+  const byAngle = hs => hs.slice().sort((a, b) => ang(a) - ang(b));
+  const ring2 = byAngle(GEO.hexes.filter(h => distC(h) === 2));
+  const ring1 = byAngle(GEO.hexes.filter(h => distC(h) === 1));
+  const corners = [[2, 0], [2, -2], [0, -2], [-2, 0], [-2, 2], [0, 2]];
+  const [cq, cr] = corners[((cornerIdx % 6) + 6) % 6];
+  const s2 = ring2.findIndex(h => h.q === cq && h.r === cr);
+  const path = [];
+  for (let i = 0; i < 12; i++) path.push(ring2[(s2 + dir * i + 48) % 12]);
+  const last = path[11];
+  // 内側リングは「外周の最後のヘクスに隣接し、同方向に続く」ヘクスから
+  const cand = ring1.map((h, i) => ({ h, i })).filter(x => GEO.hexAdj[last.id].includes(x.h.id));
+  cand.sort((x, y) => {
+    const dx = ((ang(x.h) - ang(last)) * dir + Math.PI * 2) % (Math.PI * 2);
+    const dy = ((ang(y.h) - ang(last)) * dir + Math.PI * 2) % (Math.PI * 2);
+    return dx - dy;
+  });
+  const s1 = cand.length ? cand[0].i : 0;
+  for (let i = 0; i < 6; i++) path.push(ring1[(s1 + dir * i + 24) % 6]);
+  path.push(GEO.hexes.find(h => h.q === 0 && h.r === 0));
+  return path;
+}
+function assignSpiralNumbers(tiles, cornerIdx) {
+  let k = 0;
+  for (const h of spiralPath(cornerIdx, -1)) {
+    if (tiles[h.id].res === "desert") { tiles[h.id].num = null; continue; }
+    tiles[h.id].num = NUMBER_SPIRAL[k++];
+  }
+}
+function randomBoard(mode, rand) {
+  mode = mode || "spiral";
   rand = rand || Math.random;
   const pool = [].concat(Array(4).fill("wood"), Array(3).fill("brick"), Array(4).fill("sheep"),
                          Array(4).fill("wheat"), Array(3).fill("ore"), ["desert"]);
+  const shuffle = arr => {
+    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    return arr;
+  };
+  if (mode === "spiral") {
+    // 公式: 地形のみシャッフルし、数字はA..Rの固定数列を任意の角からスパイラル配置（砂漠は飛ばす）
+    const tiles = shuffle(pool.slice()).map(r => ({ res: r, num: null }));
+    assignSpiralNumbers(tiles, Math.floor(rand() * 6));
+    return { tiles, robber: tiles.findIndex(t => t.res === "desert"), ports: framePorts(), buildings: {} };
+  }
   const nums = [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12];
   for (let attempt = 0; attempt < 400; attempt++) {
-    const res = pool.slice(), nn = nums.slice();
-    for (let i = res.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [res[i], res[j]] = [res[j], res[i]]; }
-    for (let i = nn.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [nn[i], nn[j]] = [nn[j], nn[i]]; }
+    const res = shuffle(pool.slice()), nn = shuffle(nums.slice());
     const tiles = []; let k = 0;
     for (let i = 0; i < 19; i++) tiles.push({ res: res[i], num: res[i] === "desert" ? null : nn[k++] });
     const bad = GEO.hexes.some(h => {
@@ -962,8 +1021,96 @@ function solveFresh2(board, cands, setVal) {
   return {
     exact: true,
     picks,
-    alts: alts.slice(0, 8).map(x => ({ vert: cands[x.i], eq: x.eq })),
+    alts: alts.map(x => ({ vert: cands[x.i], eq: x.eq })), // 全初手の均衡値（表示側で上位に絞る）
   };
+}
+
+/* ---- 2人ドラフト・トレーニング用: 手番プレイヤーの全候補手を厳密ランキング ---- */
+function trSlots(board, firstPlayer) {
+  const seq = firstPlayer === 0 ? [0, 1, 1, 0] : [1, 0, 0, 1];
+  const used = [0, 0];
+  for (const b of Object.values(board.buildings)) if (b.player < 2) used[b.player]++;
+  const rem = [];
+  for (const p of seq) { if (used[p] > 0) used[p]--; else rem.push(p); }
+  return rem;
+}
+// 返り値: 手番プレイヤーの各合法手 {key, label, value}（value = その手を選んだ後の部分ゲーム完全均衡での
+// 自分の優位 = 相手T − 自分T）。残り4手はsolveFresh2、3手以下は構造を使った全数探索（すべて厳密）。
+function trRank(board, firstPlayer, setVal) {
+  const slots = trSlots(board, firstPlayer);
+  if (!slots.length) return null;
+  const cands = draftCandidates(board);
+  const baseOf = p => Object.keys(board.buildings).filter(k => board.buildings[k].player === p);
+  const tOf = (p, extra) => {
+    const m = baseOf(p).concat(extra);
+    return setVal(m, m.length >= 2 ? m[1] : null).turns;
+  };
+  // 価値はすべて「手番プレイヤーの優位 = 相手T − 自分T」で統一
+  const legalVs = usedKeys => cands.filter(v =>
+    !usedKeys.has(v.key) && ![...v.adj].some(k => usedKeys.has(k)));
+  const P = slots[0];
+
+  if (slots.length === 4) { // 未配置: solveFresh2 の全初手評価をそのまま利用（先手の優位）
+    const r = solveFresh2(board, cands, setVal);
+    if (!r) return [];
+    return r.alts.map(a => ({ key: a.vert.key, label: a.vert.label, value: a.eq }));
+  }
+  if (slots.length === 3) { // [A,A,B]: Aの初手aを評価。Bの応手は自己T最小なので事前ソートで即引き
+    const B = slots[2];
+    const jList = cands.map(v => ({ v, t: tOf(B, [v.key]) })).sort((x, y) => x.t - y.t);
+    const out = [];
+    for (const a of legalVs(new Set())) {
+      const usedA = new Set([a.key]);
+      let best = -Infinity;
+      for (const b of legalVs(usedA)) {
+        const used2 = new Set([a.key, b.key]);
+        let tB = null;
+        for (const j of jList) {
+          if (used2.has(j.v.key) || [...j.v.adj].some(k => used2.has(k))) continue;
+          tB = j.t; break;
+        }
+        if (tB === null) tB = tOf(B, []); // 完全封鎖: Bは応手なし
+        const tA = tOf(P, [a.key, b.key]);
+        const adv = tB - tA; // 相手T − 自分T
+        if (adv > best) best = adv;
+      }
+      if (best > -Infinity) out.push({ key: a.key, label: a.label, value: best });
+    }
+    return out.sort((x, y) => y.value - x.value);
+  }
+  if (slots.length === 2) { // [P,Q]: Pの手vに対しQが最適応手
+    const Q = slots[1];
+    const out = [];
+    for (const v of legalVs(new Set())) {
+      const used = new Set([v.key]);
+      const tP = tOf(P, [v.key]);
+      let bestQAdv = -Infinity, tQBest = null;
+      for (const w of legalVs(used)) {
+        const tQ = tOf(Q, [w.key]);
+        const adv = tP - tQ; // Qの優位 = 相手(P)のT − 自分(Q)のT
+        if (adv > bestQAdv) { bestQAdv = adv; tQBest = tQ; }
+      }
+      if (tQBest === null) tQBest = tOf(Q, []);
+      out.push({ key: v.key, label: v.label, value: tQBest - tP });
+    }
+    return out.sort((x, y) => y.value - x.value);
+  }
+  // slots.length === 1: 最終手
+  const tOpp = tOf(1 - P, []);
+  return legalVs(new Set()).map(v => {
+    const tP = tOf(P, [v.key]);
+    return { key: v.key, label: v.label, value: tOpp - tP };
+  }).sort((x, y) => y.value - x.value);
+}
+// ソフトマックス方策（ミスありエンジン）: 上位12手から exp(value/τ) に比例して選ぶ
+function softmaxPick(ranking, tau, rand) {
+  rand = rand || Math.random;
+  const pool = ranking.slice(0, 12);
+  const vmax = pool[0].value;
+  const ws = pool.map(m => Math.exp((m.value - vmax) / Math.max(tau, 1e-6)));
+  let r = rand() * ws.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < pool.length; i++) { r -= ws[i]; if (r <= 0) return pool[i]; }
+  return pool[pool.length - 1];
 }
 // 一般形: 後ろ向き帰納法（beam=Infinity なら厳密）。
 // 2人はゼロ和（自分−相手 を最大化 = ブロック込み）、3人以上は max^n（各自が自分の値を最大化）。
@@ -1044,7 +1191,8 @@ function initState() {
     }
   } catch (e) { /* 破損データは無視して標準盤面 */ }
   ui = { mode: "inspect", player: 0, tab: "solver", paintRes: "wood", paintNum: 6,
-         nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false,
+         nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false, showVLabels: true,
+         numMode: "spiral", trFirst: 0, trOpp: "gto", tr: null,
          strategy: "balanced", useScarcity: true, useDimin: true, usePorts: true,
          placeRobber: false, prodRobber: true,
          hand: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
@@ -1052,9 +1200,13 @@ function initState() {
          drawn: { knight: 0, vp: 0, road2: 0, plenty: 0, mono: 0 }, devN: 3,
          hoverV: null, selV: null, evalRows: [], mc: null };
 }
+function persistBoard() {
+  try { localStorage.setItem("catan-gto-v1", JSON.stringify(board)); } catch (e) { /* 容量超過等は無視 */ }
+}
 function save() {
   ui.solverRes = null; ui.solverPicks = null; // 盤面が変わったら均衡解は無効
-  try { localStorage.setItem("catan-gto-v1", JSON.stringify(board)); } catch (e) { /* 容量超過等は無視 */ }
+  if (ui.tr && ui.tr.active) ui.tr = null;     // 盤面編集でトレーニング中断
+  persistBoard();
 }
 
 /* ---------- board svg ---------- */
@@ -1137,6 +1289,17 @@ function renderBoard() {
           <text x="${bx}" y="${by + 3.5}" text-anchor="middle">${label}</text></g>
           <line x1="${v.x}" y1="${v.y}" x2="${bx}" y2="${by}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"></line>`;
   }
+  // vertex name labels（トグル）
+  if (ui.showVLabels) {
+    s += `<g class="vlab" pointer-events="none">`;
+    for (const v of GEO.verts) {
+      const w = v.label.length * 5.2 + 6;
+      s += `<g transform="translate(${v.x.toFixed(1)},${(v.y + 5.5).toFixed(1)})">
+        <rect x="${(-w / 2).toFixed(1)}" y="0" width="${w.toFixed(1)}" height="10" rx="3"></rect>
+        <text x="0" y="7.8" text-anchor="middle">${v.label}</text></g>`;
+    }
+    s += `</g>`;
+  }
   // vertex hit-dots
   for (const v of GEO.verts)
     s += `<circle class="vdot" cx="${v.x}" cy="${v.y}" r="6.5" data-v="${v.key}"></circle>`;
@@ -1166,12 +1329,42 @@ function renderBoard() {
     const v = GEO.vmap.get(ui.selV);
     if (v) s += `<circle class="vring pulse" cx="${v.x}" cy="${v.y}" r="10"></circle>`;
   }
+  // 表の行ホバーと連動するハイライト（renderなしで直接動かすオーバーレイ）
+  s += `<path id="hover-hex" style="display:none"></path>
+        <g id="hover-ring" style="display:none" pointer-events="none">
+          <circle class="vring" r="11"></circle><text y="-15" text-anchor="middle"></text></g>`;
   $("#board").innerHTML = s;
   $("#hexlegend").innerHTML = ["wood","brick","sheep","wheat","ore","desert"].map(r =>
     `<span class="it"><span class="sw" style="background:var(--hx-${r})"></span>${RES_JA[r]}</span>`).join("");
 }
 
 /* ---------- tooltip ---------- */
+function setHoverVert(key) {
+  const g = $("#hover-ring");
+  if (!g) return;
+  const v = key && GEO.vmap.get(key);
+  if (!v) { g.style.display = "none"; return; }
+  g.style.display = "";
+  g.setAttribute("transform", `translate(${v.x},${v.y})`);
+  g.querySelector("text").textContent = v.label;
+}
+function setHoverHex(hid) {
+  const el = $("#hover-hex");
+  if (!el) return;
+  if (hid == null || !GEO.hexes[hid]) { el.style.display = "none"; return; }
+  el.setAttribute("d", hexPath(GEO.hexes[hid]));
+  el.style.display = "";
+}
+function bindRowHover(root) {
+  root.querySelectorAll("[data-selv]").forEach(tr => {
+    tr.addEventListener("mouseenter", () => setHoverVert(tr.dataset.selv));
+    tr.addEventListener("mouseleave", () => setHoverVert(null));
+  });
+  root.querySelectorAll("[data-robhex]").forEach(tr => {
+    tr.addEventListener("mouseenter", () => setHoverHex(+tr.dataset.robhex));
+    tr.addEventListener("mouseleave", () => setHoverHex(null));
+  });
+}
 function showTip(html, cx, cy) {
   const tip = $("#tip");
   tip.innerHTML = html; tip.style.display = "block";
@@ -1210,6 +1403,7 @@ function onBoardClick(e) {
     const vkey = vEl.dataset.v, v = GEO.vmap.get(vkey), b = board.buildings[vkey];
     if (ui.mode === "inspect") { ui.selV = ui.selV === vkey ? null : vkey; renderAll(); return; }
     if (ui.mode === "settle") {
+      if (ui.tr && ui.tr.active && !ui.tr.done) { trUserMove(vkey); return; }
       if (!b && ![...v.adj].some(k => board.buildings[k])) board.buildings[vkey] = { player: ui.player, level: 1 };
       else return flashHint("その頂点には置けません（距離ルール）");
     } else if (ui.mode === "city") {
@@ -1345,7 +1539,7 @@ function curveChartSVG(cdf, maxT) {
 }
 
 /* ---------- tabs ---------- */
-const TABS = [["solver", "GTO配置ソルバー"], ["place", "即時評価"], ["prod", "生産力"], ["build", "建設速度"], ["robber", "盗賊"], ["prob", "確率・山札"]];
+const TABS = [["solver", "GTO配置ソルバー"], ["train", "トレーニング"], ["place", "即時評価"], ["prod", "生産力"], ["build", "建設速度"], ["robber", "盗賊"], ["prob", "確率・山札"]];
 function renderTabs() {
   $("#tabs").innerHTML = TABS.map(([id, ja]) =>
     `<button role="tab" data-tab="${id}" class="${ui.tab === id ? "on" : ""}" aria-selected="${ui.tab === id}">${ja}</button>`).join("");
@@ -1434,8 +1628,8 @@ function renderSolverOut() {
       <h3>初手の候補比較<span class="m">均衡値 = 相手の到達T − 自分の到達T（大きいほど有利）</span></h3>
       <div class="tscroll"><table>
         <thead><tr><th>#</th><th>初手</th><th class="num">均衡値</th><th></th></tr></thead>
-        <tbody>${res.alts.map((a, i) => {
-          const w = Math.max(...res.alts.map(x => Math.abs(x.eq)), 0.001);
+        <tbody>${res.alts.slice(0, 8).map((a, i) => {
+          const w = Math.max(...res.alts.slice(0, 8).map(x => Math.abs(x.eq)), 0.001);
           return `<tr class="clickable" data-selv="${a.vert.key}">
             <td class="num">${i + 1}</td><td>${a.vert.label}</td>
             <td class="num"><b>${a.eq >= 0 ? "+" : ""}${a.eq.toFixed(2)}</b></td>
@@ -1445,6 +1639,160 @@ function renderSolverOut() {
   out.querySelectorAll("[data-selv]").forEach(tr => tr.addEventListener("click", () => {
     ui.selV = ui.selV === tr.dataset.selv ? null : tr.dataset.selv; renderAll();
   }));
+  bindRowHover(out);
+}
+
+/* ---- トレーニング ---- */
+const OPP_MODELS = {
+  gto: { ja: "GTO（最善）", tau: 0 },
+  miss: { ja: "ときどきミス", tau: 1.2 },
+  blunder: { ja: "ミス多め", tau: 3 },
+};
+function trSetVal(tr) {
+  return (keys, sec) => {
+    const key = keys.slice().sort().join("|") + "#" + (sec || "");
+    let v = tr.cache.get(key);
+    if (v === undefined) { v = draftValue(board, keys, sec); tr.cache.set(key, v); }
+    return v;
+  };
+}
+function trTurn() { return ui.tr ? (trSlots(board, ui.tr.first)[0] ?? null) : null; }
+function trStatusText() {
+  const tr = ui.tr;
+  if (!tr) return "「対局開始」で現在の地形・港のままドラフト対戦を始めます（2人・スネーク順）。";
+  if (tr.done) return "対局終了。下の結果をどうぞ。";
+  if (tr.thinking) return "エンジン思考中…";
+  const p = trTurn();
+  if (tr.watch) return "GTO vs GTO を再生中…";
+  return p === 0 ? "あなたの番です — 盤面の頂点をクリックして入植地を置いてください。" : "エンジンの番です…";
+}
+function trLogHTML(tr) {
+  return `<div class="tscroll"><table>
+    <thead><tr><th>#</th><th>手番</th><th>頂点</th><th>評価</th></tr></thead>
+    <tbody>${tr.log.map((l, i) => {
+      let ev;
+      if (l.loss < 0.005) ev = `<span style="color:var(--good)">最善 ✓</span>`;
+      else if (l.engine) ev = `<span style="color:var(--warn)">ミス −${l.loss.toFixed(2)}T</span>`;
+      else ev = `<span style="color:var(--bad)">損失 −${l.loss.toFixed(2)}T</span>（最善: ${l.best ? l.best.label : "—"}）`;
+      return `<tr class="clickable" data-selv="${l.key}">
+        <td class="num">${i + 1}</td>
+        <td><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[l.p]}"></span>${tr.watch ? (l.p === 0 ? "GTO(先手)" : "GTO(後手)") : (l.p === 0 ? "あなた" : "エンジン")}</span></td>
+        <td>${l.label}</td><td>${ev}</td></tr>`;
+    }).join("")}</tbody></table></div>`;
+}
+function trSummaryHTML(tr) {
+  const f = tr.final;
+  if (!f) return "";
+  const totalLoss = tr.log.filter(l => !l.engine).reduce((a, l) => a + l.loss, 0);
+  const d = f.t1.turns - f.t0.turns;
+  const verdict = tr.watch ? "" :
+    totalLoss < 0.01 ? "完璧です — 全手がGTOと一致しました。" :
+    totalLoss < 1 ? "ほぼ最善のドラフトです。" :
+    totalLoss < 3 ? "小さなロスがあります。ログの「最善」と比べてみてください。" :
+    "大きなロスがあります。行にカーソルを乗せて盤面で最善手を確認しましょう。";
+  return `
+    <div class="tiles">
+      <div class="tile"><div class="k">${tr.watch ? "GTO(先手)" : "あなた"}の10VP到達</div><div class="v">${f.t0.turns >= 9999 ? "—" : f.t0.turns.toFixed(1)}<small> T（${f.t0.ja || "—"}）</small></div></div>
+      <div class="tile"><div class="k">${tr.watch ? "GTO(後手)" : "エンジン"}の10VP到達</div><div class="v">${f.t1.turns >= 9999 ? "—" : f.t1.turns.toFixed(1)}<small> T（${f.t1.ja || "—"}）</small></div></div>
+      <div class="tile"><div class="k">レース差（+であなた有利）</div><div class="v">${d >= 0 ? "+" : ""}${d.toFixed(2)}<small> T</small></div></div>
+      ${tr.watch ? "" : `<div class="tile"><div class="k">あなたの合計損失</div><div class="v">${totalLoss.toFixed(2)}<small> T</small></div></div>`}
+    </div>
+    ${verdict ? `<p class="note"><b>${verdict}</b></p>` : ""}`;
+}
+function renderTraining() {
+  const el = $("#pane-train");
+  const tr = ui.tr;
+  const dis = tr && tr.active ? "disabled" : "";
+  el.innerHTML = `
+    <h3>配置ドラフト・トレーニング<span class="m">2人・現在の盤面地形で対戦・厳密採点</span></h3>
+    <div class="opts">
+      <span>あなたの手番:</span>
+      <span class="seg">${[0, 1].map(f =>
+        `<button data-trf="${f}" ${dis} class="${ui.trFirst === f ? "on" : ""}">${f === 0 ? "先手" : "後手"}</button>`).join("")}</span>
+      <span>相手:</span>
+      <span class="seg">${Object.entries(OPP_MODELS).map(([k, m]) =>
+        `<button data-tro="${k}" ${dis} class="${ui.trOpp === k ? "on" : ""}">${m.ja}</button>`).join("")}</span>
+    </div>
+    <div class="opts">
+      <button id="btn-tr-start" class="on" ${tr && tr.active && !tr.done ? "disabled" : ""}>対局開始（建物をクリア）</button>
+      <button id="btn-tr-watch" ${tr && tr.active && !tr.done ? "disabled" : ""}>GTO vs GTO を観戦</button>
+      ${tr ? '<button id="btn-tr-stop" class="ghost">リセット</button>' : ""}
+    </div>
+    <p class="note" id="tr-status"><b>${trStatusText()}</b></p>
+    ${tr && tr.log.length ? trLogHTML(tr) : ""}
+    ${tr && tr.done ? trSummaryHTML(tr) : ""}
+    <p class="note">各手はその局面の部分ゲーム完全均衡（GTO配置ソルバーと同じ評価）で厳密に採点され、損失＝最善手との均衡値の差（ターン）。行にカーソルで盤面の頂点をハイライト。盤面を編集すると対局は中断されます。「ミスあり」エンジンは上位候補から exp(価値/τ) のソフトマックスで着手します（ときどきミス τ=1.2 / ミス多め τ=3）。</p>`;
+  el.querySelectorAll("[data-trf]").forEach(b => b.addEventListener("click", () => { ui.trFirst = +b.dataset.trf; renderTraining(); }));
+  el.querySelectorAll("[data-tro]").forEach(b => b.addEventListener("click", () => { ui.trOpp = b.dataset.tro; renderTraining(); }));
+  $("#btn-tr-start").addEventListener("click", () => startTraining(false));
+  $("#btn-tr-watch").addEventListener("click", () => startTraining(true));
+  const stop = $("#btn-tr-stop");
+  if (stop) stop.addEventListener("click", () => { ui.tr = null; renderAll(); });
+  bindRowHover(el);
+  el.querySelectorAll("[data-selv]").forEach(trw => trw.addEventListener("click", () => {
+    ui.selV = ui.selV === trw.dataset.selv ? null : trw.dataset.selv; renderAll();
+  }));
+}
+function startTraining(watch) {
+  board.buildings = {};
+  ui.solverRes = null; ui.solverPicks = null; persistBoard();
+  ui.tr = { active: true, watch, first: ui.trFirst, opp: ui.trOpp, log: [],
+            cache: new Map(), done: false, thinking: false, final: null };
+  ui.mode = "settle"; ui.player = 0; ui.selV = null; ui.tab = "train";
+  renderAll();
+  trAdvance();
+}
+function trAdvance() {
+  const tr = ui.tr;
+  if (!tr || tr.done) return;
+  const p = trTurn();
+  if (p === null) { trFinish(); return; }
+  if (tr.watch || p === 1) {
+    tr.thinking = true;
+    renderAll();
+    setTimeout(() => trEngineMove(tr), 400);
+  } else renderAll();
+}
+function trEngineMove(tr) {
+  if (ui.tr !== tr || tr.done) return;
+  const p = trTurn();
+  if (p === null) { trFinish(); return; }
+  const rank = trRank(board, tr.first, trSetVal(tr));
+  if (!rank || !rank.length) { trFinish(); return; }
+  const tau = tr.watch ? 0 : OPP_MODELS[tr.opp].tau;
+  const mv = tau > 0 ? softmaxPick(rank, tau) : rank[0];
+  board.buildings[mv.key] = { player: p, level: 1 };
+  tr.log.push({ p, key: mv.key, label: mv.label, loss: rank[0].value - mv.value, engine: !tr.watch, best: rank[0] });
+  tr.thinking = false;
+  ui.selV = mv.key;
+  ui.solverRes = null; ui.solverPicks = null; persistBoard();
+  trAdvance();
+}
+function trUserMove(vkey) {
+  const tr = ui.tr;
+  if (!tr || tr.done) return;
+  if (tr.watch || trTurn() !== 0) return flashHint("エンジンの手番です");
+  const v = GEO.vmap.get(vkey);
+  if (board.buildings[vkey] || [...v.adj].some(k => board.buildings[k]))
+    return flashHint("そこには置けません（距離ルール）");
+  const rank = trRank(board, tr.first, trSetVal(tr));
+  const chosen = rank.find(m => m.key === vkey);
+  if (!chosen) return flashHint("生産も港もない頂点は候補外です");
+  board.buildings[vkey] = { player: 0, level: 1 };
+  tr.log.push({ p: 0, key: vkey, label: chosen.label, loss: rank[0].value - chosen.value, engine: false, best: rank[0] });
+  ui.selV = vkey;
+  ui.solverRes = null; ui.solverPicks = null; persistBoard();
+  trAdvance();
+}
+function trFinish() {
+  const tr = ui.tr;
+  if (!tr || tr.done) return;
+  tr.done = true; tr.active = false;
+  const sv = trSetVal(tr);
+  const mineOf = p => tr.log.filter(l => l.p === p).map(l => l.key);
+  const finOf = p => { const m = mineOf(p); return sv(m, m.length >= 2 ? m[1] : null); };
+  tr.final = { t0: finOf(0), t1: finOf(1) };
+  renderAll();
 }
 
 /* ---- 配置評価 ---- */
@@ -1491,6 +1839,7 @@ function renderPlace() {
   el.querySelectorAll("[data-selv]").forEach(tr => tr.addEventListener("click", () => {
     ui.selV = ui.selV === tr.dataset.selv ? null : tr.dataset.selv; renderAll();
   }));
+  bindRowHover(el);
   $("#sel-strat").addEventListener("change", e => { ui.strategy = e.target.value; renderAll(); });
   [["ck-scar", "useScarcity"], ["ck-dim", "useDimin"], ["ck-port", "usePorts"], ["ck-probber", "placeRobber"]]
     .forEach(([id, k]) => $("#" + id).addEventListener("change", e => { ui[k] = e.target.checked; renderAll(); }));
@@ -1637,6 +1986,7 @@ function renderRobber() {
   el.querySelectorAll("[data-robhex]").forEach(tr => tr.addEventListener("click", () => {
     board.robber = +tr.dataset.robhex; save(); renderAll();
   }));
+  bindRowHover(el);
 }
 
 /* ---- 確率・山札 ---- */
@@ -1689,7 +2039,7 @@ function renderProb() {
 }
 
 /* ---------- glue ---------- */
-const PANE_RENDER = { solver: renderSolver, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
+const PANE_RENDER = { solver: renderSolver, train: renderTraining, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
 function renderAll() {
   renderModebar();
   renderTabs();
@@ -1719,12 +2069,24 @@ function bindGlobal() {
   svg.addEventListener("click", onBoardClick);
   svg.addEventListener("mousemove", onBoardHover);
   svg.addEventListener("mouseleave", hideTip);
+  const vb = $("#btn-vlabels");
+  const syncVb = () => { vb.classList.toggle("on", ui.showVLabels); vb.setAttribute("aria-pressed", ui.showVLabels); };
+  syncVb();
+  vb.addEventListener("click", () => { ui.showVLabels = !ui.showVLabels; syncVb(); renderBoard(); });
   $("#btn-standard").addEventListener("click", () => {
     const keep = board.buildings; board = standardBoard(); board.buildings = keep; save(); renderAll();
   });
+  const syncNm = () => document.querySelectorAll("[data-nm]").forEach(b => {
+    const on = ui.numMode === b.dataset.nm;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+  });
+  syncNm();
+  document.querySelectorAll("[data-nm]").forEach(b => b.addEventListener("click", () => {
+    ui.numMode = b.dataset.nm; syncNm();
+  }));
   $("#btn-random").addEventListener("click", () => {
     const keepB = board.buildings;
-    board = randomBoard(); board.buildings = keepB; save(); renderAll();
+    board = randomBoard(ui.numMode); board.buildings = keepB; save(); renderAll();
   });
   $("#btn-clearb").addEventListener("click", () => { board.buildings = {}; save(); renderAll(); });
 }
@@ -1791,3 +2153,4 @@ renderAll();
 </footer>
 </body>
 </html>
+

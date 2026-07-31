@@ -93,7 +93,8 @@
     background: var(--color-paper-2); border-radius: var(--radius-md);
     font-size: var(--text-sm); color: var(--color-muted); line-height: 1.7; max-width: 62ch;
   }
-  .ad-box { margin-top: var(--space-xl); }
+  .ad-box { margin-top: var(--space-xl); overflow-x: hidden; }
+  .ad-box ins { max-width: 100%; }
   .ad-box__label { font-size: 10px; letter-spacing: 0.14em; color: var(--color-muted); text-align: center; margin-bottom: 4px; }
   ins.adsbygoogle[data-ad-status="unfilled"] { display: none; }
   .ad-box:has(ins.adsbygoogle[data-ad-status="unfilled"]) { display: none; }
@@ -149,7 +150,7 @@
           </div>
           <div>
             <h3 class="lab-card__name"><a href="/lab/gobblet-gto/">ゴブレットゴブラーズ完全解析</a></h3>
-            <p class="lab-card__desc">3×3の名作を完全解析。<strong>先手必勝・最短13手</strong>を機械検証で証明。全27通りの初手チャートと、1手ずつ再生できる最善進行つき。</p>
+            <p class="lab-card__desc">3×3の名作を完全解析。<strong>先手必勝・最短13手</strong>を機械検証で証明。実戦の手を入力すると最善手をその場で証明する<strong>GTOアシスタント（対話盤）</strong>つき。先手でも後手でも使えます。</p>
             <div class="lab-card__meta">
               <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-card)"></span>ボードゲーム</span>
               <span class="tag tag--web">ブラウザで見られる</span>
@@ -170,7 +171,7 @@
           </div>
           <div>
             <h3 class="lab-card__name"><a href="/lab/catan-gto/">カタン戦略計算機</a></h3>
-            <p class="lab-card__desc">交渉なしカタンの<strong>EV・確率エンジン</strong>。初期配置の均衡ソルバー、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。</p>
+            <p class="lab-card__desc">交渉なしカタンの<strong>EV・確率エンジン</strong>。初期配置のGTOソルバー、GTO相手のトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。</p>
             <div class="lab-card__meta">
               <span class="tag"><span class="tag__dot" style="--tag-hue:var(--cat-sim)"></span>ボードゲーム</span>
               <span class="tag tag--web">ブラウザで使える</span>
