@@ -492,12 +492,18 @@
     if (!faceUp) return `<div class="card back"></div>`;
     return `<div class="card ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>`;
   }
-  // スクイーズ用カード。裏面の左上角をスワイプでめくり、実物のトランプと同じ
-  // 左上のインデックス（ランク＋スート）を覗く。
+  // スクイーズ用カード（実際のライブポーカーの覗き方を再現）。
+  // 伏せたカードは表が左右反転するので、ランク／スートは手前の「左下」に来る。
+  // その左下の角を親指で押し上げると、めくれた部分だけが曲がりながら返り、
+  // 下に隠れていたインデックスが左下に現れる。
+  // 表向きカード(cardHTML)は実物どおり左上・右下だが、こちらは覗く用なので左下に1つだけ置く。
   function squeezeCardHTML(p, k, rot) {
     const c = H.holes[p][k];
+    const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
     return `<div class="sqcard ${rot ? 'rot' : ''}" data-player="${p}" data-idx="${k}">
-        <div class="card sq-face ${P.SUIT_COLOR[c.s]}">${faceInner(c)}</div>
+        <div class="card sq-face ${P.SUIT_COLOR[c.s]}">
+          <span class="idx bl"><b>${r}</b><i>${s}</i></span>
+        </div>
         <div class="card sq-back"></div>
         <div class="card back sq-fold"></div>
       </div>`;
@@ -571,7 +577,7 @@
       const peekBlock = `
         <div class="peek" data-player="${p}">
           <div class="hole big squeeze">${squeezeCardHTML(p, 0, !!rot)}${squeezeCardHTML(p, 1, !!rot)}</div>
-          <div class="peek-hint">左上の角をスワイプしてスクイーズ</div>
+          <div class="peek-hint">左下の角を押し上げてスクイーズ</div>
           <div class="peek-eval myhand" style="visibility:hidden">&nbsp;</div>
         </div>`;
       return `<div class="seat seat-${p} ${rot} ${isActor ? 'actor' : 'idle'}">
@@ -629,8 +635,9 @@
       };
       let dragging = false, flipped = false, sx0 = 0, sy0 = 0;
       let W = 0, Hh = 0, maxL = 0, rot = false;
-      // 同じ L を両カードに適用（各カードはローカル座標の左上角からめくる）。
-      // 実物のトランプはランク＋スートが左上に刷られているので、そこが見えるように剥がす。
+      // 同じ L を両カードに適用（各カードはローカル座標の左下角からめくる）。
+      // 裏面は左下の三角を切り取って下のインデックスを見せ、切り取った分は
+      // 折り返しの三角(sq-fold)として斜めの折り目の向こう側＝斜め上に返す。
       const applyAll = (L) => {
         L = Math.max(0, Math.min(maxL, L));
         const open = L >= 1;
@@ -639,18 +646,18 @@
             back.style.clipPath = ''; fold.style.clipPath = ''; fold.style.opacity = '0';
             card.classList.remove('open');
           } else {
-            back.style.clipPath = `polygon(${L}px 0, ${W}px 0, ${W}px ${Hh}px, 0 ${Hh}px, 0 ${L}px)`;
-            fold.style.clipPath = `polygon(0 ${L}px, ${L}px 0, ${L}px ${L}px)`;
+            back.style.clipPath = `polygon(0 0, ${W}px 0, ${W}px ${Hh}px, ${L}px ${Hh}px, 0 ${Hh - L}px)`;
+            fold.style.clipPath = `polygon(${L}px ${Hh}px, 0 ${Hh - L}px, ${L}px ${Hh - L}px)`;
             fold.style.opacity = '1';
             card.classList.add('open');
           }
         });
         refreshEval();
       };
-      // スワイプ量（開始点からの移動距離）でめくり量を決める。左上角を右下へ引くとめくれる。
+      // スワイプ量でめくり量を決める。左下の角を親指で押し上げる動き＝右上へ動かすとめくれる。
       // 上席は席ごと180°回転しているため符号を反転。
       const peelLen = (e) => {
-        const d = rot ? ((sx0 - e.clientX) + (sy0 - e.clientY)) : ((e.clientX - sx0) + (e.clientY - sy0));
+        const d = rot ? ((sx0 - e.clientX) + (e.clientY - sy0)) : ((e.clientX - sx0) + (sy0 - e.clientY));
         return d;
       };
       const onDown = (e) => {

@@ -199,6 +199,8 @@ h1,h2{ margin:.2em 0; }
 .card .idx i{ font-style:normal; font-size:11px; line-height:1; margin-top:1px; }
 .card .idx.tl{ top:3px; left:4px; }
 .card .idx.br{ bottom:3px; right:4px; }
+/* スクイーズ用。伏せたカードを左下からめくったときに覗くインデックス。 */
+.card .idx.bl{ bottom:4px; left:5px; }
 /* 中央のスート */
 .card .pip{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   font-size:22px; line-height:1; }
@@ -219,9 +221,16 @@ h1,h2{ margin:.2em 0; }
   border:2px solid #fff; border-radius:8px;
   transition:clip-path .22s ease; }
 .sqcard.dragging .sq-back{ transition:none; }
-/* めくれた角（裏面が折れ上がった三角）。影で浮き上がりを表現。左上角を剥がすので影は右下方向へ。 */
+/* めくれた角。左下を押し上げて折り返した裏面の三角。
+   折り目側を明るく・先端を暗くして、板ではなく「曲がって返っている」ように見せる。
+   影は元の位置（左下）へ落とす。 */
 .sqcard .sq-fold{ opacity:0; border:2px solid #fff; border-radius:8px;
-  filter:drop-shadow(2px 2px 3px rgba(0,0,0,.55));
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.85) 0%, rgba(255,255,255,.85) 3%,
+      rgba(255,255,255,.34) 9%, rgba(255,255,255,.08) 36%,
+      rgba(0,0,0,0) 58%, rgba(0,0,0,.32) 84%, rgba(0,0,0,.48) 100%),
+    repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
+  filter:drop-shadow(-3px 3px 4px rgba(0,0,0,.6));
   transition:clip-path .22s ease, opacity .22s ease; }
 .sqcard.dragging .sq-fold{ transition:none; }
 
@@ -370,3 +379,11 @@ h1,h2{ margin:.2em 0; }
 .rakko-link__text b{ font-size:14px; }
 .rakko-link__text small{ font-size:11px; color:var(--muted); margin-top:2px; }
 .rakko-link__arrow{ color:var(--muted); font-size:20px; line-height:1; flex:0 0 auto; }
+
+/* めくった直後に見えるインデックスは、覗く用なので通常より一回り大きく出す。 */
+.sqcard .sq-face .idx b{ font-size:19px; }
+.sqcard .sq-face .idx i{ font-size:16px; margin-top:2px; }
+@media (min-width:700px){
+  .sqcard .sq-face .idx b{ font-size:25px; }
+  .sqcard .sq-face .idx i{ font-size:21px; }
+}
