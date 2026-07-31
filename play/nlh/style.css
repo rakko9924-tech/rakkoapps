@@ -1,0 +1,317 @@
+:root{
+  --felt:#0f4a34;
+  --felt2:#093a29;
+  --line:rgba(255,255,255,.12);
+  --gold:#e8c873;
+  --txt:#f3f3ef;
+  --muted:#a9c4b6;
+  --red:#ce2029;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; height:100%; }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:radial-gradient(120% 120% at 50% 0%, #14533b 0%, var(--felt) 45%, var(--felt2) 100%);
+  color:var(--txt);
+  min-height:100%;
+  -webkit-user-select:none; user-select:none;
+  overflow-x:hidden;
+}
+#app{ max-width:520px; margin:0 auto; min-height:100vh; min-height:100dvh;
+  padding:calc(12px + var(--safe-top)) 14px calc(14px + var(--safe-bot));
+  display:flex; flex-direction:column; }
+
+h1,h2{ margin:.2em 0; }
+.muted{ color:var(--muted); }
+.rot180{ transform:rotate(180deg); }
+
+/* ---- ボタン ---- */
+.btn{
+  appearance:none; border:none; border-radius:14px;
+  padding:14px 16px; font-size:16px; font-weight:700; color:#fff;
+  background:#33524a; cursor:pointer; transition:transform .05s, filter .1s;
+  box-shadow:0 2px 0 rgba(0,0,0,.25);
+}
+.btn:active{ transform:translateY(1px); filter:brightness(1.1); }
+.btn.big{ width:100%; padding:15px; font-size:18px; }
+.btn.primary{ background:linear-gradient(#e8c873,#cfa84f); color:#3a2c00; }
+.btn.fold{ background:#7a2b2b; }
+.btn.call{ background:#2f7a4a; }
+.btn.check{ background:#2f6a7a; }
+.btn.raise{ background:#3a5db0; }
+.btn.allin{ background:#9c4dcc; }
+.btn .amt{ display:block; font-size:12px; font-weight:600; opacity:.85; }
+
+/* ---- ホーム ---- */
+.home{ text-align:center; gap:10px; display:flex; flex-direction:column; }
+.logo{ font-size:24px; font-weight:900; line-height:1.05; letter-spacing:1px; margin-top:6px; }
+.logo span{ color:var(--gold); font-size:15px; }
+.tag{ color:var(--muted); margin-top:-4px; font-size:13px; }
+.panel{ background:rgba(0,0,0,.22); border:1px solid var(--line);
+  border-radius:14px; padding:13px; text-align:left; }
+.settings label{ display:block; font-size:12px; color:var(--muted); margin-bottom:9px; }
+.settings label:last-child{ margin-bottom:0; }
+.settings input[type=text], .settings input[type=number]{
+  width:100%; margin-top:4px; padding:9px 11px; font-size:16px; border-radius:9px;
+  border:1px solid var(--line); background:#0c2b20; color:#fff;
+}
+.settings .row2{ display:flex; gap:12px; }
+.settings .row2 label{ flex:1; }
+.settings label.check{ display:flex; align-items:center; gap:8px; color:var(--txt); font-size:14px; }
+.settings label.check input{ width:22px; height:22px; margin-top:0; flex:0 0 auto; }
+.rules summary, .log summary{ cursor:pointer; font-weight:700; }
+.rules-body{ color:var(--muted); font-size:14px; line-height:1.7; }
+.rules-body ul{ padding-left:18px; }
+
+/* 設定パネル */
+.panel-title{ font-size:12px; color:var(--muted); font-weight:700; margin-bottom:10px; letter-spacing:1px; }
+.fmt-line{ font-size:13px; color:var(--muted); line-height:1.6; }
+.fmt-line b{ color:var(--gold); }
+.pt-label{ display:flex; flex-direction:column; flex:1; color:var(--txt); }
+.pt-sub{ font-size:11px; color:var(--muted); margin-top:2px; }
+.settings label.paid{ margin-bottom:14px; }
+
+/* テーブル中央のブラインド表示 */
+.blinds-line{ font-size:12px; color:var(--gold); font-weight:700; }
+.version{ color:var(--muted); font-size:12px; }
+
+/* ============================================================
+   チップのビジュアル化（額面別カラーの山で金額を直感表示）
+   ============================================================ */
+.chips{ display:inline-flex; align-items:flex-end; gap:5px; vertical-align:bottom; }
+.chip-stack{ position:relative; display:inline-block; }
+.pchip{
+  position:absolute; left:0; border-radius:50%;
+  background:var(--chip);
+  border:2px dashed var(--edge);
+  box-shadow:0 1px 2px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.18);
+}
+/* チップ中央面の境界リング（カジノチップ風の見た目） */
+.pchip::before{
+  content:""; position:absolute; inset:2px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.28);
+}
+.chip-x{ position:absolute; right:-3px; bottom:-3px; font-size:9px; font-weight:800;
+  color:#fff; text-shadow:0 1px 2px #000; }
+
+/* 額面カラー（--chip 本体色 / --edge 縁スポット色） */
+.c1   { --chip:#ededed; --edge:#bcbcbc; }   /* 白   1 */
+.c5   { --chip:#d23636; --edge:#ffffff; }   /* 赤   5 */
+.c25  { --chip:#2a9d4a; --edge:#ffffff; }   /* 緑   25 */
+.c100 { --chip:#2b2b2b; --edge:#ffffff; }   /* 黒   100 */
+.c500 { --chip:#7a3aa0; --edge:#ffffff; }   /* 紫   500 */
+.c1k  { --chip:#e8c873; --edge:#7a5b14; }   /* 黄   1,000 */
+.c5k  { --chip:#df5f97; --edge:#ffffff; }   /* 桃   5,000 */
+.c25k { --chip:#6b3f2a; --edge:#e8c873; }   /* 茶   25,000 */
+.c100k{ --chip:#101010; --edge:#e8c873; }   /* 黒金 100,000 */
+
+/* ポットのチップ */
+.pot-chips{ min-height:20px; display:flex; justify-content:center; align-items:flex-end; }
+
+/* チップ移動演出（ベットアクション画面：ベット位置→ポット） */
+.fx-layer{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+.fx-chip{ position:fixed; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%;
+  background:var(--gold); border:2px dashed #fff; box-shadow:0 1px 3px rgba(0,0,0,.5);
+  transform:translate(0,0); opacity:1;
+  transition:transform .55s cubic-bezier(.35,.85,.3,1), opacity .55s ease; }
+.fx-plus{ position:fixed; transform:translate(-50%,0); color:var(--gold);
+  font-weight:900; font-size:18px; text-shadow:0 2px 4px #000; opacity:1;
+  transition:transform .7s ease, opacity .7s ease; }
+.pot.fx-pulse b{ animation:potpulse .5s ease; }
+@keyframes potpulse{ 0%{ transform:scale(1); } 40%{ transform:scale(1.28); } 100%{ transform:scale(1); } }
+
+/* 境界線の手前に出すベット表示（チップ＋数値）とディーラーボタン */
+.table-bet{ display:flex; align-items:center; justify-content:center; gap:7px;
+  min-height:24px; }
+.bet-amt{ color:var(--gold); font-weight:800; font-size:14px; }
+.dealer-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:50%; flex:0 0 auto;
+  background:radial-gradient(circle at 35% 30%, #fff, #d8d8d8 70%, #b9b9b9);
+  color:#1a1a1a; font-weight:900; font-size:12px; font-family:Georgia,serif;
+  border:1px solid rgba(0,0,0,.25); box-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+
+/* レイズUI内のチップ（スライダー操作でライブ更新） */
+.bet-chips{ min-height:22px; display:flex; align-items:flex-end; gap:6px; }
+
+/* 結果画面のポットチップ */
+.res-chips{ display:flex; align-items:flex-end; justify-content:center; gap:8px;
+  font-size:14px; color:var(--gold); font-weight:700; }
+
+/* ---- テーブル（固定・縦対称） ---- */
+/* 上席(プレイヤー2)・中央のボード・下席(プレイヤー1) を上下対称に配置する。
+   各席は「左に情報＋手札／右にアクション列」。上席は180°回転するので各自から見て右側になる。 */
+.table2{ flex:1; display:flex; flex-direction:column; }
+.seat{ display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+  gap:10px; padding:8px 2px; }
+.seat-main{ flex:1; text-align:center; min-width:0; }
+.player-tag{ font-weight:700; font-size:13px; color:var(--muted); }
+.player-tag.me{ color:var(--gold); }
+.bet-chip{ display:inline-block; background:rgba(232,200,115,.18); color:var(--gold);
+  border-radius:999px; padding:1px 8px; font-size:11px; margin-left:4px; }
+.stack{ font-size:13px; color:var(--muted); margin-top:4px; }
+.myhand{ color:var(--gold); font-weight:700; }
+
+.center{ flex:1; min-height:130px; text-align:center; padding:8px 0;
+  display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.center-mid{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+.pot{ font-size:15px; color:var(--muted); }
+.pot b{ color:var(--gold); font-size:20px; display:inline-block; }
+.street{ font-size:12px; color:var(--muted); }
+.board{ display:flex; gap:6px; justify-content:center; }
+.result-board{ flex-wrap:wrap; margin:4px 0; }
+
+.hole{ display:flex; gap:6px; justify-content:center; margin-top:6px; }
+
+/* ---- 手札の覗き見エリア（スクイーズ） ---- */
+.peek{ margin-top:6px; padding:4px 2px;
+  -webkit-touch-callout:none; touch-action:none; cursor:pointer; }
+.peek .hole{ margin-top:0; }
+.peek-hint{ margin-top:6px; font-size:11px; color:var(--muted); }
+.peek.peeking .peek-hint{ color:var(--gold); }
+.peek-eval{ margin-top:4px; font-size:15px; min-height:18px; }
+
+/* ---- カード ---- */
+.card{
+  width:46px; height:64px; border-radius:8px; background:#fff; color:#111;
+  font-weight:800; box-shadow:0 2px 5px rgba(0,0,0,.35); position:relative; overflow:hidden;
+}
+/* 角インデックス（ランク＋スート）。左上と右下に表示。 */
+.card .idx{ position:absolute; display:flex; flex-direction:column; align-items:center;
+  line-height:1; font-weight:900; }
+.card .idx b{ font-size:13px; line-height:1; }
+.card .idx i{ font-style:normal; font-size:11px; line-height:1; margin-top:1px; }
+.card .idx.tl{ top:3px; left:4px; }
+.card .idx.br{ bottom:3px; right:4px; }
+/* 中央のスート */
+.card .pip{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-size:22px; line-height:1; }
+.card.red{ color:var(--red); }
+.card.black{ color:#111; }
+.hole.big .card .idx b{ font-size:16px; }
+.hole.big .card .idx i{ font-size:14px; }
+.hole.big .card .pip{ font-size:30px; }
+.card.back{ background:repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
+  border:2px solid #fff; }
+.card.placeholder{ background:rgba(255,255,255,.06); box-shadow:none; border:1px dashed var(--line); }
+
+/* ---- スクイーズカード（GGポーカー風に角をめくる） ---- */
+.hole.big.squeeze{ gap:8px; }
+.sqcard{ position:relative; width:60px; height:84px; flex:0 0 auto; touch-action:none; }
+.sqcard .card{ position:absolute; inset:0; width:100%; height:100%; }
+.sqcard .sq-back{ background:repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
+  border:2px solid #fff; border-radius:8px;
+  transition:clip-path .22s ease; }
+.sqcard.dragging .sq-back{ transition:none; }
+/* めくれた角（裏面が折れ上がった三角）。影で浮き上がりを表現。 */
+.sqcard .sq-fold{ opacity:0; border:2px solid #fff; border-radius:8px;
+  filter:drop-shadow(-2px -2px 3px rgba(0,0,0,.55));
+  transition:clip-path .22s ease, opacity .22s ease; }
+.sqcard.dragging .sq-fold{ transition:none; }
+
+/* ---- アクション（各席の右側に縦並び） ---- */
+.action-col{ width:118px; flex:0 0 auto; }
+.actions{ display:flex; flex-direction:column; gap:8px; width:100%; }
+.actions .btn{ padding:12px 8px; font-size:14px; border-radius:11px; }
+.actions .btn .amt{ font-size:11px; }
+.actions.dim{ opacity:.4; }
+.btn[disabled]{ filter:grayscale(.4) brightness(.85); cursor:default; box-shadow:none; }
+.btn[disabled]:active{ transform:none; filter:grayscale(.4) brightness(.85); }
+
+/* ---- レイズUI（自分側の席内にインライン展開／GGPoker風） ---- */
+.betui{ display:none; flex-direction:column; gap:10px; width:100%;
+  padding:10px; background:rgba(0,0,0,.32); border:1px solid var(--line); border-radius:14px; }
+/* 手番側がレイズ中：その席の情報＋手札とボタンを隠し、ベットUIを全幅で表示 */
+.seat.raising .seat-main{ display:none; }
+.seat.raising .action-col{ width:100%; }
+.seat.raising .actions{ display:none; }
+.seat.raising .betui{ display:flex; }
+.bet-head{ display:flex; align-items:baseline; justify-content:space-between; }
+.bet-label{ color:var(--muted); font-size:13px; }
+.bet-head .bet-val{ font-size:28px; color:var(--gold); font-weight:800; }
+.bet-presets{ display:flex; gap:6px; }
+.chip{ flex:1; padding:10px 4px; border-radius:10px; border:1px solid var(--line);
+  background:#13503a; color:#fff; font-weight:700; font-size:13px; }
+.chip.active{ background:var(--gold); color:#3a2c00; border-color:var(--gold); }
+.bet-slider-row{ display:flex; align-items:center; gap:10px; }
+.bet-range{ flex:1; height:32px; }
+.step{ width:46px; height:46px; flex:0 0 auto; border-radius:50%; border:1px solid var(--line);
+  background:#1c5a42; color:#fff; font-size:24px; font-weight:800; line-height:1; }
+.bet-confirm-row{ display:flex; gap:10px; }
+.bet-confirm-row .betcancel{ flex:0 0 96px; background:#33524a; }
+.bet-confirm-row .betconfirm{ flex:1; }
+.bet-confirm-row .bet-val{ font-size:18px; }
+
+/* ---- ハンド結果（テーブル上に表示） ---- */
+.result-banner{ font-size:17px; font-weight:800; color:var(--gold); }
+.win-amt{ color:#7dffae; font-weight:800; margin-left:4px; }
+.lose-amt{ color:#ff8a8a; font-weight:800; margin-left:4px; }
+.table2.ended .seat.winner .hole .card{ box-shadow:0 0 0 2px var(--gold), 0 2px 6px rgba(0,0,0,.4); }
+.table2.ended .center{ justify-content:center; }
+.table2.ended .center-mid{ gap:8px; }
+.table2.ended .center-mid .btn{ margin-top:4px; width:min(320px,70vw); }
+.table2.ended .log{ max-width:320px; }
+
+/* ---- 結果（旧レイアウト・未使用） ---- */
+.result{ display:flex; flex-direction:column; gap:14px; text-align:center; }
+.res-summary{ font-size:18px; font-weight:700; }
+.showdown-row{ display:flex; gap:14px; justify-content:center; }
+.sd-player{ flex:1; background:rgba(0,0,0,.2); border:1px solid var(--line);
+  border-radius:14px; padding:12px 6px; }
+.sd-player .hole{ margin:8px 0; }
+.log{ text-align:left; font-size:12px; color:var(--muted); }
+.log div div{ padding:2px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+
+/* ---- ゲームオーバー ---- */
+.gameover{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; gap:14px; }
+.gameover h1{ font-size:38px; }
+.big-win{ font-size:24px; color:var(--gold); font-weight:800; }
+.gameover .btn{ margin-top:20px; width:min(360px,80vw); }
+
+.hidden{ display:none !important; }
+
+/* ============================================================
+   レスポンシブ: iPad / 大画面・小型iPhone対応
+   ============================================================ */
+
+/* 小型iPhone（SE / mini 等, 幅375px未満）: アクション列とカードを少し縮め、はみ出しを防ぐ */
+@media (max-width:374px){
+  #app{ padding-left:10px; padding-right:10px; }
+  .action-col{ width:104px; }
+  .card{ width:42px; height:58px; }
+  .card .idx b{ font-size:11px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:18px; }
+  .sqcard{ width:54px; height:76px; }
+  .hole.big .card .idx b{ font-size:14px; } .hole.big .card .idx i{ font-size:12px; }
+  .hole.big .card .pip{ font-size:26px; }
+  .actions .btn{ padding:11px 6px; font-size:13px; }
+}
+
+/* タブレット / iPad（幅700px以上）: 中央寄せの余白を減らし、テーブル全体を拡大して見やすく */
+@media (min-width:700px){
+  #app{ max-width:760px; padding-left:24px; padding-right:24px; }
+  .logo{ font-size:32px; } .logo span{ font-size:19px; }
+  .card{ width:60px; height:84px; }
+  .card .idx b{ font-size:16px; } .card .idx i{ font-size:14px; } .card .pip{ font-size:30px; }
+  .sqcard{ width:80px; height:112px; }
+  .hole.big .card .idx b{ font-size:20px; } .hole.big .card .idx i{ font-size:17px; }
+  .hole.big .card .pip{ font-size:40px; }
+  .action-col{ width:160px; }
+  .actions .btn{ padding:15px 10px; font-size:16px; }
+  .actions .btn .amt{ font-size:13px; }
+  .player-tag{ font-size:16px; } .stack{ font-size:16px; }
+  .pot{ font-size:18px; } .pot b{ font-size:26px; }
+  .street, .blinds-line{ font-size:14px; }
+  .center{ min-height:150px; }
+  .step{ width:54px; height:54px; font-size:28px; }
+  .bet-head .bet-val{ font-size:34px; }
+}
+
+/* iPad Pro 12.9" 等のさらに大きい画面 */
+@media (min-width:1024px){
+  #app{ max-width:840px; }
+}

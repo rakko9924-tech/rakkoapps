@@ -37,15 +37,21 @@ const iconPath = (folder) => `/assets/icons/${folder}.png`;
 const iconAbs = (folder) => `${BASE}${iconPath(folder)}`;
 const detailPath = (folder) => `/apps/${folder}/`;
 const detailAbs = (folder) => `${BASE}${detailPath(folder)}`;
-const appType = (app) => (app.game ? "MobileApplication" : "SoftwareApplication");
+// `play` を持つアプリは iOS 版が無い Web 専用（導線はブラウザで遊ぶリンクのみ）。
+const isWeb = (app) => !!app.play;
+const playAbs = (app) => `${BASE}${app.play}`;
+const appType = (app) => (isWeb(app) ? "WebApplication" : app.game ? "MobileApplication" : "SoftwareApplication");
 const appCat = (app) => (app.game ? "GameApplication" : "UtilitiesApplication");
+const appOs = (app) => (isWeb(app) ? "Web browser" : "iOS");
+// 入手先。Web専用はプレイURL、それ以外は App Store。
+const getUrl = (app) => (isWeb(app) ? playAbs(app) : storeUrl(app.id));
 
 const arrow = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const arrowBtn = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 function cardHtml(app, { featured = false } = {}) {
   const c = catMap[app.cat];
-  const search = [app.name, app.folder, c.label, c.tag, app.kw, app.desc].join(" ");
+  const search = [app.name, app.folder, c.label, c.tag, app.kw, app.desc, isWeb(app) && "ブラウザ Web ウェブ"].filter(Boolean).join(" ");
   const badge = featured ? `<span class="badge-featured">注目</span>` : "";
   return `        <article class="app-card" data-cat="${app.cat}" data-search="${esc(search)}">
           ${badge}
@@ -54,7 +60,7 @@ function cardHtml(app, { featured = false } = {}) {
             <h3 class="app-card__name"><a href="${detailPath(app.folder)}">${esc(app.name)}</a></h3>
             <p class="app-card__desc">${esc(app.desc)}</p>
             <div class="app-card__meta">
-              <span class="tag"><span class="tag__dot" style="--tag-hue:var(${c.dot})"></span>${esc(c.tag)}</span>
+              <span class="tag"><span class="tag__dot" style="--tag-hue:var(${c.dot})"></span>${esc(c.tag)}</span>${isWeb(app) ? `\n              <span class="tag tag--web">ブラウザで遊べる</span>` : ""}
               <span class="app-card__go">くわしく ${arrow}</span>
             </div>
           </div>
@@ -97,9 +103,9 @@ const homeJsonld = {
           "@type": appType(a),
           name: a.name,
           url: detailAbs(a.folder),
-          downloadUrl: storeUrl(a.id),
+          ...(isWeb(a) ? { installUrl: playAbs(a) } : { downloadUrl: storeUrl(a.id) }),
           image: iconAbs(a.folder),
-          operatingSystem: "iOS",
+          operatingSystem: appOs(a),
           applicationCategory: appCat(a),
           offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
         },
@@ -159,8 +165,12 @@ ${rel.map((a) => cardHtml(a)).join("\n")}
 function detailPage(app) {
   const c = catMap[app.cat];
   const kind = app.game ? "ゲーム" : "アプリ";
-  const title = `${app.name}｜${c.label}の無料iPhone${kind} - らっこアプリ`;
-  const metaDesc = `${app.desc} iPhoneで無料でダウンロードできます。${app.name}は個人開発のiOS${kind}（らっこアプリ）。`;
+  const web = isWeb(app);
+  const headline = web ? `${c.label}のブラウザ無料${kind}` : `${c.label}の無料iPhone${kind}`;
+  const title = `${app.name}｜${headline} - らっこアプリ`;
+  const metaDesc = web
+    ? `${app.desc} インストール不要、ブラウザですぐ無料で遊べます。${app.name}は個人開発のWeb${kind}（らっこアプリ）。`
+    : `${app.desc} iPhoneで無料でダウンロードできます。${app.name}は個人開発のiOS${kind}（らっこアプリ）。`;
   const url = detailAbs(app.folder);
   const img = iconAbs(app.folder);
 
@@ -173,8 +183,10 @@ function detailPage(app) {
         description: app.desc,
         image: img,
         url,
-        downloadUrl: storeUrl(app.id),
-        operatingSystem: "iOS",
+        ...(web
+          ? { installUrl: playAbs(app), browserRequirements: "JavaScript が有効なモダンブラウザ" }
+          : { downloadUrl: storeUrl(app.id) }),
+        operatingSystem: appOs(app),
         applicationCategory: appCat(app),
         inLanguage: "ja",
         offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
@@ -204,7 +216,7 @@ function detailPage(app) {
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="らっこアプリ">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="${esc(app.name)}｜${esc(c.label)}の無料iPhone${kind}">
+<meta property="og:title" content="${esc(app.name)}｜${esc(headline)}">
 <meta property="og:description" content="${esc(app.desc)}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${img}">
@@ -241,23 +253,23 @@ ${navHtml}
         <h1>${esc(app.name)}</h1>
         <p class="detail-hero__lead">${esc(app.desc)}</p>
         <div class="detail-cta">
-          <a class="btn btn--primary btn--lg" href="${storeUrl(app.id)}" target="_blank" rel="noopener">App Storeで入手（無料）${arrowBtn}</a>
+          <a class="btn btn--primary btn--lg" href="${getUrl(app)}"${web ? "" : ' target="_blank" rel="noopener"'}>${web ? "ブラウザで遊ぶ（無料）" : "App Storeで入手（無料）"}${arrowBtn}</a>
         </div>
-        <p class="detail-cta__note">iPhone対応・ダウンロード無料（一部アプリ内課金がある場合があります）</p>
+        <p class="detail-cta__note">${web ? "インストール不要・無料（スマホ／PCのブラウザで遊べます）" : "iPhone対応・ダウンロード無料（一部アプリ内課金がある場合があります）"}</p>
       </div>
     </article>
 
     <section class="detail-body">
       <div class="detail-prose">
         <h2>${esc(app.name)}ってどんな${kind}？</h2>
-        <p>${esc(app.name)}は、${esc(c.label)}の${kind}です。${esc(app.desc)}iPhoneに対応し、App Storeから無料でダウンロードできます。</p>
+        <p>${esc(app.name)}は、${esc(c.label)}の${kind}です。${esc(app.desc)}${web ? "インストール不要で、スマホでもPCでもブラウザを開くだけで無料で遊べます。" : "iPhoneに対応し、App Storeから無料でダウンロードできます。"}</p>
       </div>
       <aside class="detail-facts">
         <dl>
           <div><dt>ジャンル</dt><dd>${esc(c.label)}</dd></div>
-          <div><dt>対応</dt><dd>iPhone（iOS）</dd></div>
+          <div><dt>対応</dt><dd>${web ? "ブラウザ（スマホ／PC）" : "iPhone（iOS）"}</dd></div>
           <div><dt>価格</dt><dd>無料</dd></div>
-          <div><dt>配信</dt><dd><a href="${storeUrl(app.id)}" target="_blank" rel="noopener">App Store</a></dd></div>
+          <div><dt>配信</dt><dd>${web ? `<a href="${app.play}">ブラウザで遊ぶ</a>` : `<a href="${storeUrl(app.id)}" target="_blank" rel="noopener">App Store</a>`}</dd></div>
         </dl>
       </aside>
     </section>
@@ -296,7 +308,7 @@ for (const app of apps) {
 }
 
 // sitemap（トップ + 全個別ページ）
-const urls = [`${BASE}/`, ...apps.map((a) => detailAbs(a.folder))];
+const urls = [`${BASE}/`, ...apps.map((a) => detailAbs(a.folder)), ...apps.filter(isWeb).map(playAbs)];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls

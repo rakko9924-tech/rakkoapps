@@ -1,7 +1,12 @@
 // らっこアプリ — 掲載アプリのデータ（配信中のみ）
 // 新しいアプリを追加/更新したら `node build.mjs` を実行してサイトを再生成する。
 // cat のキーは categories の key と一致させること。featured:true で「注目」枠に表示。
-// 導線は App Store のみ（Web版へのリンクは置かない）。
+//
+// 導線のルール:
+//   - App Store で配信中のアプリ … `id`（App Store の数値ID）を持たせる。導線は App Store のみで、
+//     Web版があってもリンクは置かない（ストア外決済・重複コンテンツを避けるため）。
+//   - iOS 版が無い Web 専用アプリ … `id` の代わりに `play`（サイト内の相対パス）を持たせる。
+//     導線はブラウザで遊ぶリンクのみ。App Store 配信中のアプリに `play` を付けてはいけない。
 
 export const categories = [
   { key: "online",  label: "オンライン対戦",   tag: "オンライン対戦", dot: "--cat-online" },
@@ -48,6 +53,7 @@ export const apps = [
   { folder: "insider",         name: "インサイダーを暴け",       id: "6787274172", cat: "party",   game: true,  featured: false, desc: "答えを操る内通者を探すワード推理ゲーム。", kw: "インサイダー 推理 ワード party" },
   { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
+  { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を2人で回して遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
 
   // ---- カジュアル・放置 ----
   { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: true,  desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },

@@ -185,6 +185,11 @@ strong { font-weight: 700; color: var(--color-ink); }
 .app-card__meta { margin-top: auto; padding-top: var(--space-sm); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .tag { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--text-xs); font-weight: 500; color: var(--color-body); }
 .tag__dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; flex: none; background: var(--tag-hue, var(--color-muted)); }
+.tag--web {
+  font-weight: 700; color: var(--color-accent-ink);
+  background: var(--color-paper-2); border: 1px solid var(--color-rule);
+  padding: 0.1rem 0.5rem; border-radius: var(--radius-pill);
+}
 .app-card__go { pointer-events: none; margin-left: auto; font-size: var(--text-xs); font-weight: 700; font-family: var(--font-display); color: var(--color-accent-ink); display: inline-flex; align-items: center; gap: 0.3em; }
 .app-card__go svg { transition: transform var(--dur) var(--ease-out); }
 .app-card:hover .app-card__go svg { transform: translateX(3px); }
