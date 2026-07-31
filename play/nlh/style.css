@@ -205,6 +205,9 @@ h1,h2{ margin:.2em 0; }
 .card .idx{ position:absolute; display:flex; flex-direction:column; align-items:center;
   line-height:1; font-weight:900; }
 .card .idx b{ font-size:10px; line-height:1; }
+/* 「10」は2文字ぶん広いので詰める（スートの並びと当たるため）。em は親から継承した
+   サイズに掛かって逆に大きくなるので px で指定すること。 */
+.card .idx b.two{ font-size:8px; letter-spacing:-.07em; }
 .card .idx i{ font-style:normal; font-size:8px; line-height:1; margin-top:1px; }
 .card .idx.tl{ top:2px; left:3px; }
 .card .idx.br{ bottom:2px; right:3px; }
@@ -214,23 +217,21 @@ h1,h2{ margin:.2em 0; }
 /* 数札のスートの並び。位置は JS が実物どおりの配置で出す。下半分は180°回す。 */
 .card .pips{ position:absolute; inset:0; }
 .card .pips .pi{ position:absolute; transform:translate(-50%,-50%);
-  font-style:normal; font-size:9px; line-height:1; }
+  font-style:normal; font-size:8px; line-height:1; }
 .card .pips .pi.flip{ transform:translate(-50%,-50%) rotate(180deg); }
 /* A は中央に大きく1つ。 */
 .card .pip{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   font-size:22px; line-height:1; }
-.card .pip.ace{ font-size:26px; }
+.card .pip.ace{ font-size:20px; }
 /* J/Q/K は絵札。枠の中にランクとスートを収める。 */
 .card .court{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  width:56%; height:56%; gap:1px; border:1.5px solid currentColor; border-radius:4px;
+  width:50%; height:52%; gap:1px; border:1.5px solid currentColor; border-radius:4px;
   box-shadow:inset 0 0 0 1.5px #fff, inset 0 0 0 2.5px currentColor; }
 .card .court b{ font-size:16px; line-height:1; }
 .card .court i{ font-style:normal; font-size:12px; line-height:1; }
 .card.red{ color:var(--red); }
 .card.black{ color:#111; }
-.hole.big .card .pip{ font-size:30px; }
-.hole.big .card .pip.ace{ font-size:34px; }
 .hole.big .card .court b{ font-size:21px; }
 .hole.big .card .court i{ font-size:16px; }
 .card.back{ background:repeating-linear-gradient(45deg,#b22,#b22 6px,#901 6px,#901 12px);
@@ -326,10 +327,9 @@ h1,h2{ margin:.2em 0; }
   #app{ padding-left:10px; padding-right:10px; }
   .action-col{ width:104px; }
   .card{ width:48px; height:67px; }
-  .card .idx b{ font-size:9px; } .card .idx i{ font-size:7px; } .card .pip{ font-size:18px; }
-  .card .pips .pi{ font-size:8px; } .card .court b{ font-size:13px; } .card .court i{ font-size:10px; }
+  .card .idx b{ font-size:9px; } .card .idx b.two{ font-size:7px; } .card .idx i{ font-size:7px; } .card .pip{ font-size:18px; }
+  .card .pips .pi{ font-size:7px; } .card .court b{ font-size:12px; } .card .court i{ font-size:9px; }
   .sqcard{ width:54px; height:76px; }
-  .hole.big .card .pip{ font-size:26px; }
   .actions .btn{ padding:11px 6px; font-size:13px; }
 }
 
@@ -338,10 +338,9 @@ h1,h2{ margin:.2em 0; }
   #app{ max-width:760px; padding-left:24px; padding-right:24px; }
   .logo{ font-size:32px; } .logo span{ font-size:19px; }
   .card{ width:60px; height:84px; }
-  .card .idx b{ font-size:11px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:30px; }
+  .card .idx b{ font-size:11px; } .card .idx b.two{ font-size:9px; } .card .idx i{ font-size:9px; } .card .pip{ font-size:30px; }
   .card .pips .pi{ font-size:10px; } .card .court b{ font-size:21px; } .card .court i{ font-size:16px; }
   .sqcard{ width:80px; height:112px; }
-  .hole.big .card .pip{ font-size:40px; } .hole.big .card .pip.ace{ font-size:46px; }
   .hole.big .card .court b{ font-size:28px; } .hole.big .card .court i{ font-size:21px; }
   .action-col{ width:160px; }
   .actions .btn{ padding:15px 10px; font-size:16px; }

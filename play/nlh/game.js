@@ -498,7 +498,7 @@
   // スートを並べる領域（カード内の割合）。角のインデックスと重ならない範囲。
   // 角のインデックスに重ならないよう、左右の列は内側に寄せてある（x0 を小さくすると
   // 上下の隅でランク／スートと当たる）。値を触ったら全ランクで重なりを再確認すること。
-  const PIP_AREA = { x0: 40, x1: 60, y0: 19, y1: 81 };
+  const PIP_AREA = { x0: 32, x1: 68, y0: 19, y1: 81 };
   function pipsHTML(c) {
     const s = P.SUIT_SYMBOL[c.s];
     if (c.r === 14) return `<span class="pip ace">${s}</span>`;           // A は大きく1つ
@@ -517,9 +517,11 @@
   // 角のインデックスは右上と左下に来る（スートの並びは左右対称なのでそのまま）。
   function faceInner(c, mirror) {
     const r = P.RANK_LABEL[c.r], s = P.SUIT_SYMBOL[c.s];
+    // 「10」だけ2文字ぶん横に広く、スートの列と当たるので実物のトランプ同様に詰める。
+    const rb = `<b${r.length > 1 ? ' class="two"' : ''}>${r}</b>`;
     const idx = mirror
-      ? `<span class="idx tr"><b>${r}</b><i>${s}</i></span><span class="idx bl"><b>${r}</b><i>${s}</i></span>`
-      : `<span class="idx tl"><b>${r}</b><i>${s}</i></span><span class="idx br"><b>${r}</b><i>${s}</i></span>`;
+      ? `<span class="idx tr">${rb}<i>${s}</i></span><span class="idx bl">${rb}<i>${s}</i></span>`
+      : `<span class="idx tl">${rb}<i>${s}</i></span><span class="idx br">${rb}<i>${s}</i></span>`;
     return idx + pipsHTML(c);
   }
   function cardHTML(c, faceUp) {
