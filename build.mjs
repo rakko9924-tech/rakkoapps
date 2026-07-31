@@ -14,7 +14,10 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 
 // ▼ SITE URL — サイトの公開URL（変更時は robots.txt と index.template.html の canonical/OGP も）
 const BASE = "https://rakkoapps.com";
-const TODAY = "2026-07-24";
+const TODAY = "2026-08-01";
+
+// 攻略ラボ（/lab/ 配下の静的ページ。build 対象外だが sitemap には載せる）
+const LAB_URLS = ["/lab/", "/lab/gobblet-gto/", "/lab/catan-gto/"];
 
 // CSS/JS のキャッシュ対策。更新しても古いスタイルが表示され続けないよう ?v= を付ける。
 const assetVer = (() => {
@@ -124,6 +127,7 @@ const navHtml = `<header class="nav">
     <nav class="nav__links" aria-label="メイン">
       <a class="nav__link" href="/#featured">注目</a>
       <a class="nav__link" href="/#apps">アプリ一覧</a>
+      <a class="nav__link" href="/lab/">攻略ラボ</a>
       <a class="nav__link" href="/#about">このサイトについて</a>
       <a class="nav__link nav__cta btn btn--ghost" href="/#apps">探す</a>
     </nav>
@@ -137,6 +141,7 @@ const footerHtml = `<footer class="footer">
       <nav class="footer__links" aria-label="フッター">
         <a href="/#featured">注目のアプリ</a>
         <a href="/#apps">アプリ一覧</a>
+        <a href="/lab/">攻略ラボ</a>
         <a href="/#about">このサイトについて</a>
         <a href="mailto:rakko9924@gmail.com">お問い合わせ</a>
       </nav>
@@ -308,7 +313,7 @@ for (const app of apps) {
 }
 
 // sitemap（トップ + 全個別ページ）
-const urls = [`${BASE}/`, ...apps.map((a) => detailAbs(a.folder)), ...apps.filter(isWeb).map(playAbs)];
+const urls = [`${BASE}/`, ...apps.map((a) => detailAbs(a.folder)), ...apps.filter(isWeb).map(playAbs), ...LAB_URLS.map((p) => `${BASE}${p}`)];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls

@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>カタン戦略計算機｜交渉なしEV・確率エンジン - らっこアプリ攻略ラボ</title>
+<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトの均衡ソルバー、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
+<link rel="canonical" href="https://rakkoapps.com/lab/catan-gto/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#f2694b">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="らっこアプリ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="カタン戦略計算機｜交渉なしEV・確率エンジン">
+<meta property="og:description" content="初期配置の均衡ソルバー、生産力、建設速度、盗賊EV、発展カード確率。ブラウザで動く無料のカタン計算機。">
+<meta property="og:url" content="https://rakkoapps.com/lab/catan-gto/">
+<meta property="og:image" content="https://rakkoapps.com/assets/og/cover.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="カタン戦略計算機｜らっこアプリ攻略ラボ">
+<meta name="twitter:description" content="交渉なしカタンのEV・確率エンジン。無料・ブラウザで動作。">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/tokens.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1975437480047330" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "カタン戦略計算機",
+      "description": "交渉なしカタンのEV・確率エンジン。初期配置の均衡ソルバー、生産力評価、建設速度、盗賊EV、発展カード確率。",
+      "url": "https://rakkoapps.com/lab/catan-gto/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web browser",
+      "inLanguage": "ja",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+      "publisher": { "@type": "Organization", "name": "らっこアプリ", "url": "https://rakkoapps.com/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "らっこアプリ", "item": "https://rakkoapps.com/" },
+        { "@type": "ListItem", "position": 2, "name": "攻略ラボ", "item": "https://rakkoapps.com/lab/" },
+        { "@type": "ListItem", "position": 3, "name": "カタン戦略計算機", "item": "https://rakkoapps.com/lab/catan-gto/" }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  /* ---- らっこアプリ 共通シェル（site- プレフィックスで本体CSSと衝突させない） ---- */
+  .site-nav{
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in oklab, var(--color-paper) 88%, white);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-nav);
+  }
+  .site-nav__inner{
+    max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(1.1rem, 4vw, 2.5rem);
+    display: flex; align-items: center; gap: 1rem; min-height: 4rem;
+  }
+  .site-wordmark{
+    display: inline-flex; align-items: center; gap: .5em;
+    font-family: var(--font-display); font-weight: 700; font-size: var(--text-md);
+    color: var(--color-ink); text-decoration: none; letter-spacing: .01em;
+  }
+  .site-wordmark img{ width: 1.6rem; height: 1.6rem; border-radius: 7px; display: block; }
+  .site-nav__links{ display: flex; align-items: center; gap: clamp(.5rem, 1.5vw, 1.5rem); margin-left: auto; }
+  .site-nav__links a{
+    font-family: var(--font-body); font-size: var(--text-sm); font-weight: 500;
+    color: var(--color-muted); text-decoration: none; padding: .4rem .2rem; white-space: nowrap;
+  }
+  .site-nav__links a:hover{ color: var(--color-ink); }
+  .site-crumb{
+    max-width: var(--maxw); margin-inline: auto; padding: .8rem clamp(1.1rem, 4vw, 2.5rem) 0;
+    font-family: var(--font-body); font-size: var(--text-xs); color: var(--color-muted);
+  }
+  .site-crumb a{ color: inherit; text-decoration: none; }
+  .site-crumb a:hover{ color: var(--color-ink); }
+  .site-footer{
+    margin-top: 3rem; background: var(--color-paper-2);
+    border-top: 1px solid var(--color-rule);
+    font-family: var(--font-body);
+  }
+  .site-footer__inner{
+    max-width: var(--maxw); margin-inline: auto; padding: 2rem clamp(1.1rem, 4vw, 2.5rem) 2.4rem;
+    display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline; justify-content: space-between;
+  }
+  .site-footer nav{ display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; }
+  .site-footer a{ font-size: var(--text-sm); color: var(--color-muted); text-decoration: none; }
+  .site-footer a:hover{ color: var(--color-ink); }
+  .site-footer__copy{ margin: 0; font-size: var(--text-xs); color: var(--color-muted); }
+  .ad-box{ max-width: 900px; margin: 2.2rem auto 0; padding: 0 20px; }
+  .ad-box__label{ font-family: var(--font-body); font-size: 10px; letter-spacing: .14em; color: var(--color-muted); text-align: center; margin-bottom: 4px; }
+  ins.adsbygoogle[data-ad-status="unfilled"]{ display: none; }
+  .ad-box:has(ins.adsbygoogle[data-ad-status="unfilled"]){ display: none; }
+</style>
+</head>
+<body>
+<header class="site-nav">
+  <div class="site-nav__inner">
+    <a class="site-wordmark" href="/" aria-label="らっこアプリ ホーム">
+      <img src="/assets/brand/icon-96.png" width="96" height="96" alt="" aria-hidden="true">
+      らっこアプリ
+    </a>
+    <nav class="site-nav__links" aria-label="メイン">
+      <a href="/#apps">アプリ一覧</a>
+      <a href="/lab/">攻略ラボ</a>
+      <a href="/#about">このサイトについて</a>
+    </nav>
+  </div>
+</header>
+<nav class="site-crumb" aria-label="パンくず">
+  <a href="/">らっこアプリ</a> <span aria-hidden="true">›</span>
+  <a href="/lab/">攻略ラボ</a> <span aria-hidden="true">›</span>
+  <span aria-current="page">カタン戦略計算機</span>
+</nav>
+<style>
+  :root {
+    --bg: #F4F6F3; --surface: #FCFDFB; --sea: #E2ECE8; --ink: #202821; --sub: #5C665B;
+    --line: #DDE3DA; --line-soft: #E9EDE6; --accent: #0E6B7A; --accent-soft: #D8E9EB;
+    --on-ink: #FFFFFF;
+    --token: #F7F1E0; --token-ink: #2A2A22; --red-num: #C03D25;
+    --cw: #1F7A40; --cb: #B23F17; --cs: #87A825; --cwh: #BE8712; --co: #3E6FBE;
+    --hx-wood: #9DC291; --hx-brick: #DBA184; --hx-sheep: #CBDA90; --hx-wheat: #EAD48D;
+    --hx-ore: #B4C4D1; --hx-desert: #E4DAB9;
+    --p0: #0E6B7A; --p1: #7D4BC9; --p2: #C93B8C; --p3: #3A434C;
+    --good: #1E7A34; --warn: #A66109; --bad: #B3341E;
+    --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", "Yu Gothic Medium", "Yu Gothic", Meiryo, system-ui, sans-serif;
+    --mono: "SF Mono", SFMono-Regular, ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131714; --surface: #1B211C; --sea: #14201E; --ink: #E4EAE1; --sub: #97A294;
+      --line: #2B332C; --line-soft: #232B24; --accent: #46B8C9; --accent-soft: #123A40;
+      --on-ink: #08282D;
+      --token: #EEE6CE; --token-ink: #2A2A22; --red-num: #C03D25;
+      --cw: #37792E; --cb: #C9391C; --cs: #8C9C4A; --cwh: #AC8E37; --co: #178AEB;
+      --hx-wood: #2C4A2E; --hx-brick: #5C3323; --hx-sheep: #4A5426; --hx-wheat: #584A1F;
+      --hx-ore: #2F3E4C; --hx-desert: #4C4531;
+      --p0: #46B8C9; --p1: #A47BE8; --p2: #E266AC; --p3: #B9C2CB;
+      --good: #4CAF6A; --warn: #D69A3A; --bad: #E06A50;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F6F3; --surface: #FCFDFB; --sea: #E2ECE8; --ink: #202821; --sub: #5C665B;
+    --line: #DDE3DA; --line-soft: #E9EDE6; --accent: #0E6B7A; --accent-soft: #D8E9EB;
+    --on-ink: #FFFFFF;
+    --token: #F7F1E0; --token-ink: #2A2A22; --red-num: #C03D25;
+    --cw: #1F7A40; --cb: #B23F17; --cs: #87A825; --cwh: #BE8712; --co: #3E6FBE;
+    --hx-wood: #9DC291; --hx-brick: #DBA184; --hx-sheep: #CBDA90; --hx-wheat: #EAD48D;
+    --hx-ore: #B4C4D1; --hx-desert: #E4DAB9;
+    --p0: #0E6B7A; --p1: #7D4BC9; --p2: #C93B8C; --p3: #3A434C;
+    --good: #1E7A34; --warn: #A66109; --bad: #B3341E;
+  }
+  :root[data-theme="dark"] {
+    --bg: #131714; --surface: #1B211C; --sea: #14201E; --ink: #E4EAE1; --sub: #97A294;
+    --line: #2B332C; --line-soft: #232B24; --accent: #46B8C9; --accent-soft: #123A40;
+    --on-ink: #08282D;
+    --token: #EEE6CE; --token-ink: #2A2A22; --red-num: #C03D25;
+    --cw: #37792E; --cb: #C9391C; --cs: #8C9C4A; --cwh: #AC8E37; --co: #178AEB;
+    --hx-wood: #2C4A2E; --hx-brick: #5C3323; --hx-sheep: #4A5426; --hx-wheat: #584A1F;
+    --hx-ore: #2F3E4C; --hx-desert: #4C4531;
+    --p0: #46B8C9; --p1: #A47BE8; --p2: #E266AC; --p3: #B9C2CB;
+    --good: #4CAF6A; --warn: #D69A3A; --bad: #E06A50;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); margin: 0;
+         font-size: 13.5px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px 56px; }
+  header.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding: 20px 0 4px; }
+  header.top h1 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: .01em; }
+  header.top h1 .sub-t { color: var(--accent); }
+  .gto-note { color: var(--sub); font-size: 12px; max-width: 640px; }
+  .gto-note b { color: var(--ink); font-weight: 600; }
+  main.app { display: grid; grid-template-columns: minmax(330px, 470px) minmax(0, 1fr); gap: 18px; margin-top: 14px; align-items: start; }
+  @media (max-width: 900px) { main.app { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .board-panel { position: sticky; top: 12px; padding: 12px; }
+  @media (max-width: 900px) { .board-panel { position: static; } }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .toolbar .sp { flex: 1 1 100%; height: 0; }
+  button { font-family: inherit; font-size: 12px; color: var(--ink); background: var(--surface);
+           border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; cursor: pointer; line-height: 1.5; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button.on { background: var(--accent); border-color: var(--accent); color: var(--on-ink); }
+  button.ghost { border-style: dashed; color: var(--sub); }
+  .pchip { display: inline-flex; align-items: center; gap: 5px; }
+  .pchip .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .paintbar { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 6px; }
+  .paintbar button { padding: 3px 8px; }
+  .paintbar .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: baseline; }
+  .mode-hint { font-size: 11.5px; color: var(--sub); min-height: 1.6em; margin: 2px 2px 6px; }
+  .board-wrap { background: var(--sea); border: 1px solid var(--line); border-radius: 10px; padding: 4px; position: relative; }
+  .board-wrap svg { display: block; width: 100%; height: auto; }
+  .hexcell { stroke: var(--surface); stroke-width: 2; cursor: pointer; }
+  .hx-wood { fill: var(--hx-wood); } .hx-brick { fill: var(--hx-brick); } .hx-sheep { fill: var(--hx-sheep); }
+  .hx-wheat { fill: var(--hx-wheat); } .hx-ore { fill: var(--hx-ore); } .hx-desert { fill: var(--hx-desert); }
+  .tok { fill: var(--token); stroke: rgba(0,0,0,.18); }
+  .tok-n { font: 700 15px var(--mono); fill: var(--token-ink); }
+  .tok-n.red { fill: var(--red-num); }
+  .pipdot { fill: var(--token-ink); opacity: .75; } .pipdot.red { fill: var(--red-num); opacity: 1; }
+  .vdot { fill: var(--ink); opacity: .16; cursor: pointer; }
+  .vdot:hover { opacity: .6; }
+  .vring { fill: none; stroke: var(--accent); stroke-width: 2.5; pointer-events: none; }
+  .rankb circle { stroke: var(--surface); stroke-width: 1.5; }
+  .rankb text { font: 700 10px var(--mono); fill: #fff; }
+  .bld { stroke: var(--surface); stroke-width: 1.6; pointer-events: none; }
+  .portb rect { fill: var(--surface); stroke: var(--line); rx: 4; }
+  .portb text { font: 700 9.5px var(--sans); fill: var(--ink); }
+  .robber { fill: #262626; stroke: #F0EDE4; stroke-width: 1.4; pointer-events: none; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 8px 4px 0; font-size: 11.5px; color: var(--sub); }
+  .legend .it { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 2px; }
+  /* tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 10px 0; border-bottom: 1px solid var(--line-soft); }
+  .tabs button { border: 1px solid transparent; border-bottom: none; background: none; color: var(--sub);
+                 border-radius: 8px 8px 0 0; padding: 6px 12px; font-weight: 600; }
+  .tabs button.on { color: var(--accent); background: var(--surface); border-color: var(--line); position: relative; top: 1px; }
+  .tabpane { padding: 14px; display: none; }
+  .tabpane.on { display: block; }
+  h3 { font-size: 13.5px; font-weight: 700; margin: 0 0 8px; }
+  h3 .m { color: var(--sub); font-weight: 400; font-size: 12px; margin-left: 8px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-bottom: 10px; font-size: 12px; color: var(--sub); }
+  .opts label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+  .opts select, .opts input[type="number"] { font-family: inherit; font-size: 12px; color: var(--ink);
+      background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th { text-align: left; color: var(--sub); font-weight: 600; font-size: 11.5px; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 5px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tr.hl { background: var(--accent-soft); }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: var(--accent-soft); }
+  .tscroll { overflow-x: auto; }
+  .chips { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-family: var(--mono);
+          border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; line-height: 1.7; white-space: nowrap; }
+  .chip .sw { width: 8px; height: 8px; border-radius: 2px; }
+  .scorebar { height: 5px; border-radius: 3px; background: var(--accent); min-width: 2px; }
+  .barslot { background: var(--line-soft); border-radius: 3px; width: 90px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 10px 0; }
+  .tile { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .tile .k { font-size: 11px; color: var(--sub); }
+  .tile .v { font: 700 20px var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  .tile .v small { font-size: 11px; font-weight: 400; color: var(--sub); font-family: var(--sans); }
+  .chart { margin: 8px 0 14px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart .grid { stroke: var(--line-soft); stroke-width: 1; }
+  .chart .axis { font: 10.5px var(--mono); fill: var(--sub); }
+  .chart .vlabel { font: 600 10.5px var(--mono); fill: var(--ink); }
+  .chart .blabel { font: 11px var(--sans); fill: var(--ink); }
+  .note { font-size: 11.5px; color: var(--sub); margin: 6px 0; }
+  .steppers { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .stepper { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; }
+  .stepper .nm { font-size: 11.5px; display: flex; align-items: center; gap: 4px; }
+  .stepper .sw { width: 9px; height: 9px; border-radius: 2px; }
+  .stepper .val { font: 600 13px var(--mono); min-width: 18px; text-align: center; }
+  .stepper button { padding: 0 7px; border-radius: 5px; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .seg button { border: none; border-radius: 0; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  #tip { position: fixed; z-index: 40; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+         padding: 7px 10px; font-size: 11.5px; pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,.13);
+         max-width: 260px; display: none; line-height: 1.55; }
+  #tip .t { font-weight: 700; margin-bottom: 2px; }
+  #tip table { font-size: 11px; } #tip td { padding: 1px 6px 1px 0; border: none; }
+  .docs { margin-top: 18px; }
+  .docs details { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0 16px; }
+  .docs summary { cursor: pointer; font-weight: 700; padding: 12px 0; font-size: 13px; }
+  .docs .body { border-top: 1px solid var(--line-soft); padding: 12px 0 16px; column-gap: 32px; }
+  .docs h4 { font-size: 12.5px; margin: 14px 0 4px; }
+  .docs p, .docs li { font-size: 12.5px; color: var(--sub); margin: 4px 0; }
+  .docs code { font-family: var(--mono); font-size: 11.5px; background: var(--line-soft); border-radius: 4px; padding: 0 4px; color: var(--ink); }
+  .pulse { animation: pulse 1s ease-out 2; }
+  @keyframes pulse { 0% { stroke-width: 2.5; opacity: 1; } 100% { stroke-width: 10; opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>カタン戦略計算機 <span class="sub-t">交渉なしEV・確率エンジン</span></h1>
+    <p class="gto-note"><b>解いているもの:</b> 交渉なしカタンの初期配置フェーズは隠れ情報のない有限の完全情報ゲームなので、後ろ向き帰納法で解けます。本ツールは<b>初期配置ドラフトの部分ゲーム完全均衡</b>（2人=厳密全数探索、明示した評価関数のレースモデル）を計算し、加えて正確な確率計算・EV・モンテカルロを備えます。ゲーム全体の厳密GTOが計算不能である理由も下部「計算モデル」に明記しています。</p>
+  </header>
+
+  <main class="app">
+    <section class="panel board-panel">
+      <div class="toolbar" id="modebar"></div>
+      <div class="paintbar" id="paintbar" hidden></div>
+      <div class="toolbar" id="playerbar"></div>
+      <p class="mode-hint" id="modehint"></p>
+      <div class="board-wrap"><svg id="board" viewBox="-218 -208 436 416" role="img" aria-label="カタン盤面"></svg></div>
+      <div class="legend" id="hexlegend"></div>
+      <div class="toolbar" style="margin-top:8px">
+        <button id="btn-standard">標準盤面に戻す</button>
+        <button id="btn-random">ランダム盤面</button>
+        <button id="btn-clearb" class="ghost">建物を全消去</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <nav class="tabs" id="tabs" role="tablist"></nav>
+      <div class="tabpane" id="pane-solver" role="tabpanel"></div>
+      <div class="tabpane" id="pane-place" role="tabpanel"></div>
+      <div class="tabpane" id="pane-prod" role="tabpanel"></div>
+      <div class="tabpane" id="pane-build" role="tabpanel"></div>
+      <div class="tabpane" id="pane-robber" role="tabpanel"></div>
+      <div class="tabpane" id="pane-prob" role="tabpanel"></div>
+    </section>
+  </main>
+
+  <section class="docs">
+    <details>
+      <summary>計算モデルの説明（式・前提・限界）</summary>
+      <div class="body">
+        <h4>「GTOを解く」とはどこまで可能か</h4>
+        <p>カタン全体の厳密な均衡解は計算不能です。1ターンごとにサイコロで最大11分岐、建設・発展カードの選択肢、隠れた山札が掛け合わさり、ゲーム木は10<sup>100</sup>を優に超えます（比較: 完全解析済みのチェッカーは約10<sup>20</sup>局面）。これは近似ではどうにもならない規模であり、「カタンのGTO」を厳密に解いたと主張するツールはすべて何らかの評価関数への置き換えを含みます。</p>
+        <p>一方で交渉なしカタンの<b>初期配置フェーズは、隠れ情報のない有限の完全情報ゲーム</b>です（ゲーム本編で非公開になるのは購入後の発展カードのみで、交渉なしなら同時手番もほぼありません）。ゆえに配置の部分ゲームは後ろ向き帰納法（バックワードインダクション）で厳密に解けます。本ツールが「解く」のは次の部分です。</p>
+        <ul>
+          <li><b>初期配置ドラフト（GTO配置ソルバー）:</b> スネークドラフト（2人なら P1→P2→P2→P1）は有限の完全情報ゲームです。下記のレース評価関数の下で、2人の場合は<b>到達時間差のゼロ和ゲームとして全数探索し、部分ゲーム完全均衡を厳密に計算</b>します（先手の全候補 × 後手の全ペア × 先手の最適応手。相手を完全封鎖する手も評価対象）。残り3手以下なら人数によらず全数探索。3〜4人のフル読みのみ、各手番を静的評価上位に絞るビーム探索（近似と明記）です。なお生産も港もない頂点は候補から除外します（自己生産を放棄する純ブロック配置は非考慮。候補が極端に少ない盤面では全合法頂点に自動フォールバック）。</li>
+          <li><b>確率計算:</b> サイコロ分布・生産期待値・山札の超幾何分布は厳密値です。</li>
+          <li><b>建設速度:</b> 方策固定のモンテカルロ推定（2万試行）です。</li>
+        </ul>
+        <h4>ソルバーの評価関数（10VP到達の段階的レースモデル）</h4>
+        <p>各プレイヤーの配置の価値は「<b>10VPに到達する最小ターン数 T</b>」で測ります。初期2軒（2VP）から+8VPへ至る固定順序のプランを3種用意し、最速のものを採用します。</p>
+        <ul>
+          <li><b>都市・発展型:</b> 都市化×2 → 3軒目の入植（街道2+入植） → 3軒目を都市化 → 発展カード（騎士3枚＋勝利点2枚が揃うまでの期待 <b><span data-deve="armyVp2">?</span>枚</b>）で最大騎士力+VP2。</li>
+          <li><b>拡張型:</b> 入植×3（各 街道2+入植） → 都市化×3 → 最長交易路（+街道2、計8本）。</li>
+          <li><b>バランス型:</b> 都市化 → 入植 → 都市化 → 入植 → 都市化 → 発展カード（騎士3+VP1の期待 <span data-deve="armyVp1">?</span>枚）。</li>
+        </ul>
+        <p>T の計算は<b>段階的流体モデル</b>です: 毎ターン期待枚数 <code>ピップ/36</code> を連続量として獲得し、余剰を銀行/港レートで交換。各段階の最小所要 Δt は <code>Σ 余剰_r/レート_r ≥ Σ 不足_r</code>（Δt について単調）を二分探索で解き、購入後の余りは次段階へ繰り越します。<b>都市化するとその頂点の生産が実際に2倍になり、以後の段階が速くなります</b>（複利効果を反映）。3軒目以降の新規入植地は「盤面の頂点をピップ順に並べた8番手の地点」の生産を得ると仮定します（盤面ごとの定数・出典明示のための近似）。<b>2軒目の入植地の初期資源</b>（隣接する砂漠以外の各タイルから1枚）も初期手札として算入し、2手連続で置くプレイヤーはどちらを2軒目にするかも最適化・探索されます。</p>
+        <p><b>発展カードは中身まで評価します:</b> 山札25枚の構成に対し「騎士3枚かつ勝利点k枚が揃うまでの期待購入枚数」を多変量の負の超幾何分布として厳密に計算し（確率・山札タブに定数を表示）、その枚数分のコスト（羊麦鉱×枚数）をプランに計上します。単一種の場合は閉形式 <code>j(N+1)/(K+1)</code> に一致します。</p>
+        <p><b>この均衡が「厳密」なのは評価関数の内側の話です。</b>残る限界: 街道の具体的な位置取り、盗賊・騎士による妨害、最大騎士力・最長交易路の他家との競争、サイコロの分散（分散は建設速度タブのモンテカルロで確認できます）、相手の拡張による将来スポットの競合は含みません。</p>
+        <h4>基本確率</h4>
+        <p>2個のサイコロで出目 n が出る確率は <code>P(n) = (6 − |7 − n|) / 36</code>。「ピップ」はその分子（36分率）で、6と8が5ピップ、2と12が1ピップです。</p>
+        <h4>入植地候補スコア</h4>
+        <p><code>スコア = (Σ_r ピップ_r × w_r × 逓減_r) × 多様性 + 港ボーナス</code></p>
+        <ul>
+          <li><code>w_r = 戦略重み_r × 希少性_r</code>。希少性は <code>盤面平均供給 ÷ その資源の総ピップ</code>（0.5〜2.0に制限）。盤面に少ない資源の地点ほど高評価。</li>
+          <li>逓減（2軒目以降）: <code>6 / (6 + 自分の既存ピップ_r)</code>。既に多く生産している資源の限界価値を下げ、2軒目の相補性を評価。</li>
+          <li>多様性: <code>1 + 0.04 × (資源種類数 − 1)</code>。</li>
+          <li>港: 3:1港は基礎スコア×8%、2:1港は <code>0.45 × その資源ピップ × w_r</code> を加算（余剰の倍率交換の近似）。標準盤面・ランダム盤面には実物の枠と同じ9港（3:1×4・各資源2:1×1）を沿岸へ自動配置します（位置はほぼ等間隔の近似。港モードで自由に編集可能）。</li>
+          <li>距離ルール（隣接頂点に建物があると建設不可）を満たす頂点のみ表示。</li>
+        </ul>
+        <p>重み付けの係数（0.04, 8%, 0.45, 逓減定数6）は理論値ではなく、実戦則を透明化したヒューリスティックです。素のピップ合計も常に併記します。</p>
+        <h4>生産力</h4>
+        <p>1ロールあたりの期待獲得 <code>E[r] = Σ(隣接ヘクス) P(出目) × 建物係数</code>（入植地=1、都市=2）。盗賊が乗ったヘクスは生産しません（トグルで考慮/無視を切替）。</p>
+        <h4>建設速度（モンテカルロ）</h4>
+        <p>現在の建物と手札から2万回試行。各ターン2d6を振り、7なら手札8枚以上で半分廃棄（目標コストへの余剰が大きい資源から捨てる）、それ以外は生産。毎ターン、銀行/港交換（不足数 ≦ Σ⌊余剰_r ÷ レート_r⌋ なら到達可能）を含めて目標コストに到達した最初のターンを記録します。前提: 生産設備は増えない・盗賊は現在位置に固定（既定ではそのヘクスは生産せず、「盗賊ブロック考慮」トグルで無視も可）・他家の妨害は無視・騎士/独占なし。</p>
+        <h4>盗賊配置EV</h4>
+        <p>ヘクス h に置いた場合の各プレイヤーの期待損失 = <code>P(出目_h) × Σ その隣接建物係数</code>（カード/ロール）。推奨は「相手の損失合計 − 3×自分の損失」を最大化する配置です。</p>
+        <h4>発展カード</h4>
+        <p>山札25枚（騎士14・勝利点5・街道建設2・収穫2・独占2）。既出枚数を入力すると、次の1枚の確率と、n枚引いた時に特定種が1枚以上含まれる確率 <code>1 − C(残り−種, n) ÷ C(残り, n)</code>（超幾何分布）を計算します。</p>
+      </div>
+    </details>
+  </section>
+</div>
+<div id="tip"></div>
+
+<script>
+"use strict";
+/* ============================== LOGIC (pure) ============================== */
+const RES = ["wood", "brick", "sheep", "wheat", "ore"];
+const CHART_ORDER = ["wood", "wheat", "ore", "sheep", "brick"]; // CVD検証済みの隣接順
+const RES_JA = { wood: "木材", brick: "レンガ", sheep: "羊毛", wheat: "小麦", ore: "鉱石", desert: "砂漠" };
+const RES_K = { wood: "木", brick: "土", sheep: "羊", wheat: "麦", ore: "鉱" };
+const COST = {
+  road:  { wood: 1, brick: 1, sheep: 0, wheat: 0, ore: 0 },
+  settlement: { wood: 1, brick: 1, sheep: 1, wheat: 1, ore: 0 },
+  city:  { wood: 0, brick: 0, sheep: 0, wheat: 2, ore: 3 },
+  dev:   { wood: 0, brick: 0, sheep: 1, wheat: 1, ore: 1 },
+};
+const BUILD_JA = { road: "街道", settlement: "入植地", city: "都市", dev: "発展カード" };
+const DEV_DECK = { knight: 14, vp: 5, road2: 2, plenty: 2, mono: 2 };
+const DEV_JA = { knight: "騎士", vp: "勝利点", road2: "街道建設", plenty: "収穫", mono: "独占" };
+const PLAYER_JA = ["あなた", "相手A", "相手B", "相手C"];
+
+const pipOf = n => (n >= 2 && n <= 12 && n !== 7) ? 6 - Math.abs(7 - n) : 0;
+const probOf = n => pipOf(n) / 36;
+
+/* ---- geometry: 19-hex board, pointy-top, axial coords, radius 2 ---- */
+const HEX_S = 46;
+function buildGeometry() {
+  const hexes = [];
+  for (let r = -2; r <= 2; r++) {
+    const qmin = Math.max(-2, -r - 2), qmax = Math.min(2, -r + 2);
+    for (let q = qmin; q <= qmax; q++) {
+      const cx = HEX_S * Math.sqrt(3) * (q + r / 2), cy = HEX_S * 1.5 * r;
+      const corners = [];
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 180) * (60 * i - 90);
+        corners.push([cx + HEX_S * Math.cos(a), cy + HEX_S * Math.sin(a)]);
+      }
+      hexes.push({ id: hexes.length, q, r, cx, cy, corners });
+    }
+  }
+  // dedupe vertices (adjacent corners are HEX_S=46px apart; integer rounding is safe)
+  const vmap = new Map();
+  hexes.forEach(h => h.corners.forEach(([x, y]) => {
+    const key = Math.round(x) + "," + Math.round(y);
+    if (!vmap.has(key)) vmap.set(key, { key, x, y, hexes: [], adj: new Set() });
+    const v = vmap.get(key);
+    if (!v.hexes.includes(h.id)) v.hexes.push(h.id);
+  }));
+  const verts = [...vmap.values()];
+  for (let i = 0; i < verts.length; i++)
+    for (let j = i + 1; j < verts.length; j++) {
+      const d = Math.hypot(verts[i].x - verts[j].x, verts[i].y - verts[j].y);
+      if (d < HEX_S * 1.12) { verts[i].adj.add(verts[j].key); verts[j].adj.add(verts[i].key); }
+    }
+  verts.sort((a, b) => (Math.round(a.y) - Math.round(b.y)) || (Math.round(a.x) - Math.round(b.x)));
+  verts.forEach((v, i) => { v.label = "V" + (i + 1); v.coastal = v.hexes.length < 3; });
+  const hexAdj = hexes.map(h => hexes.filter(o =>
+    [[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,1]].some(([dq, dr]) => o.q === h.q + dq && o.r === h.r + dr)
+  ).map(o => o.id));
+  return { hexes, vmap, verts, hexAdj };
+}
+const GEO = buildGeometry();
+
+const BEGINNER = [
+  ["ore",10],["sheep",2],["wood",9],
+  ["wheat",12],["brick",6],["sheep",4],["brick",10],
+  ["wheat",9],["wood",11],["desert",null],["wood",3],["ore",8],
+  ["wood",8],["ore",3],["wheat",4],["sheep",5],
+  ["brick",5],["wheat",6],["sheep",11],
+];
+
+// 枠の9港（3:1×4、各資源2:1×1）。沿岸エッジを角度順にほぼ等間隔の9辺へ、枠の並び順で配置。
+// 公式の枠と同じ「9港・両端頂点で有効」を再現する近似配置（位置は港モードで自由に編集可能）。
+function framePorts() {
+  const ring = GEO.verts.filter(v => v.coastal)
+    .sort((a, b) => Math.atan2(a.y, a.x) - Math.atan2(b.y, b.x));
+  const edges = [];
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length];
+    if (a.adj.has(b.key)) edges.push([a.key, b.key]);
+  }
+  const seq = ["any", "sheep", "any", "any", "brick", "wood", "any", "wheat", "ore"];
+  const ports = {};
+  seq.forEach((type, k) => {
+    const e = edges[Math.round(k * edges.length / seq.length) % edges.length];
+    if (e) { ports[e[0]] = type; ports[e[1]] = type; }
+  });
+  return ports;
+}
+function standardBoard() {
+  return {
+    tiles: BEGINNER.map(([res, num]) => ({ res, num })),
+    robber: BEGINNER.findIndex(([res]) => res === "desert"),
+    ports: framePorts(), // vertexKey -> 'any'|resource
+    buildings: {},       // vertexKey -> {player:0-3, level:1|2}
+  };
+}
+
+function randomBoard(rand) {
+  rand = rand || Math.random;
+  const pool = [].concat(Array(4).fill("wood"), Array(3).fill("brick"), Array(4).fill("sheep"),
+                         Array(4).fill("wheat"), Array(3).fill("ore"), ["desert"]);
+  const nums = [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12];
+  for (let attempt = 0; attempt < 400; attempt++) {
+    const res = pool.slice(), nn = nums.slice();
+    for (let i = res.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [res[i], res[j]] = [res[j], res[i]]; }
+    for (let i = nn.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [nn[i], nn[j]] = [nn[j], nn[i]]; }
+    const tiles = []; let k = 0;
+    for (let i = 0; i < 19; i++) tiles.push({ res: res[i], num: res[i] === "desert" ? null : nn[k++] });
+    const bad = GEO.hexes.some(h => {
+      if (tiles[h.id].num !== 6 && tiles[h.id].num !== 8) return false;
+      return GEO.hexAdj[h.id].some(o => tiles[o].num === 6 || tiles[o].num === 8);
+    });
+    if (!bad || attempt === 399)
+      return { tiles, robber: tiles.findIndex(t => t.res === "desert"), ports: framePorts(), buildings: {} };
+  }
+}
+
+/* ---- production ---- */
+// pips gained per resource at a vertex (multiplier 1)
+function vertexPips(board, vkey, respectRobber) {
+  const v = GEO.vmap.get(vkey), out = { wood:0, brick:0, sheep:0, wheat:0, ore:0 };
+  if (!v) return out;
+  for (const hid of v.hexes) {
+    const t = board.tiles[hid];
+    if (!t || t.res === "desert" || !t.num) continue;
+    if (respectRobber && board.robber === hid) continue;
+    out[t.res] += pipOf(t.num);
+  }
+  return out;
+}
+// expected cards per roll for a player (settlement=1, city=2)
+function playerProduction(board, player, respectRobber) {
+  const pips = { wood:0, brick:0, sheep:0, wheat:0, ore:0 };
+  for (const [vkey, b] of Object.entries(board.buildings)) {
+    if (b.player !== player) continue;
+    const vp = vertexPips(board, vkey, respectRobber);
+    for (const r of RES) pips[r] += vp[r] * b.level;
+  }
+  const perRoll = {}; for (const r of RES) perRoll[r] = pips[r] / 36;
+  return { pips, perRoll };
+}
+// cards gained by player per die number (for histogram / MC)
+function gainByRoll(board, player, respectRobber) {
+  const out = {}; for (let n = 2; n <= 12; n++) out[n] = { wood:0, brick:0, sheep:0, wheat:0, ore:0 };
+  for (const [vkey, b] of Object.entries(board.buildings)) {
+    if (b.player !== player) continue;
+    const v = GEO.vmap.get(vkey);
+    for (const hid of v.hexes) {
+      const t = board.tiles[hid];
+      if (!t || t.res === "desert" || !t.num) continue;
+      if (respectRobber && board.robber === hid) continue;
+      out[t.num][t.res] += b.level;
+    }
+  }
+  return out;
+}
+// P(player gains >=1 card on a roll)
+function probAnyGain(board, player, respectRobber) {
+  const g = gainByRoll(board, player, respectRobber);
+  let p = 0;
+  for (let n = 2; n <= 12; n++) if (n !== 7 && RES.some(r => g[n][r] > 0)) p += probOf(n);
+  return p;
+}
+
+function boardSupply(board) {
+  const s = { wood:0, brick:0, sheep:0, wheat:0, ore:0 };
+  for (const t of board.tiles) if (t.res !== "desert" && t.num) s[t.res] += pipOf(t.num);
+  return s;
+}
+const STRATS = {
+  balanced:  { ja: "バランス",   w: { wood: 1, brick: 1, sheep: 1, wheat: 1, ore: 1 } },
+  oreWheat:  { ja: "都市・発展型", w: { wood: .7, brick: .6, sheep: .85, wheat: 1.3, ore: 1.4 } },
+  woodBrick: { ja: "拡張型",     w: { wood: 1.3, brick: 1.3, sheep: .9, wheat: 1, ore: .7 } },
+};
+function scarcityWeights(board) {
+  const s = boardSupply(board), avg = RES.reduce((a, r) => a + s[r], 0) / RES.length;
+  const w = {};
+  for (const r of RES) w[r] = Math.max(.5, Math.min(2, avg / Math.max(s[r], .0001)));
+  return w;
+}
+
+/* ---- placement evaluation ---- */
+const DIMIN_K = 6;
+function evaluatePlacements(board, opts) {
+  const o = Object.assign({ player: 0, strategy: "balanced", useScarcity: true,
+                            useDimin: true, usePorts: true, respectRobber: false }, opts);
+  const strat = STRATS[o.strategy].w;
+  const scar = o.useScarcity ? scarcityWeights(board) : { wood:1, brick:1, sheep:1, wheat:1, ore:1 };
+  const mine = playerProduction(board, o.player, false).pips;
+  const rows = [];
+  for (const v of GEO.verts) {
+    if (board.buildings[v.key]) continue;
+    if ([...v.adj].some(k => board.buildings[k])) continue; // 距離ルール
+    const pips = vertexPips(board, v.key, o.respectRobber);
+    const total = RES.reduce((a, r) => a + pips[r], 0);
+    if (total === 0 && !board.ports[v.key]) continue;
+    let base = 0;
+    for (const r of RES) {
+      const w = strat[r] * scar[r];
+      const dim = o.useDimin ? DIMIN_K / (DIMIN_K + mine[r]) : 1;
+      base += pips[r] * w * dim;
+    }
+    const distinct = RES.filter(r => pips[r] > 0).length;
+    const divMult = 1 + 0.04 * Math.max(0, distinct - 1);
+    let portBonus = 0; const port = board.ports[v.key] || null;
+    if (o.usePorts && port) {
+      if (port === "any") portBonus = base * 0.08;
+      else portBonus = 0.45 * pips[port] * strat[port] * scar[port];
+    }
+    const pAny = (() => { // union over distinct numbers adjacent
+      const seen = new Set();
+      for (const hid of v.hexes) {
+        const t = board.tiles[hid];
+        if (!t || t.res === "desert" || !t.num) continue;
+        if (o.respectRobber && board.robber === hid) continue;
+        seen.add(t.num);
+      }
+      let p = 0; seen.forEach(n => p += probOf(n)); return p;
+    })();
+    rows.push({ v, pips, total, distinct, pAny, port,
+                score: base * divMult + portBonus,
+                parts: { base, divMult, portBonus } });
+  }
+  rows.sort((a, b) => b.score - a.score);
+  return rows;
+}
+
+/* ---- trading & Monte Carlo build speed ---- */
+function tradeRates(board, player) {
+  const rates = { wood: 4, brick: 4, sheep: 4, wheat: 4, ore: 4 };
+  for (const [vkey, b] of Object.entries(board.buildings)) {
+    if (b.player !== player) continue;
+    const port = board.ports[vkey];
+    if (!port) continue;
+    if (port === "any") { for (const r of RES) rates[r] = Math.min(rates[r], 3); }
+    else rates[port] = Math.min(rates[port], 2);
+  }
+  return rates;
+}
+function canAfford(hand, cost, rates) {
+  let missing = 0, units = 0;
+  for (const r of RES) {
+    if (hand[r] >= cost[r]) units += Math.floor((hand[r] - cost[r]) / rates[r]);
+    else missing += cost[r] - hand[r];
+  }
+  return units >= missing;
+}
+function discardHalf(hand, cost) {
+  const size = RES.reduce((a, r) => a + hand[r], 0);
+  if (size <= 7) return;
+  let toss = Math.floor(size / 2);
+  while (toss-- > 0) {
+    let best = null, bestVal = -Infinity;
+    for (const r of RES) {
+      if (hand[r] === 0) continue;
+      const surplus = hand[r] - (cost[r] || 0);
+      const val = surplus * 100 + hand[r]; // 余剰が大きい資源から、同率なら多い資源から
+      if (val > bestVal) { bestVal = val; best = r; }
+    }
+    if (!best) break;
+    hand[best]--;
+  }
+}
+function simulateBuild(board, player, startHand, target, opts) {
+  const o = Object.assign({ nSims: 20000, maxTurns: 60, respectRobber: true, sevenDiscard: true }, opts);
+  const cost = COST[target], rates = tradeRates(board, player);
+  const g = gainByRoll(board, player, o.respectRobber);
+  const cdfCount = new Array(o.maxTurns + 1).fill(0); // built by turn t
+  const results = [];
+  for (let s = 0; s < o.nSims; s++) {
+    const hand = Object.assign({}, startHand);
+    let done = canAfford(hand, cost, rates) ? 0 : -1;
+    for (let t = 1; t <= o.maxTurns && done < 0; t++) {
+      const roll = 1 + Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6);
+      if (roll === 7) { if (o.sevenDiscard) discardHalf(hand, cost); }
+      else for (const r of RES) hand[r] += g[roll][r];
+      if (canAfford(hand, cost, rates)) done = t;
+    }
+    results.push(done < 0 ? o.maxTurns + 1 : done);
+    if (done >= 0) for (let t = done; t <= o.maxTurns; t++) cdfCount[t]++;
+  }
+  results.sort((a, b) => a - b);
+  const n = results.length;
+  const built = results.filter(x => x <= o.maxTurns);
+  const mean = built.length ? built.reduce((a, b) => a + b, 0) / built.length : Infinity;
+  const median = results[Math.floor(n / 2)];
+  return {
+    mean, median: median > o.maxTurns ? Infinity : median,
+    pWithin: t => cdfCount[Math.min(t, o.maxTurns)] / n,
+    cdf: cdfCount.map(c => c / n),
+    pNever: 1 - cdfCount[o.maxTurns] / n,
+    maxTurns: o.maxTurns,
+  };
+}
+
+/* ---- robber EV ---- */
+function robberOptions(board, me) {
+  const out = [];
+  for (const h of GEO.hexes) {
+    const t = board.tiles[h.id];
+    if (board.robber === h.id) continue; // 盗賊は必ず移動（現在地のみ除外。砂漠・無数字も合法な候補）
+    const loss = [0, 0, 0, 0];
+    if (t.res !== "desert" && t.num) {
+      for (const v of GEO.verts) {
+        if (!v.hexes.includes(h.id)) continue;
+        const b = board.buildings[v.key];
+        if (b) loss[b.player] += probOf(t.num) * b.level;
+      }
+    }
+    const oppLoss = loss.reduce((a, x, i) => a + (i === me ? 0 : x), 0);
+    out.push({ hex: h.id, num: t.num, res: t.res, loss, oppLoss, myLoss: loss[me],
+               value: oppLoss - 3 * loss[me] });
+  }
+  out.sort((a, b) => b.value - a.value);
+  return out;
+}
+
+/* ---- GTO draft solver (subgame-perfect equilibrium of the placement snake draft) ---- */
+function comb(n, k) {
+  if (k < 0 || k > n) return 0;
+  k = Math.min(k, n - k);
+  let r = 1;
+  for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+  return r;
+}
+// 山札25枚から引き続け、騎士a枚かつVP b枚が揃うまでの期待購入枚数（多変量の負の超幾何、厳密値）
+// E[T] = Σ_t P(T > t)。単一種なら閉形式 j(N+1)/(K+1) に一致する。
+function expectedDrawsUntil(req) {
+  const N = 25, K = DEV_DECK.knight, V = DEV_DECK.vp, O = N - K - V;
+  const a = req.knight || 0, b = req.vp || 0;
+  let E = 0;
+  for (let t = 0; t < N; t++) {
+    let sat = 0;
+    for (let k = a; k <= Math.min(K, t); k++)
+      for (let v = b; v <= Math.min(V, t - k); v++) {
+        const o = t - k - v;
+        if (o >= 0 && o <= O) sat += comb(K, k) * comb(V, v) * comb(O, o);
+      }
+    E += 1 - sat / comb(N, t);
+  }
+  return E;
+}
+const DEV_E = {
+  vp1: expectedDrawsUntil({ vp: 1 }),                  // 26/6 ≈ 4.33
+  army: expectedDrawsUntil({ knight: 3 }),             // 3·26/15 = 5.2
+  armyVp1: expectedDrawsUntil({ knight: 3, vp: 1 }),
+  armyVp2: expectedDrawsUntil({ knight: 3, vp: 2 }),
+};
+// 旧・一括流体モデル（単発コスト用。テストと参照用に残置）
+function fluidTurns(perTurn, rates, cost) {
+  if (RES.reduce((a, r) => a + perTurn[r], 0) <= 1e-12) return Infinity;
+  const feasible = T => {
+    let need = 0, units = 0;
+    for (const r of RES) {
+      const have = perTurn[r] * T;
+      if (have >= cost[r]) units += (have - cost[r]) / rates[r];
+      else need += cost[r] - have;
+    }
+    return units >= need;
+  };
+  let lo = 0, hi = 20000;
+  if (!feasible(hi)) return Infinity;
+  for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (feasible(m)) hi = m; else lo = m; }
+  return hi;
+}
+// 段階的流体レース: ステージ列を順に購入。毎ターン perTurn を連続量として獲得し余剰を rates で交換。
+// 各ステージの最小 Δt を二分探索（Δt について単調）。購入後、不足していた場合は手札ちょうど0、
+// 余剰があれば交換に使った分（余剰の大きい資源から充当）を引いて繰り越す。prodAdd で生産が成長する。
+function stagedTurns(h0, p0, rates, stages) {
+  const h = Object.assign({}, h0), p = Object.assign({}, p0);
+  let total = 0;
+  const detail = [];
+  for (const st of stages) {
+    const cost = st.cost;
+    if (cost && RES.some(r => cost[r] > 1e-12)) {
+      const feasible = dt => {
+        let need = 0, units = 0;
+        for (const r of RES) {
+          const have = h[r] + p[r] * dt;
+          if (have >= cost[r]) units += (have - cost[r]) / rates[r];
+          else need += cost[r] - have;
+        }
+        return units >= need;
+      };
+      let dt = 0;
+      if (!feasible(0)) {
+        if (RES.reduce((a, r) => a + p[r], 0) <= 1e-12) return { turns: 9999, detail: null };
+        let lo = 0, hi = 40000;
+        if (!feasible(hi)) return { turns: 9999, detail: null };
+        for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (feasible(m)) hi = m; else lo = m; }
+        dt = hi;
+      }
+      let need = 0;
+      const surplus = [];
+      for (const r of RES) {
+        const have = h[r] + p[r] * dt;
+        if (have >= cost[r]) surplus.push([r, have - cost[r]]);
+        else need += cost[r] - have;
+      }
+      surplus.sort((a, b) => b[1] - a[1]);
+      for (const r of RES) h[r] = 0;
+      for (const [r, s] of surplus) {
+        const use = Math.min(s, need * rates[r]);
+        h[r] = s - use; need -= use / rates[r];
+      }
+      total += dt;
+      if (total > 9000) return { turns: 9999, detail: null };
+    }
+    if (st.prodAdd) for (const r of RES) p[r] += st.prodAdd[r];
+    detail.push({ label: st.label, t: total });
+  }
+  return { turns: total, detail };
+}
+// 3軒目以降の入植地の生産見積り: 盤面全体の頂点をピップ降順に並べた8番手の生産ベクトル（盤面定数）
+function estimateNewSpot(board) {
+  const arr = GEO.verts
+    .map(v => vertexPips(board, v.key, false))
+    .map(p => ({ p, t: RES.reduce((a, r) => a + p[r], 0) }))
+    .filter(x => x.t > 0)
+    .sort((a, b) => b.t - a.t);
+  if (!arr.length) return { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
+  return arr[Math.min(7, arr.length - 1)].p;
+}
+const PLAN_JA = { cityDev: "都市・発展型", expansion: "拡張型", balance: "バランス型" };
+// 10VP到達プラン（初期2軒=2VPから+8VP）。順序は固定（生産成長を先行）。
+// 最大騎士力・最長交易路は他家との競争を無視（期待枚数/本数のみ計上）。
+function racePlans(board, vertKeys, newSpot) {
+  const info = vertKeys.map(k => {
+    const p = vertexPips(board, k, false);
+    return { k, p, t: RES.reduce((a, r) => a + p[r], 0), lbl: (GEO.vmap.get(k) || {}).label || "?" };
+  }).sort((a, b) => b.t - a.t);
+  const v1 = info[0], v2 = info[1] || null;
+  const mul = (b, n) => { const c = {}; for (const r of RES) c[r] = COST[b][r] * n; return c; };
+  const add = (...cs) => { const c = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
+    for (const x of cs) for (const r of RES) c[r] += x[r] || 0; return c; };
+  const perTurnOf = p => { const q = {}; for (const r of RES) q[r] = p[r] / 36; return q; };
+  const S = lbl => ({ label: lbl, cost: add(mul("road", 2), mul("settlement", 1)), prodAdd: perTurnOf(newSpot) });
+  const C = (v, lbl) => v ? { label: lbl, cost: mul("city", 1), prodAdd: perTurnOf(v.p) } : null;
+  const CN = lbl => ({ label: lbl, cost: mul("city", 1), prodAdd: perTurnOf(newSpot) });
+  const D = (n, lbl) => ({ label: lbl, cost: { wood: 0, brick: 0, sheep: n, wheat: n, ore: n }, prodAdd: null });
+  return {
+    cityDev: [ // 2VP→ 都市2(+2) 入植(+1) 都市(+1) 最大騎士力+VP札2(+4) = 10VP
+      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), v2 && C(v2, `都市化 ${v2.lbl}`),
+      S("3軒目の入植(街道2)"), CN("3軒目を都市化"),
+      D(DEV_E.armyVp2, `発展${DEV_E.armyVp2.toFixed(1)}枚(騎士3+VP2の期待)`),
+    ].filter(Boolean),
+    expansion: [ // 2VP→ 入植3(+3) 都市3(+3) 最長交易路(+2) = 10VP
+      S("3軒目の入植(街道2)"), S("4軒目の入植(街道2)"), S("5軒目の入植(街道2)"),
+      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), v2 && C(v2, `都市化 ${v2.lbl}`), CN("新入植地を都市化"),
+      { label: "最長交易路(+街道2)", cost: mul("road", 2), prodAdd: null },
+    ].filter(Boolean),
+    balance: [ // 2VP→ 都市(+1) 入植(+1) 都市(+1) 入植(+1) 都市(+1) 最大騎士力+VP札1(+3) = 10VP
+      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), S("3軒目の入植(街道2)"),
+      v2 && C(v2, `都市化 ${v2.lbl}`), S("4軒目の入植(街道2)"), CN("新入植地を都市化"),
+      D(DEV_E.armyVp1, `発展${DEV_E.armyVp1.toFixed(1)}枚(騎士3+VP1の期待)`),
+    ].filter(Boolean),
+  };
+}
+// 頂点集合の価値: 10VPに最速で到達するプランの所要ターン（小さいほど良い）。
+// secondKey = 2軒目として置いた頂点（公式ルール通り、隣接する砂漠以外の各タイルから資源1枚を初期手札に）
+function draftValue(board, vertKeys, secondKey) {
+  const perTurn = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
+  const rates = { wood: 4, brick: 4, sheep: 4, wheat: 4, ore: 4 };
+  for (const k of vertKeys) {
+    const p = vertexPips(board, k, false);
+    for (const r of RES) perTurn[r] += p[r] / 36;
+    const port = board.ports[k];
+    if (port === "any") { for (const r of RES) rates[r] = Math.min(rates[r], 3); }
+    else if (port) rates[port] = Math.min(rates[port], 2);
+  }
+  const h0 = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
+  if (secondKey && GEO.vmap.has(secondKey))
+    for (const hid of GEO.vmap.get(secondKey).hexes) {
+      const t = board.tiles[hid];
+      if (t && t.res !== "desert") h0[t.res] += 1;
+    }
+  const plans = racePlans(board, vertKeys, estimateNewSpot(board));
+  let best = { turns: Infinity, bundle: null, ja: null, detail: null };
+  for (const [key, stages] of Object.entries(plans)) {
+    const r = stagedTurns(h0, perTurn, rates, stages);
+    if (r.turns < best.turns) best = { turns: r.turns, bundle: key, ja: PLAN_JA[key], detail: r.detail };
+  }
+  if (!isFinite(best.turns)) best = { turns: 9999, bundle: null, ja: null, detail: null }; // 番兵値
+  return best;
+}
+function snakeSeq(n) { const a = [...Array(n).keys()]; return a.concat([...a].reverse()); }
+// 既存の建物を「消化済みのドラフト手」とみなし、残りの手番列を返す
+function remainingSlots(board, n) {
+  const used = Array(n).fill(0);
+  for (const b of Object.values(board.buildings)) if (b.player < n) used[b.player]++;
+  const rem = [];
+  for (const p of snakeSeq(n)) { if (used[p] > 0) used[p]--; else rem.push(p); }
+  return rem;
+}
+function draftCandidates(board) {
+  const free = GEO.verts.filter(v =>
+    !board.buildings[v.key] && ![...v.adj].some(k => board.buildings[k]));
+  const cands = free.filter(v => {
+    const p = vertexPips(board, v.key, false);
+    return RES.some(r => p[r] > 0) || board.ports[v.key];
+  });
+  return cands.length >= 8 ? cands : free; // 縮退盤面では全合法頂点にフォールバック
+}
+// メイン: 残りドラフトを解く。2人は常に厳密、3-4人は残り3手以下なら厳密・
+// それ以上は時間予算内でビーム幅を反復拡幅する近似（拡幅しても結果が不変なら「安定」と報告）。
+function solveDraft(board, n, opts) {
+  const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+  const t0 = now();
+  const slots = remainingSlots(board, n);
+  const cands = draftCandidates(board);
+  const baseSets = Array.from({ length: n }, (_, p) =>
+    Object.keys(board.buildings).filter(k => board.buildings[k].player === p));
+  const cache = new Map();
+  const setVal = (keys, secondKey) => {
+    const key = keys.slice().sort().join("|") + "#" + (secondKey || "");
+    let v = cache.get(key);
+    if (v === undefined) { v = draftValue(board, keys, secondKey); cache.set(key, v); }
+    return v;
+  };
+  const turnsOf = mine => setVal(mine, mine.length >= 2 ? mine[1] : null);
+  if (slots.length === 0)
+    return { slots, picks: [], exact: true, ms: now() - t0,
+             turns: baseSets.map(turnsOf), alts: [] };
+
+  const fresh2 = n === 2 && slots.length === 4 && baseSets.every(s => s.length === 0);
+  let result = fresh2 ? solveFresh2(board, cands, setVal) : null;
+  if (!result && (slots.length <= 3 || fresh2))
+    result = solveBeam(board, n, slots, cands, baseSets, setVal, Infinity);
+  if (!result) {
+    const budget = (opts && opts.budgetMs) || 2500;
+    let beam = 4, last = null;
+    while (true) {
+      const tb = now();
+      const r = solveBeam(board, n, slots, cands, baseSets, setVal, beam);
+      const dt = now() - tb;
+      r.converged = !!last &&
+        JSON.stringify(r.picks.map(x => x.vert.key)) === JSON.stringify(last.picks.map(x => x.vert.key));
+      r.beamUsed = beam;
+      last = r;
+      const next = beam + 2;
+      // 次の拡幅の所要見積り。キャッシュ再利用と並べ替え効果で実際は指数より軽いため指数を2つ緩める
+      const est = dt * Math.pow(next / beam, Math.max(2, slots.length - 2));
+      if (next > 24 || (now() - t0) + est > budget) break;
+      beam = next;
+    }
+    result = last;
+  }
+  result.slots = slots;
+  result.turns = Array.from({ length: n }, (_, p) =>
+    turnsOf(baseSets[p].concat(result.picks.filter(x => x.player === p).map(x => x.vert.key))));
+  result.ms = now() - t0;
+  return result;
+}
+// 2人・未配置: P1,P2,P2,P1 の完全探索（P2の2手は非順序ペア＋2軒目の選択、P1の応手は argmax）
+function solveFresh2(board, cands, setVal) {
+  const m = cands.length;
+  const T1 = (i, j) => setVal([cands[i].key, cands[j].key], cands[j].key).turns; // P1: 2軒目=4手目のj
+  const T2pick = (a, b) => { // P2は2手連続なのでどちらを2軒目(初期資源)にするか選べる
+    const tb = setVal([cands[a].key, cands[b].key], cands[b].key).turns;
+    const ta = setVal([cands[a].key, cands[b].key], cands[a].key).turns;
+    return tb <= ta ? { t: tb, second: b } : { t: ta, second: a };
+  };
+  const adj = Array.from({ length: m }, (_, i) =>
+    cands.map((v, j) => i !== j && cands[i].adj.has(v.key)));
+  // P1応手用: 各 i について T1(i,j) 昇順の j リスト
+  const sorted = Array.from({ length: m }, (_, i) =>
+    [...Array(m).keys()].filter(j => j !== i && !adj[i][j]).sort((a, b) => T1(i, a) - T1(i, b)));
+  let best = null;
+  const alts = [];
+  for (let i = 0; i < m; i++) {
+    let bestP2 = null;
+    for (let a = 0; a < m; a++) {
+      if (a === i || adj[a][i]) continue;
+      for (let b = a + 1; b < m; b++) {
+        if (b === i || adj[b][i] || adj[a][b]) continue;
+        // P1の最終手: T1(i,j) 最小の合法 j。無ければ完全封鎖でP1は初手のみ
+        let j = -1;
+        for (const cand of sorted[i]) {
+          if (cand === a || cand === b || adj[cand][a] || adj[cand][b]) continue;
+          j = cand; break;
+        }
+        const p1T = j >= 0 ? T1(i, j) : setVal([cands[i].key], null).turns;
+        const p2 = T2pick(a, b);
+        const diff = p1T - p2.t; // P2目的: 自分が速い = diff(P1遅れ) 最大
+        if (!bestP2 || diff > bestP2.diff + 1e-12) bestP2 = { a, b, j, diff, second: p2.second };
+      }
+    }
+    if (!bestP2) continue;
+    const eq = -bestP2.diff; // P1視点の均衡値（P2到達T − P1到達T）
+    alts.push({ i, eq, line: bestP2 });
+    if (!best || eq > best.eq + 1e-12) best = { i, eq, line: bestP2 };
+  }
+  if (!best) return null; // 合法なドラフトが組めない縮退局面: solveBeam にフォールバック
+  alts.sort((x, y) => y.eq - x.eq);
+  const L = best.line;
+  const mk = (idx, player) => ({ player, vert: cands[idx] });
+  const p2first = L.second === L.a ? L.b : L.a; // 2軒目でない方を先に置く
+  const picks = [mk(best.i, 0), mk(p2first, 1), mk(L.second, 1)];
+  if (L.j >= 0) picks.push(mk(L.j, 0));
+  return {
+    exact: true,
+    picks,
+    alts: alts.slice(0, 8).map(x => ({ vert: cands[x.i], eq: x.eq })),
+  };
+}
+// 一般形: 後ろ向き帰納法（beam=Infinity なら厳密）。
+// 2人はゼロ和（自分−相手 を最大化 = ブロック込み）、3人以上は max^n（各自が自分の値を最大化）。
+// 同一プレイヤーの連続手は順序込みで列挙されるため、2軒目（初期資源）の選択も探索される。
+function solveBeam(board, n, slots, cands, baseSets, setVal, beam) {
+  const sKey = keys => keys.length >= 2 ? keys[1] : null;
+  const single = new Map(cands.map(v => [v.key, setVal([v.key], null).turns]));
+  const orderAll = cands.slice().sort((a, b) => single.get(a.key) - single.get(b.key));
+  const chosen = Array.from({ length: n }, (_, p) => baseSets[p].slice());
+  const used = new Set();
+  const scoreOf = (values, p) => n === 2 ? values[p] - values[1 - p] : values[p];
+  function rec(idx) {
+    if (idx === slots.length)
+      return { values: chosen.map(s => -setVal(s, sKey(s)).turns), picks: [] };
+    const p = slots[idx];
+    let legal = orderAll.filter(v => !used.has(v.key) && ![...v.adj].some(k => used.has(k)));
+    if (idx <= 2) legal = legal.slice().sort((A, B) => { // 浅い層は限界価値順（ビーム質向上）
+      const mA = chosen[p].concat(A.key), mB = chosen[p].concat(B.key);
+      return setVal(mA, sKey(mA)).turns - setVal(mB, sKey(mB)).turns;
+    });
+    if (beam !== Infinity) legal = legal.slice(0, beam);
+    let best = null;
+    for (const v of legal) {
+      chosen[p].push(v.key); used.add(v.key);
+      const sub = rec(idx + 1);
+      chosen[p].pop(); used.delete(v.key);
+      if (!best || scoreOf(sub.values, p) > scoreOf(best.values, p) + 1e-12)
+        best = { values: sub.values, picks: [{ player: p, vert: v }].concat(sub.picks) };
+    }
+    return best || { values: chosen.map(s => -setVal(s, sKey(s)).turns), picks: [] };
+  }
+  const r = rec(0);
+  return { exact: beam === Infinity, picks: r.picks, alts: [] };
+}
+
+/* ---- dev cards (hypergeometric) ---- */
+function devProbs(drawn) {
+  const rem = {}; let total = 0;
+  for (const t of Object.keys(DEV_DECK)) {
+    rem[t] = Math.max(0, DEV_DECK[t] - (drawn[t] || 0));
+    total += rem[t];
+  }
+  return { rem, total };
+}
+function pAtLeastOne(remType, remTotal, n) {
+  if (n <= 0 || remTotal <= 0 || remType <= 0) return 0;
+  if (n >= remTotal) return 1;
+  return 1 - comb(remTotal - remType, n) / comb(remTotal, n);
+}
+/* ============================== UI ============================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+const CVAR = { wood: "var(--cw)", brick: "var(--cb)", sheep: "var(--cs)", wheat: "var(--cwh)", ore: "var(--co)" };
+const PVAR = ["var(--p0)", "var(--p1)", "var(--p2)", "var(--p3)"];
+const fmtP = (p, d = 1) => (100 * p).toFixed(d) + "%";
+
+let board, ui;
+function initState() {
+  board = standardBoard();
+  try {
+    const saved = JSON.parse(localStorage.getItem("catan-gto-v1"));
+    if (saved && Array.isArray(saved.tiles) && saved.tiles.length === 19) {
+      const RES_ALL = RES.concat("desert");
+      const tiles = saved.tiles.map(t => ({
+        res: t && RES_ALL.includes(t.res) ? t.res : "desert",
+        num: t && typeof t.num === "number" && t.num >= 2 && t.num <= 12 && t.num !== 7 ? t.num : null,
+      }));
+      const ports = {}, buildings = {};
+      if (saved.ports && typeof saved.ports === "object")
+        for (const [k, p] of Object.entries(saved.ports))
+          if (GEO.vmap.has(k) && (p === "any" || RES.includes(p))) ports[k] = p;
+      if (saved.buildings && typeof saved.buildings === "object")
+        for (const [k, b] of Object.entries(saved.buildings))
+          if (GEO.vmap.has(k) && b && [0, 1, 2, 3].includes(b.player) && [1, 2].includes(b.level))
+            buildings[k] = { player: b.player, level: b.level };
+      const robber = typeof saved.robber === "number" && saved.robber >= 0 && saved.robber < 19 ? saved.robber : 0;
+      board = { tiles, robber, ports, buildings };
+    }
+  } catch (e) { /* 破損データは無視して標準盤面 */ }
+  ui = { mode: "inspect", player: 0, tab: "solver", paintRes: "wood", paintNum: 6,
+         nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false,
+         strategy: "balanced", useScarcity: true, useDimin: true, usePorts: true,
+         placeRobber: false, prodRobber: true,
+         hand: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
+         target: "settlement", sevenDiscard: true, mcRobber: true,
+         drawn: { knight: 0, vp: 0, road2: 0, plenty: 0, mono: 0 }, devN: 3,
+         hoverV: null, selV: null, evalRows: [], mc: null };
+}
+function save() {
+  ui.solverRes = null; ui.solverPicks = null; // 盤面が変わったら均衡解は無効
+  try { localStorage.setItem("catan-gto-v1", JSON.stringify(board)); } catch (e) { /* 容量超過等は無視 */ }
+}
+
+/* ---------- board svg ---------- */
+const MODES = [
+  ["inspect", "調べる"], ["settle", "入植地"], ["city", "都市"], ["erase", "消す"],
+  ["port", "港"], ["robber", "盗賊"], ["paintRes", "資源"], ["paintNum", "数字"],
+];
+const MODE_HINT = {
+  inspect: "頂点にカーソルを合わせると生産確率、クリックで固定表示。",
+  settle: "空いている頂点をクリックして選択中プレイヤーの入植地を置く（距離ルール適用）。",
+  city: "自分の入植地をクリックすると都市に昇格（もう一度で入植地に戻す）。",
+  erase: "建物をクリックして撤去。",
+  port: "沿岸の頂点をクリックして港を切替（なし→3:1→各2:1）。",
+  robber: "ヘクスをクリックして盗賊を移動。",
+  paintRes: "下の資源を選んでからヘクスをクリックで塗り替え。",
+  paintNum: "下の数字を選んでからヘクスをクリックで差し替え。",
+};
+function renderModebar() {
+  $("#modebar").innerHTML = MODES.map(([m, ja]) =>
+    `<button data-mode="${m}" class="${ui.mode === m ? "on" : ""}" aria-pressed="${ui.mode === m}">${ja}</button>`).join("");
+  $("#modehint").textContent = MODE_HINT[ui.mode] || "";
+  const pb = $("#paintbar");
+  if (ui.mode === "paintRes") {
+    pb.hidden = false;
+    pb.innerHTML = ["wood","brick","sheep","wheat","ore","desert"].map(r =>
+      `<button data-pres="${r}" class="${ui.paintRes === r ? "on" : ""}"><span class="swatch" style="background:var(--hx-${r})"></span>${RES_JA[r]}</button>`).join("");
+  } else if (ui.mode === "paintNum") {
+    pb.hidden = false;
+    pb.innerHTML = [2,3,4,5,6,8,9,10,11,12].map(n =>
+      `<button data-pnum="${n}" class="${ui.paintNum === n ? "on" : ""}">${n}</button>`).join("") +
+      `<button data-pnum="0" class="${ui.paintNum === 0 ? "on" : ""}">なし</button>`;
+  } else pb.hidden = true;
+  $("#playerbar").innerHTML = PLAYER_JA.map((ja, i) =>
+    `<button data-player="${i}" class="pchip ${ui.player === i ? "on" : ""}" aria-pressed="${ui.player === i}">
+       <span class="dot" style="background:${PVAR[i]}"></span>${ja}</button>`).join("");
+}
+function hexPath(h) { return "M" + h.corners.map(c => c[0].toFixed(1) + "," + c[1].toFixed(1)).join("L") + "Z"; }
+function settlementPath(x, y, s) {
+  return `M${x - s},${y + s * 0.9} L${x - s},${y - s * 0.2} L${x},${y - s} L${x + s},${y - s * 0.2} L${x + s},${y + s * 0.9} Z`;
+}
+function cityPath(x, y, s) {
+  return `M${x - s * 1.2},${y + s} L${x - s * 1.2},${y - s * 0.1} L${x - s * 0.55},${y - s * 0.75} L${x + s * 0.1},${y - s * 0.1} L${x + s * 1.2},${y - s * 0.1} L${x + s * 1.2},${y + s} Z`;
+}
+function renderBoard() {
+  const top3 = ui.tab === "place" ? ui.evalRows.slice(0, 3) : [];
+  let s = "";
+  for (const h of GEO.hexes) {
+    const t = board.tiles[h.id];
+    s += `<path class="hexcell hx-${t.res}" d="${hexPath(h)}" data-hex="${h.id}"></path>`;
+  }
+  for (const h of GEO.hexes) {
+    const t = board.tiles[h.id];
+    if (t.num) {
+      const red = t.num === 6 || t.num === 8;
+      s += `<g pointer-events="none"><circle class="tok" cx="${h.cx}" cy="${h.cy}" r="15"></circle>
+        <text class="tok-n ${red ? "red" : ""}" x="${h.cx}" y="${h.cy + 4}" text-anchor="middle">${t.num}</text>`;
+      const pips = pipOf(t.num), w = (pips - 1) * 4.4;
+      for (let i = 0; i < pips; i++)
+        s += `<circle class="pipdot ${red ? "red" : ""}" cx="${h.cx - w / 2 + i * 4.4}" cy="${h.cy + 9.5}" r="1.4"></circle>`;
+      s += `</g>`;
+    }
+    if (board.robber === h.id)
+      s += `<g class="robber" pointer-events="none" transform="translate(${h.cx + (t.num ? 20 : 0)},${h.cy - (t.num ? 14 : 0)})">
+              <circle cx="0" cy="-6.5" r="4"></circle><path d="M-5.5,7 Q-5.5,-3 0,-3 Q5.5,-3 5.5,7 Z"></path></g>`;
+  }
+  // ports（同じ港がエッジ両端にある場合はバッジを1つに間引く。線は両頂点に引く）
+  for (const v of GEO.verts) {
+    const p = board.ports[v.key];
+    if (!p) continue;
+    const twin = [...v.adj].find(k => board.ports[k] === p);
+    if (twin && twin < v.key) {
+      const d0 = Math.hypot(v.x, v.y) || 1;
+      s += `<line x1="${v.x}" y1="${v.y}" x2="${v.x + v.x / d0 * 14}" y2="${v.y + v.y / d0 * 14}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"></line>`;
+      continue;
+    }
+    const d = Math.hypot(v.x, v.y) || 1, bx = v.x + v.x / d * 24, by = v.y + v.y / d * 24;
+    const label = p === "any" ? "3:1" : RES_K[p] + "2:1";
+    const wRect = label.length > 3 ? 34 : 26;
+    s += `<g class="portb" pointer-events="none"><rect x="${bx - wRect / 2}" y="${by - 8}" width="${wRect}" height="16" rx="4"></rect>
+          <text x="${bx}" y="${by + 3.5}" text-anchor="middle">${label}</text></g>
+          <line x1="${v.x}" y1="${v.y}" x2="${bx}" y2="${by}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"></line>`;
+  }
+  // vertex hit-dots
+  for (const v of GEO.verts)
+    s += `<circle class="vdot" cx="${v.x}" cy="${v.y}" r="6.5" data-v="${v.key}"></circle>`;
+  // top-3 rank badges
+  const rankFill = ["#B3341E", "#A66109", "#5C665B"];
+  top3.forEach((row, i) => {
+    s += `<g class="rankb" pointer-events="none">
+      <circle cx="${row.v.x}" cy="${row.v.y}" r="8.5" fill="${rankFill[i]}"></circle>
+      <text x="${row.v.x}" y="${row.v.y + 3.4}" text-anchor="middle">${i + 1}</text></g>`;
+  });
+  // solver equilibrium pick badges
+  if (ui.tab === "solver" && ui.solverPicks) for (const pk of ui.solverPicks) {
+    const v = GEO.vmap.get(pk.key);
+    if (!v) continue;
+    s += `<g class="rankb" pointer-events="none">
+      <circle cx="${v.x}" cy="${v.y}" r="8.5" fill="${PVAR[pk.player]}"></circle>
+      <text x="${v.x}" y="${v.y + 3.4}" text-anchor="middle">${pk.order}</text></g>`;
+  }
+  // buildings
+  for (const [vkey, b] of Object.entries(board.buildings)) {
+    const v = GEO.vmap.get(vkey);
+    if (!v) continue;
+    const path = b.level === 2 ? cityPath(v.x, v.y, 7.5) : settlementPath(v.x, v.y, 6);
+    s += `<path class="bld" d="${path}" fill="${PVAR[b.player]}"></path>`;
+  }
+  if (ui.selV) {
+    const v = GEO.vmap.get(ui.selV);
+    if (v) s += `<circle class="vring pulse" cx="${v.x}" cy="${v.y}" r="10"></circle>`;
+  }
+  $("#board").innerHTML = s;
+  $("#hexlegend").innerHTML = ["wood","brick","sheep","wheat","ore","desert"].map(r =>
+    `<span class="it"><span class="sw" style="background:var(--hx-${r})"></span>${RES_JA[r]}</span>`).join("");
+}
+
+/* ---------- tooltip ---------- */
+function showTip(html, cx, cy) {
+  const tip = $("#tip");
+  tip.innerHTML = html; tip.style.display = "block";
+  tip.style.left = "0px"; tip.style.top = "0px"; // 前回位置の画面端で幅が潰れた状態のまま測らない
+  const r = tip.getBoundingClientRect();
+  let x = cx + 14, y = cy + 12;
+  if (x + r.width > innerWidth - 8) x = cx - r.width - 12;
+  if (y + r.height > innerHeight - 8) y = cy - r.height - 12;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { $("#tip").style.display = "none"; }
+function chipRow(pips, fmt) {
+  return `<span class="chips">` + CHART_ORDER.filter(r => pips[r] > 0).map(r =>
+    `<span class="chip"><span class="sw" style="background:${CVAR[r]}"></span>${RES_K[r]}${fmt ? fmt(pips[r]) : pips[r]}</span>`).join("") + `</span>`;
+}
+function vertexTipHTML(vkey) {
+  const v = GEO.vmap.get(vkey);
+  const pips = vertexPips(board, vkey, ui.placeRobber);
+  const total = RES.reduce((a, r) => a + pips[r], 0);
+  const row = ui.evalRows.find(r => r.v.key === vkey);
+  const b = board.buildings[vkey];
+  let h = `<div class="t">${v.label}${b ? `（${PLAYER_JA[b.player]}の${b.level === 2 ? "都市" : "入植地"}）` : ""}</div>`;
+  h += `合計 <b>${total}ピップ</b>`;
+  if (total > 0) h += `　${chipRow(pips)}`;
+  if (row) h += `<table><tr><td>スコア</td><td>${row.score.toFixed(2)}（基礎${row.parts.base.toFixed(2)} × 多様性${row.parts.divMult.toFixed(2)}${row.parts.portBonus ? ` + 港${row.parts.portBonus.toFixed(2)}` : ""}）</td></tr>
+       <tr><td>P(何か獲得)</td><td>${fmtP(row.pAny)}</td></tr></table>`;
+  if (board.ports[vkey]) h += `<div>港: ${board.ports[vkey] === "any" ? "3:1" : RES_JA[board.ports[vkey]] + " 2:1"}</div>`;
+  return h;
+}
+
+/* ---------- board interaction ---------- */
+const PORT_CYCLE = [null, "any", "wood", "brick", "sheep", "wheat", "ore"];
+function onBoardClick(e) {
+  const vEl = e.target.closest("[data-v]"), hEl = e.target.closest("[data-hex]");
+  if (vEl) {
+    const vkey = vEl.dataset.v, v = GEO.vmap.get(vkey), b = board.buildings[vkey];
+    if (ui.mode === "inspect") { ui.selV = ui.selV === vkey ? null : vkey; renderAll(); return; }
+    if (ui.mode === "settle") {
+      if (!b && ![...v.adj].some(k => board.buildings[k])) board.buildings[vkey] = { player: ui.player, level: 1 };
+      else return flashHint("その頂点には置けません（距離ルール）");
+    } else if (ui.mode === "city") {
+      if (b && b.player === ui.player) b.level = b.level === 1 ? 2 : 1;
+      else return flashHint("自分の入植地をクリックしてください");
+    } else if (ui.mode === "erase") {
+      if (b) delete board.buildings[vkey]; else return;
+    } else if (ui.mode === "port") {
+      if (!v.coastal) return flashHint("港は沿岸の頂点のみ");
+      const cur = PORT_CYCLE.indexOf(board.ports[vkey] || null);
+      const next = PORT_CYCLE[(cur + 1) % PORT_CYCLE.length];
+      if (next) board.ports[vkey] = next; else delete board.ports[vkey];
+    } else return;
+    save(); renderAll(); return;
+  }
+  if (hEl) {
+    const hid = +hEl.dataset.hex, t = board.tiles[hid];
+    if (ui.mode === "robber") board.robber = hid;
+    else if (ui.mode === "paintRes") {
+      t.res = ui.paintRes;
+      if (t.res === "desert") t.num = null;
+    } else if (ui.mode === "paintNum") {
+      if (t.res === "desert") return flashHint("砂漠に数字は置けません");
+      t.num = ui.paintNum || null;
+    } else return;
+    save(); renderAll();
+  }
+}
+let hintTimer = null;
+function flashHint(msg) {
+  const el = $("#modehint"); el.textContent = msg;
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => { el.textContent = MODE_HINT[ui.mode] || ""; }, 2200);
+}
+function onBoardHover(e) {
+  const vEl = e.target.closest("[data-v]");
+  if (vEl) showTip(vertexTipHTML(vEl.dataset.v), e.clientX, e.clientY);
+  else {
+    const hEl = e.target.closest("[data-hex]");
+    if (hEl) {
+      const t = board.tiles[+hEl.dataset.hex];
+      const body = t.res === "desert" ? "生産なし" :
+        t.num ? `出目 ${t.num}（${pipOf(t.num)}ピップ, ${fmtP(probOf(t.num))}）` : "数字なし";
+      showTip(`<div class="t">${RES_JA[t.res]}</div>${body}${board.robber === +hEl.dataset.hex ? "<div>盗賊がいます</div>" : ""}`, e.clientX, e.clientY);
+    } else hideTip();
+  }
+}
+
+/* ---------- charts ---------- */
+function barChartSVG(items, o) {
+  // items: [{label, value, color, sub}]  o: {fmt, h, max}
+  const fmt = o.fmt || (v => v.toFixed(2)), H = o.h || 150, PAD_B = 34, PAD_T = 16;
+  const W = Math.max(280, items.length * 56), bw = Math.min(34, (W - 20) / items.length - 10);
+  const max = o.max || Math.max(...items.map(i => i.value), 1e-9);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for (let g = 1; g <= 3; g++) {
+    const y = PAD_T + (H - PAD_B - PAD_T) * (1 - g / 3);
+    s += `<line class="grid" x1="0" x2="${W}" y1="${y}" y2="${y}"></line>`;
+  }
+  items.forEach((it, i) => {
+    const x = (W / items.length) * (i + 0.5);
+    const bh = Math.max(1.5, (H - PAD_B - PAD_T) * (it.value / max));
+    const y = H - PAD_B - bh;
+    s += `<path d="M${x - bw / 2},${H - PAD_B} L${x - bw / 2},${y + 3} Q${x - bw / 2},${y} ${x - bw / 2 + 3},${y} L${x + bw / 2 - 3},${y} Q${x + bw / 2},${y} ${x + bw / 2},${y + 3} L${x + bw / 2},${H - PAD_B} Z"
+           fill="${it.color}" data-bar="${i}"></path>`;
+    s += `<text class="vlabel" x="${x}" y="${y - 4}" text-anchor="middle">${fmt(it.value)}</text>`;
+    s += `<text class="blabel" x="${x}" y="${H - PAD_B + 14}" text-anchor="middle">${esc(it.label)}</text>`;
+    if (it.sub) s += `<text class="axis" x="${x}" y="${H - PAD_B + 27}" text-anchor="middle">${esc(it.sub)}</text>`;
+  });
+  s += `</svg>`;
+  return s;
+}
+function attachBarTips(el, items, fmtTip) {
+  el.addEventListener("mousemove", e => {
+    const b = e.target.closest("[data-bar]");
+    if (b) showTip(fmtTip(items[+b.dataset.bar]), e.clientX, e.clientY); else hideTip();
+  });
+  el.addEventListener("mouseleave", hideTip);
+}
+function stackChartSVG(gains, robberOn) {
+  // gains: {2..12: {res:count}} — 出目別の獲得枚数（積み上げ）
+  const H = 170, PAD_B = 30, PAD_T = 14, W = 460, cols = 11;
+  let max = 1;
+  for (let n = 2; n <= 12; n++) max = Math.max(max, RES.reduce((a, r) => a + gains[n][r], 0));
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  for (let g = 1; g <= 3; g++) {
+    const y = PAD_T + (H - PAD_B - PAD_T) * (1 - g / 3);
+    s += `<line class="grid" x1="10" x2="${W - 10}" y1="${y}" y2="${y}"></line>
+          <text class="axis" x="${W - 8}" y="${y - 2}" text-anchor="end">${(max * g / 3).toFixed(0)}</text>`;
+  }
+  const unit = (H - PAD_B - PAD_T) / max;
+  for (let n = 2; n <= 12; n++) {
+    const x = 10 + (W - 40) * (n - 2) / 10 + 10, bw = 26;
+    let y = H - PAD_B;
+    const total = RES.reduce((a, r) => a + gains[n][r], 0);
+    for (const r of CHART_ORDER) {
+      const c = gains[n][r];
+      if (!c) continue;
+      const bh = Math.max(0, c * unit - 2); // 2px gap between segments
+      y -= c * unit;
+      s += `<rect x="${x - bw / 2}" y="${y + 1}" width="${bw}" height="${bh}" rx="2" fill="${CVAR[r]}" data-roll="${n}"></rect>`;
+    }
+    if (total > 0) s += `<text class="vlabel" x="${x}" y="${y - 4}" text-anchor="middle">${total}</text>`;
+    const red = n === 6 || n === 8;
+    s += `<text class="blabel" x="${x}" y="${H - PAD_B + 14}" text-anchor="middle" ${red ? 'fill="var(--red-num)" font-weight="700"' : ""}>${n === 7 ? "7" : n}</text>`;
+    if (n === 7) s += `<text class="axis" x="${x}" y="${H - PAD_B + 26}" text-anchor="middle">盗賊</text>`;
+  }
+  s += `</svg>`;
+  return s;
+}
+function curveChartSVG(cdf, maxT) {
+  const H = 180, W = 460, PAD_L = 36, PAD_B = 26, PAD_T = 12, PAD_R = 12;
+  const iw = W - PAD_L - PAD_R, ih = H - PAD_B - PAD_T;
+  const X = t => PAD_L + iw * t / maxT, Y = p => PAD_T + ih * (1 - p);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" data-curve="1">`;
+  for (const p of [0, .25, .5, .75, 1])
+    s += `<line class="grid" x1="${PAD_L}" x2="${W - PAD_R}" y1="${Y(p)}" y2="${Y(p)}"></line>
+          <text class="axis" x="${PAD_L - 5}" y="${Y(p) + 3}" text-anchor="end">${(p * 100).toFixed(0)}%</text>`;
+  for (let t = 0; t <= maxT; t += 5)
+    s += `<text class="axis" x="${X(t)}" y="${H - PAD_B + 14}" text-anchor="middle">${t}</text>`;
+  let area = `M${X(0)},${Y(cdf[0])}`, line = area;
+  for (let t = 1; t <= maxT; t++) { const seg = ` L${X(t)},${Y(cdf[t])}`; area += seg; line += seg; }
+  area += ` L${X(maxT)},${Y(0)} L${X(0)},${Y(0)} Z`;
+  s += `<path d="${area}" fill="var(--accent)" opacity="0.14"></path>`;
+  s += `<path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2"></path>`;
+  const med = cdf.findIndex(p => p >= 0.5);
+  if (med >= 0) s += `<circle cx="${X(med)}" cy="${Y(cdf[med])}" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"></circle>`;
+  s += `<g data-cross style="display:none"><line y1="${PAD_T}" y2="${H - PAD_B}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="3 3"></line>
+        <circle r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5"></circle></g>`;
+  s += `<text class="axis" x="${W / 2}" y="${H - 2}" text-anchor="middle">経過ターン</text>`;
+  s += `</svg>`;
+  return { svg: s, X, Y, PAD_L, PAD_R, iw };
+}
+
+/* ---------- tabs ---------- */
+const TABS = [["solver", "GTO配置ソルバー"], ["place", "即時評価"], ["prod", "生産力"], ["build", "建設速度"], ["robber", "盗賊"], ["prob", "確率・山札"]];
+function renderTabs() {
+  $("#tabs").innerHTML = TABS.map(([id, ja]) =>
+    `<button role="tab" data-tab="${id}" class="${ui.tab === id ? "on" : ""}" aria-selected="${ui.tab === id}">${ja}</button>`).join("");
+  for (const [id] of TABS) $("#pane-" + id).classList.toggle("on", ui.tab === id);
+}
+
+/* ---- GTO配置ソルバー ---- */
+function renderSolver() {
+  const el = $("#pane-solver");
+  const n = ui.nPlayers;
+  const slots = remainingSlots(board, n);
+  const cands = draftCandidates(board);
+  const cheap = slots.length === 0 || (n === 2) || slots.length <= 3;
+  const exactExpected = n === 2 || slots.length <= 3;
+  el.innerHTML = `
+    <h3>初期配置ドラフトの均衡解<span class="m">スネークドラフトを後ろ向き帰納法で解く</span></h3>
+    <div class="opts">
+      <span>人数:</span>
+      <span class="seg">${[2, 3, 4].map(k =>
+        `<button data-np="${k}" class="${n === k ? "on" : ""}">${k}人</button>`).join("")}</span>
+      <span>残り手番: ${slots.length ? slots.map(p => PLAYER_JA[p]).join(" → ") : "なし（配置完了）"}</span>
+      <span>候補頂点: ${cands.length}</span>
+    </div>
+    <p class="note">${exactExpected
+      ? "<b>厳密解:</b> この条件では全候補を完全探索します（2人=全数、残り3手以下=全数）。"
+      : "<b>近似:</b> 3〜4人のフル読みは分岐が大きいため、時間予算内でビーム幅を自動拡幅する探索です（拡幅しても結果が変わらなければ「安定」と表示）。"}
+      評価関数はレースモデル: 各プレイヤーは自分の<b>10VP到達ターン数</b>（段階的流体モデル: 都市化・入植による生産成長、2軒目の初期資源、港レート、発展カードの厳密な期待購入枚数を含む、下記3プランの最速）を最小化し、2人の場合は到達時間差のゼロ和ゲームとして解きます。既に置かれた建物は消化済みの手として扱うので、途中局面からの「相手の最善はどこか」にも使えます。</p>
+    <div class="opts">
+      <button id="btn-solve" class="on">${cheap ? "再計算" : "計算する（数秒かかります）"}</button>
+      ${exactExpected ? "" : `<label><input type="checkbox" id="ck-deep" ${ui.deepSearch ? "checked" : ""}> 徹底探索（〜10秒）</label>`}
+      ${ui.solverRes ? `<span class="note">計算時間 ${ui.solverRes.ms.toFixed(0)}ms / ${ui.solverRes.exact ? "厳密解"
+        : `ビーム近似（幅${ui.solverRes.beamUsed}${ui.solverRes.converged ? "・拡幅安定" : ""}）`}</span>` : ""}
+    </div>
+    <div id="solver-out"></div>`;
+  el.querySelectorAll("[data-np]").forEach(b => b.addEventListener("click", () => {
+    ui.nPlayers = +b.dataset.np; ui.solverRes = null; ui.solverPicks = null; renderAll();
+  }));
+  $("#btn-solve").addEventListener("click", () => { runSolver(); });
+  const deep = $("#ck-deep");
+  if (deep) deep.addEventListener("change", e => { ui.deepSearch = e.target.checked; });
+  if (!ui.solverRes && cheap && slots.length > 0) runSolver();
+  else renderSolverOut();
+}
+function runSolver() {
+  const n = ui.nPlayers;
+  const res = solveDraft(board, n, { budgetMs: ui.deepSearch ? 10000 : 2500 });
+  ui.solverRes = res;
+  ui.solverPicks = res.picks.map((p, i) => ({ key: p.vert.key, player: p.player, order: i + 1 }));
+  renderAll();
+}
+function renderSolverOut() {
+  const out = $("#solver-out");
+  if (!out) return;
+  const res = ui.solverRes;
+  if (!res) { out.innerHTML = '<p class="note">「計算する」を押すと残りの配置手順の均衡解を求めます。</p>'; return; }
+  const n = ui.nPlayers;
+  if (res.slots.length === 0 && res.picks.length === 0) {
+    out.innerHTML = `<div class="tiles">${res.turns.map((t, p) => `
+      <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${PLAYER_JA[p]}</span></div>
+      <div class="v">${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}<small> T（${t.ja || "—"}）</small></div></div>`).join("")}</div>
+      <p class="note">全員配置済みのため、現在の配置の到達ターン評価のみ表示しています。</p>`;
+    return;
+  }
+  out.innerHTML = `
+    <h3>均衡手順（PV）<span class="m">盤面に番号バッジで表示</span></h3>
+    <div class="tscroll"><table>
+      <thead><tr><th>#</th><th>手番</th><th>頂点</th><th class="num">ピップ</th><th>内訳</th><th>港</th></tr></thead>
+      <tbody>${res.picks.map((p, i) => {
+        const pips = vertexPips(board, p.vert.key, false);
+        const total = RES.reduce((a, r) => a + pips[r], 0);
+        return `<tr class="clickable" data-selv="${p.vert.key}">
+          <td class="num">${i + 1}</td>
+          <td><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p.player]}"></span>${PLAYER_JA[p.player]}</span></td>
+          <td>${p.vert.label}</td><td class="num">${total}</td><td>${chipRow(pips)}</td>
+          <td>${board.ports[p.vert.key] ? (board.ports[p.vert.key] === "any" ? "3:1" : RES_JA[board.ports[p.vert.key]] + " 2:1") : "—"}</td></tr>`;
+      }).join("")}</tbody></table></div>
+    <div class="tiles">${res.turns.slice(0, n).map((t, p) => `
+      <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${PLAYER_JA[p]} の10VP到達</span></div>
+      <div class="v">${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}<small> T（${t.ja || "—"}）</small></div></div>`).join("")}</div>
+    ${res.turns.slice(0, n).some(t => t.detail) ? `
+      <h3>勝ち筋の行程<span class="m">段階的レースモデルの内訳（累積ターン）</span></h3>
+      ${res.turns.slice(0, n).map((t, p) => t.detail ? `
+        <p class="note"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span><b>${PLAYER_JA[p]}</b></span>（${t.ja}）:
+        ${t.detail.map(d => `${esc(d.label)} <b>${d.t.toFixed(1)}T</b>`).join(" → ")}</p>` : "").join("")}` : ""}
+    ${res.alts && res.alts.length ? `
+      <h3>初手の候補比較<span class="m">均衡値 = 相手の到達T − 自分の到達T（大きいほど有利）</span></h3>
+      <div class="tscroll"><table>
+        <thead><tr><th>#</th><th>初手</th><th class="num">均衡値</th><th></th></tr></thead>
+        <tbody>${res.alts.map((a, i) => {
+          const w = Math.max(...res.alts.map(x => Math.abs(x.eq)), 0.001);
+          return `<tr class="clickable" data-selv="${a.vert.key}">
+            <td class="num">${i + 1}</td><td>${a.vert.label}</td>
+            <td class="num"><b>${a.eq >= 0 ? "+" : ""}${a.eq.toFixed(2)}</b></td>
+            <td><div class="barslot"><div class="scorebar" style="width:${(100 * Math.abs(a.eq) / w).toFixed(0)}%;${a.eq < 0 ? "background:var(--bad)" : ""}"></div></div></td></tr>`;
+        }).join("")}</tbody></table></div>` : ""}
+    <p class="note">前提: 2軒目の初期資源、都市化・入植による生産成長、発展カードの期待購入枚数は評価に<b>含みます</b>。街道の位置取り・盗賊/騎士の妨害・最大騎士力/最長交易路の競争・サイコロの分散は含みません（詳細は「計算モデルの説明」）。</p>`;
+  out.querySelectorAll("[data-selv]").forEach(tr => tr.addEventListener("click", () => {
+    ui.selV = ui.selV === tr.dataset.selv ? null : tr.dataset.selv; renderAll();
+  }));
+}
+
+/* ---- 配置評価 ---- */
+function renderPlace() {
+  ui.evalRows = evaluatePlacements(board, {
+    player: ui.player, strategy: ui.strategy, useScarcity: ui.useScarcity,
+    useDimin: ui.useDimin, usePorts: ui.usePorts, respectRobber: ui.placeRobber });
+  const supply = boardSupply(board), scar = scarcityWeights(board);
+  const mine = playerProduction(board, ui.player, false).pips;
+  const hasMine = Object.values(board.buildings).some(b => b.player === ui.player);
+  const el = $("#pane-place");
+  const maxScore = ui.evalRows.length ? ui.evalRows[0].score : 1;
+  el.innerHTML = `
+    <h3>入植地スコア<span class="m">${PLAYER_JA[ui.player]}視点 / 距離ルール適用済み</span></h3>
+    <div class="opts">
+      <label>戦略 <select id="sel-strat">${Object.entries(STRATS).map(([k, v]) =>
+        `<option value="${k}" ${ui.strategy === k ? "selected" : ""}>${v.ja}</option>`).join("")}</select></label>
+      <label><input type="checkbox" id="ck-scar" ${ui.useScarcity ? "checked" : ""}> 希少性重み</label>
+      <label><input type="checkbox" id="ck-dim" ${ui.useDimin ? "checked" : ""}> 既存生産の逓減${hasMine ? "" : "（建物なし=無効果）"}</label>
+      <label><input type="checkbox" id="ck-port" ${ui.usePorts ? "checked" : ""}> 港を評価</label>
+      <label><input type="checkbox" id="ck-probber" ${ui.placeRobber ? "checked" : ""}> 盗賊を考慮</label>
+    </div>
+    <div class="tscroll"><table>
+      <thead><tr><th>#</th><th>頂点</th><th class="num">ピップ</th><th>内訳</th><th class="num">P(獲得)</th><th class="num">スコア</th><th></th></tr></thead>
+      <tbody>${ui.evalRows.slice(0, 12).map((r, i) => `
+        <tr class="clickable ${ui.selV === r.v.key ? "hl" : ""}" data-selv="${r.v.key}">
+          <td class="num">${i + 1}</td>
+          <td>${r.v.label}${r.port ? ` <span class="chip">${r.port === "any" ? "3:1" : RES_K[r.port] + "2:1"}</span>` : ""}</td>
+          <td class="num">${r.total}</td>
+          <td>${chipRow(r.pips)}</td>
+          <td class="num">${fmtP(r.pAny)}</td>
+          <td class="num"><b>${r.score.toFixed(2)}</b></td>
+          <td><div class="barslot"><div class="scorebar" style="width:${(100 * r.score / maxScore).toFixed(0)}%"></div></div></td>
+        </tr>`).join("")}</tbody>
+    </table></div>
+    <p class="note">スコア = (Σ ピップ×戦略×希少性×逓減) × 多様性 + 港。上位3件は盤面に赤・橙・灰のバッジで表示。行クリックで盤面ハイライト。</p>
+    <h3 style="margin-top:16px">盤面の資源供給<span class="m">総ピップと希少性重み</span></h3>
+    <div class="chart" id="ch-supply"></div>`;
+  const supplyItems = CHART_ORDER.map(r => ({
+    label: RES_JA[r], value: supply[r], color: CVAR[r], sub: "×" + scar[r].toFixed(2), res: r }));
+  $("#ch-supply").innerHTML = barChartSVG(supplyItems, { fmt: v => v.toFixed(0), h: 150, max: Math.max(...supplyItems.map(i => i.value), 1) });
+  attachBarTips($("#ch-supply"), supplyItems, it =>
+    `<div class="t">${it.label}</div>総供給 ${it.value}ピップ<br>希少性重み ${it.sub}<br>自分の生産 ${mine[it.res]}ピップ`);
+  el.querySelectorAll("[data-selv]").forEach(tr => tr.addEventListener("click", () => {
+    ui.selV = ui.selV === tr.dataset.selv ? null : tr.dataset.selv; renderAll();
+  }));
+  $("#sel-strat").addEventListener("change", e => { ui.strategy = e.target.value; renderAll(); });
+  [["ck-scar", "useScarcity"], ["ck-dim", "useDimin"], ["ck-port", "usePorts"], ["ck-probber", "placeRobber"]]
+    .forEach(([id, k]) => $("#" + id).addEventListener("change", e => { ui[k] = e.target.checked; renderAll(); }));
+}
+
+/* ---- 生産力 ---- */
+function renderProd() {
+  const el = $("#pane-prod");
+  const p = ui.player;
+  const { perRoll, pips } = playerProduction(board, p, ui.prodRobber);
+  const totalPerRoll = RES.reduce((a, r) => a + perRoll[r], 0);
+  const pAny = probAnyGain(board, p, ui.prodRobber);
+  const gains = gainByRoll(board, p, ui.prodRobber);
+  const nB = Object.values(board.buildings).filter(b => b.player === p);
+  el.innerHTML = `
+    <h3>生産力<span class="m">${PLAYER_JA[p]}（入植地${nB.filter(b => b.level === 1).length}・都市${nB.filter(b => b.level === 2).length}）</span></h3>
+    <div class="opts"><label><input type="checkbox" id="ck-prodrob" ${ui.prodRobber ? "checked" : ""}> 盗賊のブロックを考慮</label></div>
+    <div class="tiles">
+      <div class="tile"><div class="k">期待獲得 / ロール</div><div class="v">${totalPerRoll.toFixed(2)}<small> 枚</small></div></div>
+      <div class="tile"><div class="k">P(1枚以上獲得)</div><div class="v">${fmtP(pAny)}</div></div>
+      <div class="tile"><div class="k">10ロールでの期待</div><div class="v">${(totalPerRoll * 10).toFixed(1)}<small> 枚</small></div></div>
+    </div>
+    <h3>資源別の期待獲得<span class="m">枚 / ロール</span></h3>
+    <div class="chart" id="ch-perres"></div>
+    <h3>出目別の獲得枚数<span class="m">どの目に依存しているか</span></h3>
+    <div class="legend">${CHART_ORDER.map(r => `<span class="it"><span class="sw" style="background:${CVAR[r]}"></span>${RES_JA[r]}</span>`).join("")}</div>
+    <div class="chart" id="ch-rolls"></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>資源</th>${CHART_ORDER.map(r => `<th class="num">${RES_JA[r]}</th>`).join("")}<th class="num">合計</th></tr></thead>
+      <tbody>
+        <tr><td>ピップ</td>${CHART_ORDER.map(r => `<td class="num">${pips[r]}</td>`).join("")}<td class="num">${RES.reduce((a, r) => a + pips[r], 0)}</td></tr>
+        <tr><td>枚/ロール</td>${CHART_ORDER.map(r => `<td class="num">${perRoll[r].toFixed(3)}</td>`).join("")}<td class="num">${totalPerRoll.toFixed(3)}</td></tr>
+      </tbody></table></div>
+    ${nB.length === 0 ? '<p class="note">盤面ツールバーの「入植地」で自分の建物を置くと計算されます。</p>' : ""}`;
+  const items = CHART_ORDER.map(r => ({ label: RES_JA[r], value: perRoll[r], color: CVAR[r], res: r }));
+  $("#ch-perres").innerHTML = barChartSVG(items, { fmt: v => v.toFixed(2), h: 150, max: Math.max(...items.map(i => i.value), 0.05) });
+  attachBarTips($("#ch-perres"), items, it =>
+    `<div class="t">${it.label}</div>${it.value.toFixed(3)} 枚/ロール<br>= ${pips[it.res]}ピップ ÷ 36`);
+  $("#ch-rolls").innerHTML = stackChartSVG(gains, ui.prodRobber);
+  $("#ch-rolls").addEventListener("mousemove", e => {
+    const b = e.target.closest("[data-roll]");
+    if (!b) return hideTip();
+    const n = +b.dataset.roll, g = gains[n];
+    showTip(`<div class="t">出目 ${n}（${fmtP(probOf(n))}）</div>${chipRow(g, x => x + "枚")}`, e.clientX, e.clientY);
+  });
+  $("#ch-rolls").addEventListener("mouseleave", hideTip);
+  $("#ck-prodrob").addEventListener("change", e => { ui.prodRobber = e.target.checked; renderAll(); });
+}
+
+/* ---- 建設速度 ---- */
+function renderBuild() {
+  const el = $("#pane-build");
+  const rates = tradeRates(board, ui.player);
+  el.innerHTML = `
+    <h3>建設速度シミュレーション<span class="m">${PLAYER_JA[ui.player]} / 2万回試行</span></h3>
+    <p class="note">現在の生産力と手札から、各建設目標に届くまでのターン数を推定（銀行4:1・港交換込み、盗賊出目7の手札半減を含む）。</p>
+    <div class="opts"><span>手札:</span></div>
+    <div class="steppers">${CHART_ORDER.map(r => `
+      <div class="stepper"><span class="nm"><span class="sw" style="background:${CVAR[r]}"></span>${RES_JA[r]}</span>
+        <button data-hd="${r}" aria-label="${RES_JA[r]}を減らす">−</button>
+        <span class="val" id="hand-${r}">${ui.hand[r]}</span>
+        <button data-hu="${r}" aria-label="${RES_JA[r]}を増やす">＋</button></div>`).join("")}</div>
+    <div class="opts">
+      <span>目標:</span>
+      <span class="seg">${Object.keys(COST).map(t =>
+        `<button data-target="${t}" class="${ui.target === t ? "on" : ""}">${BUILD_JA[t]}</button>`).join("")}</span>
+      <label><input type="checkbox" id="ck-7" ${ui.sevenDiscard ? "checked" : ""}> 7の手札半減</label>
+      <label><input type="checkbox" id="ck-mcrob" ${ui.mcRobber ? "checked" : ""}> 盗賊ブロック考慮</label>
+    </div>
+    <p class="note">コスト: ${CHART_ORDER.filter(r => COST[ui.target][r]).map(r => `${RES_JA[r]}×${COST[ui.target][r]}`).join("・") || "なし"}
+      ／ 交換レート: ${CHART_ORDER.map(r => `${RES_K[r]}${rates[r]}:1`).join(" ")}</p>
+    <div id="mc-out"></div>`;
+  el.querySelectorAll("[data-hd]").forEach(b => b.addEventListener("click", () => {
+    const r = b.dataset.hd; ui.hand[r] = Math.max(0, ui.hand[r] - 1); renderBuild(); }));
+  el.querySelectorAll("[data-hu]").forEach(b => b.addEventListener("click", () => {
+    const r = b.dataset.hu; ui.hand[r] = Math.min(30, ui.hand[r] + 1); renderBuild(); }));
+  el.querySelectorAll("[data-target]").forEach(b => b.addEventListener("click", () => {
+    ui.target = b.dataset.target; renderBuild(); }));
+  $("#ck-7").addEventListener("change", e => { ui.sevenDiscard = e.target.checked; renderBuild(); });
+  $("#ck-mcrob").addEventListener("change", e => { ui.mcRobber = e.target.checked; renderBuild(); });
+  runMC();
+}
+function runMC() {
+  const out = $("#mc-out");
+  const prod = playerProduction(board, ui.player, ui.mcRobber);
+  const totalProd = RES.reduce((a, r) => a + prod.perRoll[r], 0);
+  const handTotal = RES.reduce((a, r) => a + ui.hand[r], 0);
+  if (totalProd === 0 && handTotal === 0) {
+    out.innerHTML = '<p class="note">生産も手札もありません。盤面に建物を置くか手札を入力してください。</p>';
+    return;
+  }
+  const t0 = performance.now();
+  const res = simulateBuild(board, ui.player, ui.hand, ui.target, {
+    sevenDiscard: ui.sevenDiscard, respectRobber: ui.mcRobber });
+  const ms = performance.now() - t0;
+  const c = curveChartSVG(res.cdf, res.maxTurns);
+  out.innerHTML = `
+    <div class="tiles">
+      <div class="tile"><div class="k">中央値</div><div class="v">${res.median === Infinity ? "60+" : res.median}<small> ターン</small></div></div>
+      <div class="tile"><div class="k">平均（到達時）</div><div class="v">${res.mean === Infinity ? "—" : res.mean.toFixed(1)}<small> ターン</small></div></div>
+      <div class="tile"><div class="k">5ターン以内</div><div class="v">${fmtP(res.pWithin(5))}</div></div>
+      <div class="tile"><div class="k">10ターン以内</div><div class="v">${fmtP(res.pWithin(10))}</div></div>
+    </div>
+    <h3>${BUILD_JA[ui.target]}に届く累積確率</h3>
+    <div class="chart" id="ch-curve">${c.svg}</div>
+    <p class="note">20,000回試行（${ms.toFixed(0)}ms）。${res.pNever > 0.001 ? `60ターン以内に届かない確率 ${fmtP(res.pNever)}。` : ""}前提は「計算モデルの説明」参照。</p>`;
+  const svg = out.querySelector("[data-curve]");
+  svg.addEventListener("mousemove", e => {
+    const rect = svg.getBoundingClientRect();
+    const fx = (e.clientX - rect.left) / rect.width * 460;
+    const t = Math.max(0, Math.min(res.maxTurns, Math.round((fx - c.PAD_L) / c.iw * res.maxTurns)));
+    const g = svg.querySelector("[data-cross]");
+    g.style.display = "";
+    const x = c.X(t), y = c.Y(res.cdf[t]);
+    g.querySelector("line").setAttribute("x1", x); g.querySelector("line").setAttribute("x2", x);
+    const dot = g.querySelector("circle"); dot.setAttribute("cx", x); dot.setAttribute("cy", y);
+    showTip(`<div class="t">${t}ターン以内</div>到達確率 ${fmtP(res.cdf[t])}`, e.clientX, e.clientY);
+  });
+  svg.addEventListener("mouseleave", () => { svg.querySelector("[data-cross]").style.display = "none"; hideTip(); });
+}
+
+/* ---- 盗賊 ---- */
+function renderRobber() {
+  const el = $("#pane-robber");
+  const rows = robberOptions(board, ui.player);
+  const anyOpp = rows.some(r => r.oppLoss > 0);
+  el.innerHTML = `
+    <h3>盗賊配置の期待値<span class="m">${PLAYER_JA[ui.player]}視点 / カード・ロール単位</span></h3>
+    <p class="note">評価値 = 相手の期待損失合計 − 3×自分の損失。相手の建物（プレイヤー切替で配置）を置くと意味のある比較になります。</p>
+    ${!anyOpp ? '<p class="note"><b>相手の建物が未配置です。</b>ツールバーでプレイヤーを切り替えて配置してください。</p>' : ""}
+    <div class="tscroll"><table>
+      <thead><tr><th>ヘクス</th><th class="num">出目</th>${PLAYER_JA.map((n, i) =>
+        `<th class="num"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[i]}"></span>${n}</span></th>`).join("")}
+        <th class="num">評価値</th></tr></thead>
+      <tbody>${rows.slice(0, 10).map((r, i) => `
+        <tr class="clickable" data-robhex="${r.hex}">
+          <td>${RES_JA[r.res]}${i === 0 && r.value >= 0 && anyOpp ? ' <span class="chip" style="color:var(--good)">推奨</span>' : ""}</td>
+          <td class="num">${r.num ?? "—"}</td>
+          ${r.loss.map(l => `<td class="num">${l ? l.toFixed(3) : "—"}</td>`).join("")}
+          <td class="num"><b>${r.value.toFixed(3)}</b></td>
+        </tr>`).join("")}</tbody>
+    </table></div>
+    <p class="note">行クリックで盗賊をそのヘクスへ移動。</p>`;
+  el.querySelectorAll("[data-robhex]").forEach(tr => tr.addEventListener("click", () => {
+    board.robber = +tr.dataset.robhex; save(); renderAll();
+  }));
+}
+
+/* ---- 確率・山札 ---- */
+function renderProb() {
+  const el = $("#pane-prob");
+  const onBoard = new Set(board.tiles.filter(t => t.num).map(t => t.num));
+  const { rem, total } = devProbs(ui.drawn);
+  el.innerHTML = `
+    <h3>2d6の確率分布<span class="m">薄い棒は盤面に無い数字</span></h3>
+    <div class="chart" id="ch-dice"></div>
+    <h3 style="margin-top:16px">発展カード山札<span class="m">全25枚の超幾何確率</span></h3>
+    <p class="note">既に引かれた（公開された）枚数を入力:</p>
+    <div class="steppers">${Object.keys(DEV_DECK).map(t => `
+      <div class="stepper"><span class="nm">${DEV_JA[t]} <span class="axis">/${DEV_DECK[t]}</span></span>
+        <button data-dd="${t}">−</button><span class="val">${ui.drawn[t]}</span><button data-du="${t}">＋</button></div>`).join("")}</div>
+    <div class="tiles">
+      <div class="tile"><div class="k">山札残り</div><div class="v">${total}<small> 枚</small></div></div>
+      <div class="tile"><div class="k">次の1枚が騎士</div><div class="v">${total ? fmtP(rem.knight / total) : "—"}</div></div>
+      <div class="tile"><div class="k">次の1枚が勝利点</div><div class="v">${total ? fmtP(rem.vp / total) : "—"}</div></div>
+    </div>
+    <div class="chart" id="ch-dev"></div>
+    <div class="opts"><label>n枚買った時に1枚以上含まれる確率 n=
+      <input type="number" id="in-devn" min="1" max="25" value="${ui.devN}" style="width:52px"></label></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>種類</th><th class="num">残り</th><th class="num">次の1枚</th><th class="num">n=${ui.devN}枚中1枚以上</th></tr></thead>
+      <tbody>${Object.keys(DEV_DECK).map(t => `
+        <tr><td>${DEV_JA[t]}</td><td class="num">${rem[t]}/${DEV_DECK[t]}</td>
+          <td class="num">${total ? fmtP(rem[t] / total) : "—"}</td>
+          <td class="num">${fmtP(pAtLeastOne(rem[t], total, Math.min(ui.devN, total)))}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p class="note">参考 — 満杯の山札での期待購入枚数（負の超幾何分布の厳密値）:
+      勝利点1枚まで <b>${DEV_E.vp1.toFixed(2)}枚</b> ／ 騎士3枚まで <b>${DEV_E.army.toFixed(2)}枚</b> ／
+      騎士3+勝利点1 <b>${DEV_E.armyVp1.toFixed(2)}枚</b> ／ 騎士3+勝利点2 <b>${DEV_E.armyVp2.toFixed(2)}枚</b>。
+      GTO配置ソルバーの発展カード評価にはこの期待値を使用しています。</p>`;
+  const diceItems = [];
+  for (let n = 2; n <= 12; n++) if (n !== 7) diceItems.push({
+    label: String(n), value: probOf(n), color: onBoard.has(n) ? "var(--accent)" : "var(--line)", n });
+  $("#ch-dice").innerHTML = barChartSVG(diceItems, { fmt: v => (v * 36).toFixed(0), h: 140, max: 5 / 36 });
+  attachBarTips($("#ch-dice"), diceItems, it =>
+    `<div class="t">出目 ${it.n}</div>${fmtP(it.value)}（${pipOf(it.n)}/36）${onBoard.has(it.n) ? "" : "<br>盤面に無い数字"}`);
+  const devItems = Object.keys(DEV_DECK).map(t => ({
+    label: DEV_JA[t], value: total ? rem[t] / total : 0, color: t === "vp" ? "var(--accent)" : "var(--sub)", t }));
+  $("#ch-dev").innerHTML = barChartSVG(devItems, { fmt: fmtP, h: 140 });
+  attachBarTips($("#ch-dev"), devItems, it => `<div class="t">${it.label}</div>次の1枚である確率 ${fmtP(it.value)}<br>残り ${rem[it.t]}枚`);
+  el.querySelectorAll("[data-dd]").forEach(b => b.addEventListener("click", () => {
+    const t = b.dataset.dd; ui.drawn[t] = Math.max(0, ui.drawn[t] - 1); renderProb(); }));
+  el.querySelectorAll("[data-du]").forEach(b => b.addEventListener("click", () => {
+    const t = b.dataset.du; ui.drawn[t] = Math.min(DEV_DECK[t], ui.drawn[t] + 1); renderProb(); }));
+  $("#in-devn").addEventListener("change", e => { ui.devN = Math.max(1, Math.min(25, +e.target.value || 1)); renderProb(); });
+}
+
+/* ---------- glue ---------- */
+const PANE_RENDER = { solver: renderSolver, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
+function renderAll() {
+  renderModebar();
+  renderTabs();
+  PANE_RENDER[ui.tab]();
+  renderBoard(); // 評価後に描画（上位3バッジのため）
+}
+function bindGlobal() {
+  $("#modebar").addEventListener("click", e => {
+    const b = e.target.closest("[data-mode]");
+    if (b) { ui.mode = b.dataset.mode; renderModebar(); }
+  });
+  $("#paintbar").addEventListener("click", e => {
+    const pr = e.target.closest("[data-pres]"), pn = e.target.closest("[data-pnum]");
+    if (pr) ui.paintRes = pr.dataset.pres;
+    if (pn) ui.paintNum = +pn.dataset.pnum;
+    if (pr || pn) renderModebar();
+  });
+  $("#playerbar").addEventListener("click", e => {
+    const b = e.target.closest("[data-player]");
+    if (b) { ui.player = +b.dataset.player; renderAll(); }
+  });
+  $("#tabs").addEventListener("click", e => {
+    const b = e.target.closest("[data-tab]");
+    if (b) { ui.tab = b.dataset.tab; renderAll(); }
+  });
+  const svg = $("#board");
+  svg.addEventListener("click", onBoardClick);
+  svg.addEventListener("mousemove", onBoardHover);
+  svg.addEventListener("mouseleave", hideTip);
+  $("#btn-standard").addEventListener("click", () => {
+    const keep = board.buildings; board = standardBoard(); board.buildings = keep; save(); renderAll();
+  });
+  $("#btn-random").addEventListener("click", () => {
+    const keepB = board.buildings;
+    board = randomBoard(); board.buildings = keepB; save(); renderAll();
+  });
+  $("#btn-clearb").addEventListener("click", () => { board.buildings = {}; save(); renderAll(); });
+}
+initState();
+bindGlobal();
+document.querySelectorAll("[data-deve]").forEach(el => {
+  const v = DEV_E[el.dataset.deve];
+  if (v !== undefined) el.textContent = v.toFixed(1);
+});
+renderAll();
+</script>
+<style>
+  /* ダークモード無効化: ライト用トークンを再宣言して後勝ちで固定 */
+  :root {
+    --bg: #F4F6F3; --surface: #FCFDFB; --sea: #E2ECE8; --ink: #202821; --sub: #5C665B;
+    --line: #DDE3DA; --line-soft: #E9EDE6; --accent: #0E6B7A; --accent-soft: #D8E9EB;
+    --on-ink: #FFFFFF;
+    --token: #F7F1E0; --token-ink: #2A2A22; --red-num: #C03D25;
+    --cw: #1F7A40; --cb: #B23F17; --cs: #87A825; --cwh: #BE8712; --co: #3E6FBE;
+    --hx-wood: #9DC291; --hx-brick: #DBA184; --hx-sheep: #CBDA90; --hx-wheat: #EAD48D;
+    --hx-ore: #B4C4D1; --hx-desert: #E4DAB9;
+    --p0: #0E6B7A; --p1: #7D4BC9; --p2: #C93B8C; --p3: #3A434C;
+    --good: #1E7A34; --warn: #A66109; --bad: #B3341E;
+    --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", "Yu Gothic Medium", "Yu Gothic", Meiryo, system-ui, sans-serif;
+    --mono: "SF Mono", SFMono-Regular, ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  }
+</style>
+<style>
+  /* ---- らっこアプリのデザイントークンへ統一（元のトークンを上書き。後勝ち） ----
+     盤面のゲーム内色（資源ヘクス・プレイヤー色・数字トークン）は意味を持つため残し、
+     シェル（紙・文字・罫線・アクセント・書体）だけをサイト共通に揃える。ライトテーマ固定。 */
+  :root{
+    --bg: var(--color-paper);
+    --surface: var(--color-card);
+    --ink: var(--color-ink);
+    --sub: var(--color-muted);
+    --line: var(--color-rule);
+    --line-soft: color-mix(in oklab, var(--color-rule) 55%, white);
+    --accent: var(--color-accent-strong);
+    --accent-soft: var(--color-accent-soft);
+    --on-ink: var(--color-on-accent);
+    --sans: var(--font-body);
+  }
+</style>
+<div class="ad-box">
+  <p class="ad-box__label">広告</p>
+  <ins class="adsbygoogle" style="display:block"
+       data-ad-client="ca-pub-1975437480047330"
+       data-ad-slot="6052222234"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <nav aria-label="フッター">
+      <a href="/#apps">アプリ一覧</a>
+      <a href="/lab/">攻略ラボ</a>
+      <a href="/lab/privacy.html">プライバシーポリシー</a>
+      <a href="mailto:rakko9924@gmail.com">お問い合わせ</a>
+    </nav>
+    <p class="site-footer__copy">© 2026 らっこアプリ ｜ 本ツールはカタンの非公式ファンコンテンツです。ゲームの名称・権利は権利者に帰属します。</p>
+  </div>
+</footer>
+</body>
+</html>

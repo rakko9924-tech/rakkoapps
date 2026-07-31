@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ゴブレットゴブラーズ完全解析｜先手必勝・最短13手の証明 - らっこアプリ攻略ラボ</title>
+<meta name="description" content="ゴブレットゴブラーズ（3×3盤・大中小各2個）を完全解析。先手必勝・最短13手を機械検証で証明しました。全27通りの初手チャート（厳密値）と、1手ずつ再生できる最善進行を無料公開。">
+<link rel="canonical" href="https://rakkoapps.com/lab/gobblet-gto/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#f2694b">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="らっこアプリ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="ゴブレットゴブラーズ完全解析｜先手必勝・最短13手の証明">
+<meta property="og:description" content="全27通りの初手チャートと機械検証済みの最善進行。中をどこに置いても負け、大は角か中央で最速13手勝ち。">
+<meta property="og:url" content="https://rakkoapps.com/lab/gobblet-gto/">
+<meta property="og:image" content="https://rakkoapps.com/assets/og/cover.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ゴブレットゴブラーズ完全解析｜らっこアプリ攻略ラボ">
+<meta name="twitter:description" content="先手必勝・最短13手。全27初手の厳密チャートと最善進行を無料公開。">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/og/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1975437480047330" crossorigin="anonymous"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "ゴブレットゴブラーズ完全解析 — 先手必勝・最短13手の証明",
+      "description": "3×3のゴブレットゴブラーズを完全解析。先手必勝・最短13手を機械検証で証明。全27初手の厳密チャートと最善進行。",
+      "inLanguage": "ja",
+      "datePublished": "2026-08-01",
+      "author": { "@type": "Organization", "name": "らっこアプリ", "url": "https://rakkoapps.com/" },
+      "publisher": { "@type": "Organization", "name": "らっこアプリ", "url": "https://rakkoapps.com/" },
+      "mainEntityOfPage": "https://rakkoapps.com/lab/gobblet-gto/"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "らっこアプリ", "item": "https://rakkoapps.com/" },
+        { "@type": "ListItem", "position": 2, "name": "攻略ラボ", "item": "https://rakkoapps.com/lab/" },
+        { "@type": "ListItem", "position": 3, "name": "ゴブレットゴブラーズ完全解析", "item": "https://rakkoapps.com/lab/gobblet-gto/" }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  /* ---- 攻略ラボ / ゴブレット解析（サイトトークンに統一） ---- */
+  :root{
+    --x: var(--color-accent);                                                  /* 先手 */
+    --x-deep: var(--color-accent-ink);
+    --o: var(--color-sky);                                                     /* 後手 */
+    --o-deep: color-mix(in oklab, var(--color-sky) 68%, var(--color-ink));
+    --x-tint-strong: color-mix(in oklab, var(--color-accent) 26%, var(--color-card));
+    --x-tint:        color-mix(in oklab, var(--color-accent) 12%, var(--color-card));
+    --o-tint-strong: color-mix(in oklab, var(--color-sky) 30%, var(--color-card));
+    --o-tint:        color-mix(in oklab, var(--color-sky) 16%, var(--color-card));
+    --board-bg: var(--color-paper-3);
+    --cell-bg: var(--color-card);
+  }
+  .lab-prose{ max-width: 900px; margin: 0 auto; padding: 0 20px 8px; }
+  .mono{ font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace; }
+
+  .report-head{ padding-top: var(--space-lg); }
+  .report-head h1{ font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.35; margin: 0 0 10px; text-wrap: balance; }
+  .report-head h1 .win{ color: var(--x); }
+  .report-lede{ color: var(--color-body); max-width: 42em; margin: 0; }
+  .cert-chip{
+    display: inline-block; margin-top: 16px; padding: 4px 14px;
+    border: 1.5px solid var(--x); color: var(--x-deep);
+    border-radius: var(--radius-pill); font-size: var(--text-xs); letter-spacing: .06em; font-weight: 700;
+  }
+
+  .report h2{
+    font-size: var(--text-lg); margin: var(--space-2xl) 0 6px;
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .report h2 .sub{ font-size: var(--text-sm); color: var(--color-muted); font-weight: 500; }
+  .lab-p{ color: var(--color-muted); font-size: var(--text-sm); margin: 0 0 20px; max-width: 48em; line-height: 1.75; }
+
+  /* ---- 盤面 ---- */
+  .board{
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 5px;
+    background: var(--board-bg); border: 1px solid var(--color-rule); border-radius: var(--radius-md); padding: 8px;
+    width: 186px; height: 186px; flex: none;
+  }
+  .board .sq{ background: var(--cell-bg); border-radius: 7px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .board .sq.hl{ outline: 2.5px solid var(--x); outline-offset: -2.5px; }
+  .pc{ border-radius: 50%; position: relative; flex: none; }
+  .pc::after{ content:""; position:absolute; inset:18%; border-radius:50%; border:2px solid rgba(255,255,255,.45); }
+  .pc.x{ background: var(--x); } .pc.o{ background: var(--o); }
+  .pc.L{ width:72%; height:72% } .pc.M{ width:53%; height:53% } .pc.S{ width:35%; height:35% }
+
+  /* ---- 初手チャート ---- */
+  .charts{ display:flex; gap:22px; flex-wrap:wrap; margin-top:18px; }
+  .chart{ flex:1 1 180px; min-width:170px; max-width:230px; }
+  .chart h3{ margin:0 0 8px; font-size:var(--text-sm); display:flex; align-items:center; gap:8px; }
+  .chart h3 .pc{ width:20px; height:20px; display:inline-block; }
+  .chart h3 .pc.M{ width:15px; height:15px } .chart h3 .pc.S{ width:11px; height:11px }
+  .cgrid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:4px;
+    background:var(--board-bg); border:1px solid var(--color-rule); border-radius:10px; padding:6px; aspect-ratio:1;
+  }
+  .cgrid .c{ border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; line-height:1.15; gap:1px; }
+  .cgrid .c b{ font-size:16.5px; font-weight:700; }
+  .cgrid .c span{ font-size:10px; letter-spacing:.05em; }
+  .c.w13{ background:var(--x-tint-strong); color:var(--x-deep); }
+  .c.w15{ background:var(--x-tint); color:var(--x-deep); }
+  .c.l12{ background:var(--o-tint-strong); color:var(--o-deep); }
+  .c.l14{ background:var(--o-tint); color:var(--o-deep); }
+  .legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; font-size:var(--text-xs); color:var(--color-muted); }
+  .legend i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+  .legend .k1 i{ background:var(--x-tint-strong) } .legend .k2 i{ background:var(--x-tint) }
+  .legend .k3 i{ background:var(--o-tint-strong) } .legend .k4 i{ background:var(--o-tint) }
+
+  /* ---- 最善進行ステッパー ---- */
+  .stepper{
+    display:flex; gap:24px; align-items:flex-start; margin-top:18px; flex-wrap:wrap;
+    background:var(--color-card); border:1px solid var(--color-rule); border-radius:var(--radius-lg); padding:20px;
+    box-shadow: var(--shadow-card);
+  }
+  .step-info{ flex:1; min-width:230px; }
+  .step-move{ font-size:var(--text-md); font-weight:700; margin:2px 0 6px; color:var(--color-ink); font-family:var(--font-display); }
+  .step-move .mono{ font-size:15px; }
+  .step-move.xs{ color:var(--x-deep) } .step-move.os{ color:var(--o-deep) }
+  .step-gloss{ color:var(--color-body); font-size:var(--text-sm); min-height:3.2em; margin:0; line-height:1.7; }
+  .step-ctl{ display:flex; gap:8px; margin-top:14px; align-items:center; }
+  .step-ctl button{
+    font:inherit; font-weight:700; font-size:var(--text-sm); padding:7px 16px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--color-rule-strong); background:var(--color-card); color:var(--color-ink); cursor:pointer;
+    transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .step-ctl button:hover{ border-color: var(--color-accent); transform: translateY(-1px); }
+  .step-ctl button:focus-visible{ outline:2px solid var(--color-focus); outline-offset:2px; }
+  .step-ctl button:disabled{ opacity:.35; cursor:default; transform:none; }
+  .step-ctl .cnt{ font-size:var(--text-xs); color:var(--color-muted); margin-left:6px; font-variant-numeric:tabular-nums; }
+  .movelist{ margin-top:14px; font-size:13px; line-height:2; }
+  .movelist button{
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:12px; border:none; background:none;
+    padding:1px 5px; border-radius:5px; cursor:pointer; color:var(--color-muted);
+  }
+  .movelist button.xs{ color:var(--x-deep) } .movelist button.os{ color:var(--o-deep) }
+  .movelist button.cur{ background:var(--color-paper-3); color:var(--color-ink); font-weight:700; }
+  .movelist button:focus-visible{ outline:2px solid var(--color-focus); outline-offset:1px; }
+
+  /* ---- その他 ---- */
+  .fact-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin-top:16px; }
+  .fact-card{ background:var(--color-card); border:1px solid var(--color-rule); border-radius:var(--radius-lg); padding:18px 20px; box-shadow:var(--shadow-card); }
+  .fact-card h3{ margin:0 0 8px; font-size:var(--text-base); }
+  .fact-card p{ margin:0; font-size:var(--text-sm); color:var(--color-body); line-height:1.7; }
+  .fact-card .big{ font-size:22px; font-weight:700; color:var(--color-ink); font-variant-numeric:tabular-nums; font-family:var(--font-display); }
+  .report ul.bullets{ list-style: disc; padding-left:1.3em; margin:10px 0; font-size:var(--text-sm); color:var(--color-body); }
+  .report ul.bullets li{ margin:6px 0; line-height:1.75; }
+  .report table.vtable{ border-collapse: collapse; margin-top:14px; font-size:var(--text-sm); font-variant-numeric:tabular-nums; }
+  .report table.vtable th, .report table.vtable td{ border:1px solid var(--color-rule); padding:7px 14px; text-align:center; }
+  .report table.vtable th{ background:var(--color-paper-2); font-weight:700; color:var(--color-ink); }
+  .report td.vw{ background:var(--x-tint); color:var(--x-deep); font-weight:700; }
+  .report td.vl{ background:var(--o-tint); color:var(--o-deep); font-weight:700; }
+  .pvline{
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:12.5px;
+    background:var(--color-paper-2); border:1px solid var(--color-rule); border-radius:var(--radius-sm);
+    padding:12px 16px; overflow-x:auto; line-height:1.9; margin:14px 0 0; white-space:nowrap;
+  }
+  .report-meta{ margin-top:var(--space-2xl); padding-top:16px; border-top:1px solid var(--color-rule); font-size:var(--text-xs); color:var(--color-muted); letter-spacing:.03em; }
+
+  .ad-box{ margin: var(--space-xl) auto 0; max-width: 900px; padding: 0 20px; }
+  .ad-box__label{ font-size:10px; letter-spacing:.14em; color:var(--color-muted); text-align:center; margin-bottom:4px; }
+  ins.adsbygoogle[data-ad-status="unfilled"]{ display:none; }
+  .ad-box:has(ins.adsbygoogle[data-ad-status="unfilled"]){ display:none; }
+</style>
+</head>
+<body>
+<a class="skip" href="#report">本文へスキップ</a>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="wordmark" href="/" aria-label="らっこアプリ ホーム">
+      <img class="wordmark__mark" src="/assets/brand/icon-96.png" width="96" height="96" alt="" aria-hidden="true">
+      らっこアプリ
+    </a>
+    <nav class="nav__links" aria-label="メイン">
+      <a class="nav__link" href="/#featured">注目</a>
+      <a class="nav__link" href="/#apps">アプリ一覧</a>
+      <a class="nav__link" href="/lab/">攻略ラボ</a>
+      <a class="nav__link" href="/#about">このサイトについて</a>
+    </nav>
+  </div>
+</header>
+
+<main id="report" class="report">
+  <div class="lab-prose">
+    <nav class="breadcrumb" aria-label="パンくず">
+      <a href="/">らっこアプリ</a> <span aria-hidden="true">›</span>
+      <a href="/lab/">攻略ラボ</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">ゴブレットゴブラーズ完全解析</span>
+    </nav>
+
+    <header class="report-head">
+      <h1>ゴブレットゴブラーズは<span class="win">先手必勝</span>。<br>最短13手、機械検証済み。</h1>
+      <p class="report-lede">3×3盤・大中小各2個の公式ルールを完全解析しました。先手は最善を尽くす後手に対し、自身の7手目までに必ず勝てます。掲載の手数はすべて予算付きAND-OR全数証明による厳密値です。</p>
+      <span class="cert-chip">CERTIFIED EXACT — 証明ノード 4,700万 / 6秒</span>
+    </header>
+
+    <h2>初手チャート <span class="sub">全27手の厳密値</span></h2>
+    <p class="lab-p">数字は両者最善時の終局までの総手数（プライ）。コーラル=先手勝ち、ブルー=先手負け。<strong>大を角か中央</strong>、または<strong>小を辺</strong>に置けば最速13手勝ち。<strong>中はどこに置いても負けます</strong>。</p>
+    <div class="charts">
+      <div class="chart">
+        <h3><span class="pc x S"></span>小を置く</h3>
+        <div class="cgrid" role="img" aria-label="小の初手評価: 角15手勝ち・辺13手勝ち・中央15手勝ち">
+          <div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div>
+          <div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div>
+          <div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div>
+        </div>
+      </div>
+      <div class="chart">
+        <h3><span class="pc x M"></span>中を置く</h3>
+        <div class="cgrid" role="img" aria-label="中の初手評価: 角14手負け・辺12手負け・中央12手負け">
+          <div class="c l14"><b>14</b><span>負け</span></div><div class="c l12"><b>12</b><span>負け</span></div><div class="c l14"><b>14</b><span>負け</span></div>
+          <div class="c l12"><b>12</b><span>負け</span></div><div class="c l12"><b>12</b><span>負け</span></div><div class="c l12"><b>12</b><span>負け</span></div>
+          <div class="c l14"><b>14</b><span>負け</span></div><div class="c l12"><b>12</b><span>負け</span></div><div class="c l14"><b>14</b><span>負け</span></div>
+        </div>
+      </div>
+      <div class="chart">
+        <h3><span class="pc x L"></span>大を置く</h3>
+        <div class="cgrid" role="img" aria-label="大の初手評価: 角13手勝ち・辺15手勝ち・中央13手勝ち">
+          <div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div>
+          <div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div>
+          <div class="c w13"><b>13</b><span>勝ち</span></div><div class="c w15"><b>15</b><span>勝ち</span></div><div class="c w13"><b>13</b><span>勝ち</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span class="k1"><i></i>13手で先手勝ち</span>
+      <span class="k2"><i></i>15手で先手勝ち</span>
+      <span class="k3"><i></i>12手で先手負け</span>
+      <span class="k4"><i></i>14手で先手負け</span>
+    </div>
+
+    <h2>証明済み最善進行 <span class="sub">両者最善・13手で終局</span></h2>
+    <p class="lab-p">先手・後手とも証明済みの最適手（後手は最長抵抗）です。10手目以降の「持ち上げてゴブル」の応酬と、11手目のダブル脅威に注目してください。</p>
+    <div class="stepper">
+      <div class="board" id="board" aria-label="盤面"></div>
+      <div class="step-info">
+        <div class="step-move" id="stepMove"></div>
+        <p class="step-gloss" id="stepGloss"></p>
+        <div class="step-ctl">
+          <button id="btnPrev" aria-label="前の手">←</button>
+          <button id="btnNext" aria-label="次の手">→</button>
+          <span class="cnt" id="stepCnt"></span>
+        </div>
+        <div class="movelist" id="moveList"></div>
+      </div>
+    </div>
+
+    <h2>ルールと変種 <span class="sub">どちらのルールでも先手必勝</span></h2>
+    <div class="fact-grid">
+      <div class="fact-card">
+        <h3>採用ルール（公式）</h3>
+        <p>手駒でも盤上の小さい駒に被せられる公式ルール。同サイズには被せ不可、持ち上げて相手の3並びが現れたらライン上を塞がない限り即負け（露出ルール）も正確に実装しています。</p>
+      </div>
+      <div class="fact-card">
+        <h3>変種：手駒は空マスのみ</h3>
+        <p>結果はさらに一方的で、<span class="big">27手すべて</span>の初手が先手勝ち。最速は中央に大の<strong>9手</strong>、その他もすべて11手以内です。手駒でゴブルできない分、後手の防御が乏しくなります。</p>
+      </div>
+    </div>
+
+    <h2>検証方法 <span class="sub">2系統のソルバーで確定</span></h2>
+    <ul class="bullets">
+      <li><strong>高速探索器</strong> — 反復深化ネガマックス＋αβ＋置換表（盤面8対称×手番相対の16倍縮約）。勝敗の分類に使用。</li>
+      <li><strong>独立証明器（最終判定）</strong> — 「bプライ以内に勝てる/負ける」を予算付きAND-OR全数展開＋メモ化で証明。距離は構成的に厳密で、最初に成立した予算＝最短手数。初期局面の証明は約650万ノード・約1秒。</li>
+      <li>ルールエンジンはperft手計算値（27 / 675）との一致、露出ルールのシナリオテストで検証済み。</li>
+      <li>完全情報・二人零和・確定ゲームのため、GTO＝ミニマックス最適。引き分けになる進行は最善同士では現れません。</li>
+    </ul>
+
+    <p class="report-meta">SOLVED 2026-08-01 · らっこアプリ攻略ラボ · 表記: 列a–c × 行1–3（Lb2=大をb2へ、Lc1&gt;c3=c1の駒をc3へ移動）</p>
+  </div>
+
+  <div class="ad-box">
+    <p class="ad-box__label">広告</p>
+    <ins class="adsbygoogle" style="display:block"
+         data-ad-client="ca-pub-1975437480047330"
+         data-ad-slot="6052222234"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer__statement">つくって、公開して、また next。<br>らっこアプリ。</p>
+    <div class="footer__row">
+      <nav class="footer__links" aria-label="フッター">
+        <a href="/#apps">アプリ一覧</a>
+        <a href="/lab/">攻略ラボ</a>
+        <a href="/lab/privacy.html">プライバシーポリシー</a>
+        <a href="mailto:rakko9924@gmail.com">お問い合わせ</a>
+      </nav>
+      <p class="footer__copy">© 2026 らっこアプリ</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// 証明済み最善進行（各手適用後の盤面トップのみ、順序: a1,b1,c1,a2,b2,c2,a3,b3,c3）
+const STEPS = [
+  {m:null, g:"初期局面。先手（コーラル）の手番。", t:["","","","","","","","",""]},
+  {m:"X Sb1", g:"小をb1へ。あえて小駒から入るのも最速勝ちの一つ（大を角/中央でも13手）。", t:["","xS","","","","","","",""]},
+  {m:"o Sa1", g:"後手も小をa1へ（証明済みの最長抵抗）。", t:["oS","xS","","","","","","",""]},
+  {m:"X Ma1", g:"中でa1の後手の小をゴブル。", t:["xM","xS","","","","","","",""]},
+  {m:"o Mb1", g:"お返しに中でb1の先手の小をゴブル。", t:["xM","oM","","","","","","",""]},
+  {m:"X La1", g:"大を自分の中の上に重ねてa1を恒久支配（大は誰にも被せられない）。", t:["xL","oM","","","","","","",""]},
+  {m:"o Lc1", g:"後手は大でc1を確保。", t:["xL","oM","oL","","","","","",""]},
+  {m:"X Ma2", g:"中をa2へ。a列（a1-a2-a3）の脅威を作る。", t:["xL","oM","oL","xM","","","","",""]},
+  {m:"o La2", g:"後手は2個目の大でa2の中をゴブルして脅威を消す。これで後手の大は出払った。", t:["xL","oM","oL","oL","","","","",""]},
+  {m:"X Lb2", g:"先手2個目の大を中央へ。対角 a1-b2-c3 の脅威。後手に大は残っていない。", t:["xL","oM","oL","oL","xL","","","",""]},
+  {m:"o Lc1>c3", g:"c1の大をc3へ動かして対角をブロック。ただしc1が空く。", t:["xL","oM","","oL","xL","","","","oL"]},
+  {m:"X La1>b1", g:"a1の大でb1の中をゴブル。a1には自分の中が現れ、1行目（a1-b1-c1）とb列（b1-b2-b3）のダブル脅威。", t:["xM","xL","","oL","xL","","","",""]},
+  {m:"o Sc1", g:"小でc1を塞ぐ（最長の粘り）。しかしb3は塞げない。", t:["xM","xL","oS","oL","xL","","","",""]},
+  {m:"X Sb3", g:"小をb3へ。b列（大・大・小）が完成し先手の勝ち。", t:["xM","xL","oS","oL","xL","","","xS",""], win:[1,4,7]},
+];
+// ply10以降は c3 に後手の大が残る
+for(let i=11;i<STEPS.length;i++) STEPS[i].t[8]="oL";
+
+const board=document.getElementById("board");
+const mv=document.getElementById("stepMove"), gl=document.getElementById("stepGloss"),
+      cnt=document.getElementById("stepCnt"), ml=document.getElementById("moveList");
+let cur=0;
+
+function render(){
+  const s=STEPS[cur];
+  board.innerHTML="";
+  for(let r=2;r>=0;r--)for(let c=0;c<3;c++){
+    const idx=r*3+c, sq=document.createElement("div");
+    sq.className="sq"+((s.win&&s.win.includes(idx))?" hl":"");
+    const top=s.t[idx];
+    if(top){
+      const p=document.createElement("div");
+      p.className="pc "+(top[0]==="x"?"x":"o")+" "+top[1];
+      sq.appendChild(p);
+    }
+    board.appendChild(sq);
+  }
+  if(s.m){
+    const isX=s.m[0]==="X";
+    mv.className="step-move "+(isX?"xs":"os");
+    mv.innerHTML=(isX?"先手":"後手")+"&nbsp;<span class=\"mono\">"+s.m.slice(2)+"</span>";
+  }else{ mv.className="step-move"; mv.textContent="開始"; }
+  gl.textContent=s.g;
+  cnt.textContent=cur+" / "+(STEPS.length-1);
+  document.getElementById("btnPrev").disabled=(cur===0);
+  document.getElementById("btnNext").disabled=(cur===STEPS.length-1);
+  [...ml.children].forEach((b,i)=>b.classList.toggle("cur",i===cur-1));
+}
+STEPS.slice(1).forEach((s,i)=>{
+  const b=document.createElement("button");
+  b.textContent=(i+1)+"."+s.m.slice(2);
+  b.className=s.m[0]==="X"?"xs":"os";
+  b.addEventListener("click",()=>{cur=i+1;render();});
+  ml.appendChild(b);
+});
+document.getElementById("btnPrev").addEventListener("click",()=>{if(cur>0){cur--;render();}});
+document.getElementById("btnNext").addEventListener("click",()=>{if(cur<STEPS.length-1){cur++;render();}});
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA") return;
+  if(e.key==="ArrowLeft"&&cur>0){cur--;render();}
+  if(e.key==="ArrowRight"&&cur<STEPS.length-1){cur++;render();}
+});
+render();
+</script>
+</body>
+</html>
