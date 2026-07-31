@@ -1,6 +1,6 @@
 /* sw.js — オフライン用 Service Worker。
    初回アクセス時に必要ファイルをキャッシュし、以後はネットワーク無しでも起動可能にする。 */
-const CACHE = 'nlh-headsup-v13';
+const CACHE = 'nlh-headsup-v14';
 const ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS = [
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
   './icons/ui/trophy.png',
+  './icons/ui/rakko.png',
   './sfx/click.m4a',
   './sfx/flip.m4a',
   './sfx/deal.m4a',

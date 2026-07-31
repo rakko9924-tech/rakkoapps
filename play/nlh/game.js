@@ -963,6 +963,16 @@
           </div>
         </details>
         ${a2hsHTML}
+
+        <a class="rakko-link" href="https://rakkoapps.com/" rel="noopener">
+          <img src="./icons/ui/rakko.png" width="96" height="96" alt="">
+          <span class="rakko-link__text">
+            <b>らっこアプリ</b>
+            <small>ほかのゲーム・アプリを見る</small>
+          </span>
+          <span class="rakko-link__arrow" aria-hidden="true">›</span>
+        </a>
+
         <p class="version">v1.1</p>
       </div>`;
 
