@@ -102,7 +102,7 @@
   #home h1{ margin:6px 0 0; font-size:30px; text-shadow:0 2px 12px rgba(255,61,127,.6); }
   #home p{ margin:0 0 14px; font-size:13px; opacity:.7; line-height:1.6; }
 
-  /* ===== らっこアプリへの導線 ===== */
+  /* ===== らっこアプリへの導線（サイト版のみ） ===== */
   .rakko-link{
     display:flex; align-items:center; gap:11px; text-decoration:none;
     background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22);
@@ -115,6 +115,7 @@
   .rakko-link__text b{ font-size:14px; }
   .rakko-link__text small{ font-size:11px; opacity:.7; margin-top:2px; }
   .rakko-link__arrow{ opacity:.6; font-size:20px; line-height:1; flex:0 0 auto; }
+
 
   /* ===== ゲーム ===== */
   .card-stage{ flex:1; width:100%; display:flex; align-items:center; justify-content:center; perspective:900px; min-height:0; }
@@ -145,6 +146,43 @@
   .tier-ero{ background:#ff1e6f; color:#fff; }
   .tier-booze{ background:#b71c1c; color:#fff; }
   .age-badge{ display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#c2185b; border-radius:8px; padding:1px 6px; margin-left:6px; vertical-align:middle; }
+
+  /* ===== 広告で解放するロックカード ===== */
+  .lock-card{
+    background:rgba(255,255,255,.07); border:1px dashed rgba(255,255,255,.28);
+    border-radius:14px; padding:16px; margin-bottom:10px; text-align:center;
+  }
+  .lock-card.danger{ background:rgba(255,23,68,.1); border-color:rgba(255,82,82,.45); }
+  .lock-card .lock-name{ font-size:15px; font-weight:800; }
+  .lock-card .lock-meta{ font-size:11px; opacity:.65; margin-top:6px; line-height:1.6; }
+  .ad-btn{
+    margin-top:12px; border:none; cursor:pointer; border-radius:14px; color:#fff;
+    font-size:15px; font-weight:800; padding:13px 22px; width:100%; max-width:280px;
+    background:linear-gradient(160deg,#ff6fa3,var(--accent));
+    box-shadow:0 8px 20px rgba(255,61,127,.4);
+  }
+  .ad-btn:disabled{ opacity:.6; box-shadow:none; }
+  .ad-btn.danger{ background:linear-gradient(160deg,#ff5252,#c62828); box-shadow:0 8px 20px rgba(198,40,40,.45); }
+  .lock-until{ font-size:10px; opacity:.5; margin-top:8px; }
+
+  /* ===== 広告モーダル ===== */
+  .ad-modal{
+    position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.72); padding:24px;
+  }
+  .ad-modal[hidden]{ display:none; }
+  .ad-modal__box{
+    background:linear-gradient(160deg,#2a0a45,#1a0033); border:1px solid rgba(255,255,255,.18);
+    border-radius:20px; padding:22px 20px; width:min(90vw,360px); text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+  }
+  .ad-modal__box h3{ margin:0 0 10px; font-size:17px; }
+  .ad-modal__box p{ margin:0; font-size:12px; opacity:.75; line-height:1.8; }
+  .ad-modal__actions{ display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .ad-modal__cancel{
+    background:none; border:none; color:#fff; opacity:.6; font-size:13px; font-weight:700;
+    padding:8px; cursor:pointer;
+  }
   .card.extreme{ background:linear-gradient(160deg,#fff,#ffe3e8); }
   .card.extreme.result{ animation:pop .5s cubic-bezier(.2,1.4,.4,1), flash .6s ease 3; }
   @keyframes flash{ 0%,100%{ box-shadow:0 18px 50px rgba(0,0,0,.55), inset 0 0 0 6px #ff1744 } 50%{ box-shadow:0 0 60px 10px rgba(255,23,68,.9), inset 0 0 0 8px #ff1744 } }
@@ -229,6 +267,7 @@
       </span>
       <span class="rakko-link__arrow" aria-hidden="true">›</span>
     </a>
+
   </section>
 
   <!-- ===== ゲーム画面 ===== -->
@@ -269,6 +308,18 @@
       <p class="age" style="opacity:.6"><a href="privacy.html" style="color:#fff">プライバシーポリシー</a></p>
     </div>
   </section>
+
+  <!-- ===== 広告で解放するモーダル ===== -->
+  <div class="ad-modal" id="adModal" hidden>
+    <div class="ad-modal__box">
+      <h3 id="adModalTitle"></h3>
+      <p id="adModalBody"></p>
+      <div class="ad-modal__actions">
+        <button class="ad-btn" id="adModalGo"></button>
+        <button class="ad-modal__cancel" id="adModalCancel">やめる</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -423,6 +474,117 @@ for(const k in DEFAULTS.tiers) if(settings.tiers[k]===undefined) settings.tiers[
 function load(key, def){ try{ const v=localStorage.getItem(key); return v? JSON.parse(v): def; }catch(e){ return def; } }
 function save(){ try{ localStorage.setItem('dg_settings', JSON.stringify(settings)); }catch(e){} }
 
+/* ===================== 広告で解放（大人パック → ライン超え） =====================
+   2段構え:
+     ①「大人パック」(17+/18+) … 広告を見ると解放。同時に「ライン超え」枠が姿を現す
+     ②「ライン超え」(エロ系/飲酒系) … さらにもう1本広告を見ると解放
+   解放は24時間で切れ、その時点でそのジャンルは自動でOFFに戻る。
+   広告は Google H5 Games Ads（リワード）を使う。Web版のみ＝iOS(Capacitor)ではゲートしない。 */
+const ADSENSE_CLIENT = 'ca-pub-1975437480047330';
+const UNLOCK_TTL_MS  = 24*60*60*1000;
+const AD_GATE   = /^https?:$/.test(location.protocol);
+const GATES = {
+  adult:  { tiers:['spicy','spicy2'], label:'大人パック' },
+  danger: { tiers:['ero','booze'],    label:'ライン超え枠' },
+};
+
+let unlocks = load('dg_unlocks', {});
+function saveUnlocks(){ try{ localStorage.setItem('dg_unlocks', JSON.stringify(unlocks)); }catch(e){} }
+function isUnlocked(kind){
+  if(!AD_GATE) return true;                       // ネイティブ版はゲートしない
+  return (unlocks[kind]||0) + UNLOCK_TTL_MS > Date.now();
+}
+function grantUnlock(kind){ unlocks[kind]=Date.now(); saveUnlocks(); }
+/* 期限切れの解放は捨てて、そのジャンルもOFFに戻す */
+function pruneUnlocks(){
+  let dirty=false;
+  for(const kind in GATES){
+    if(unlocks[kind] && !isUnlocked(kind)){ delete unlocks[kind]; dirty=true; }
+    if(!isUnlocked(kind)) GATES[kind].tiers.forEach(t=>{ if(settings.tiers[t]){ settings.tiers[t]=false; dirty=true; } });
+  }
+  if(dirty){ saveUnlocks(); save(); }
+}
+function unlockLeftText(kind){
+  const left = (unlocks[kind]||0) + UNLOCK_TTL_MS - Date.now();
+  if(left<=0) return '';
+  const h = Math.floor(left/3600000), m = Math.ceil((left%3600000)/60000);
+  return `解放中（あと${h>0?`${h}時間`:''}${h>0?'':`${m}分`}）`;
+}
+
+/* --- Google H5 Games Ads（リワード広告） --- */
+let adsReady = false;
+if(AD_GATE){
+  window.adsbygoogle = window.adsbygoogle || [];
+  window.adBreak  = function(o){ window.adsbygoogle.push(o); };
+  window.adConfig = function(o){ window.adsbygoogle.push(o); };
+  const s = document.createElement('script');
+  s.async = true; s.crossOrigin = 'anonymous';
+  s.setAttribute('data-ad-frequency-hint','30s');
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
+  document.head.appendChild(s);
+  window.adConfig({ preloadAdBreaks:'on', sound:'off', onReady(){ adsReady = true; } });
+}
+/* リワード広告を1本出す。最後まで見られたら true */
+function showRewardAd(name){
+  return new Promise(resolve=>{
+    if(!AD_GATE || !adsReady){ resolve(false); return; }
+    let rewarded=false, settled=false;
+    const done = v => { if(!settled){ settled=true; clearTimeout(timer); resolve(v); } };
+    const timer = setTimeout(()=>done(false), 8000);   // 在庫が無い/応答が無い場合の保険
+    try{
+      window.adBreak({
+        type:'reward', name,
+        beforeReward(showAdFn){ clearTimeout(timer); showAdFn(); },
+        adViewed(){ rewarded = true; },
+        adDismissed(){ rewarded = false; },
+        adBreakDone(){ done(rewarded); },
+      });
+    }catch(e){ done(false); }
+  });
+}
+
+/* --- 解放モーダル --- */
+const adModal = { box:byId('adModal'), title:byId('adModalTitle'), body:byId('adModalBody'), go:byId('adModalGo'), cancel:byId('adModalCancel') };
+function closeAdGate(){ adModal.box.hidden = true; }
+adModal.cancel.onclick = closeAdGate;
+adModal.box.addEventListener('click', e=>{ if(e.target===adModal.box) closeAdGate(); });
+
+function openAdGate(kind){
+  const danger = kind==='danger';
+  adModal.title.textContent = danger ? '🔞 ライン超え枠を解放' : '💕 大人パックを解放';
+  adModal.body.innerHTML = danger
+    ? 'エロ系・飲酒系の<b>ライン超え枠</b>を解放します。<br>動画広告を最後まで見ると<b>24時間</b>使えるようになります。<br><small>※18歳以上・参加者全員の合意が前提です。イヤなお題は遠慮なく却下してください。</small>'
+    : '17+/18+の<b>大人パック</b>を解放します。<br>動画広告を最後まで見ると<b>24時間</b>使えるようになります。<br><small>※解放すると、さらに過激な「ライン超え枠」も設定に表示されます。</small>';
+  adModal.go.textContent = '▶ 広告を見て解放';
+  adModal.go.className = 'ad-btn' + (danger ? ' danger' : '');
+  adModal.go.disabled = false;
+  adModal.box.hidden = false;
+
+  adModal.go.onclick = async ()=>{
+    adModal.go.disabled = true;
+    adModal.go.textContent = '広告を読み込み中…';
+    const ok = await showRewardAd('unlock_'+kind);
+    if(ok){
+      grantUnlock(kind); closeAdGate(); renderSettings();
+      toast(`${GATES[kind].label}を解放しました🎉`);
+      return;
+    }
+    // 広告が出せなかったとき（在庫なし/ブロック中）は待ち時間で代替する
+    let left = 10;
+    adModal.body.innerHTML = 'いま広告を配信できませんでした。<br>少し待つと解放されます。';
+    const tick = setInterval(()=>{
+      adModal.go.textContent = `解放まで ${left}秒`;
+      if(left-- <= 0){
+        clearInterval(tick);
+        grantUnlock(kind); closeAdGate(); renderSettings();
+        toast(`${GATES[kind].label}を解放しました🎉`);
+      }
+    }, 1000);
+  };
+}
+
+pruneUnlocks();   // 起動時に期限切れの解放を掃除（切れていたらそのジャンルはOFFに戻る）
+
 /* ===================== 抽選プール ===================== */
 function activePool(){
   let pool = ALL_CARDS.filter(c => settings.tiers[c.t]);
@@ -501,17 +663,32 @@ hint.textContent='長押しでスタート！';
 
 /* ===================== 設定画面の描画 ===================== */
 function renderSettings(){
+  pruneUnlocks();
   const rowHtml = info=>{
     const on = settings.tiers[info.t] ? 'checked':'';
     const badge = info.adult ? ` <span class="age-badge">${info.age}+</span>` : '';
     return `<div class="row${info.danger?' row-danger':''}"><div class="info"><div class="name">${info.name}${badge}</div><div class="meta">${info.meta}</div></div>
       <div class="sw"><input type="checkbox" id="t_${info.t}" ${on}><label for="t_${info.t}"></label></div></div>`;
   };
-  // 通常ジャンル
-  byId('tierRows').innerHTML = TIER_INFO.filter(i=>!i.danger).map(rowHtml).join('');
-  // ライン超え枠（設定のいちばん下）
-  const dangers = TIER_INFO.filter(i=>i.danger);
-  byId('dangerSection').innerHTML =
+  const lockHtml = (kind, name, meta)=>
+    `<div class="lock-card${kind==='danger'?' danger':''}">
+       <div class="lock-name">🔒 ${name}</div>
+       <div class="lock-meta">${meta}</div>
+       <button class="ad-btn${kind==='danger'?' danger':''}" id="unlock_${kind}">▶ 広告を見て解放</button>
+     </div>`;
+
+  // 通常ジャンル（大人パックはロック中なら1枚のカードにまとめる）
+  const adultOK  = isUnlocked('adult');
+  const dangerOK = isUnlocked('danger');
+  byId('tierRows').innerHTML =
+    TIER_INFO.filter(i=>!i.danger && !i.adult).map(rowHtml).join('') +
+    (adultOK
+      ? TIER_INFO.filter(i=>!i.danger && i.adult).map(rowHtml).join('') + `<div class="lock-until">${unlockLeftText('adult')}</div>`
+      : lockHtml('adult','大人パック（17+/18+）',
+          '「💕 大人のドキドキ」「🔥 大人のプレミアム」を24時間だけ解放します。<br>解放すると、さらに過激な<b>ライン超え枠</b>も設定に出てきます。'));
+
+  // ライン超え枠（設定のいちばん下）＝大人パックを解放するまで表示しない
+  byId('dangerSection').innerHTML = !adultOK ? '' :
     `<div class="sec-title danger-title">🔞 ライン超え（超危険・自己責任）</div>
      <div class="danger-note">
        <b>⚠️ 本当にやばい枠です。</b>過激なお題だけが入っています。ノリより安全を優先してください。<br>
@@ -519,10 +696,20 @@ function renderSettings(){
        ・スキンシップ系は<b>相手の同意が絶対</b>。イヤがることは絶対にしない。<br>
        ・飲酒は20歳以上。<b>一気飲みは急性アルコール中毒の危険</b>。キツければ水・ソフトドリンクに切り替えを。<br>
        ・すべて自己責任で。体調・安全・全員の合意を最優先に。
-     </div>` + dangers.map(rowHtml).join('');
+     </div>` + (dangerOK
+       ? TIER_INFO.filter(i=>i.danger).map(rowHtml).join('') + `<div class="lock-until">${unlockLeftText('danger')}</div>`
+       : lockHtml('danger','ライン超え枠（💋 エロ系 / 🍾 飲酒系）',
+           'ここから先はもう一段きわどい枠です。<br>もう1本だけ広告を見ると24時間解放されます。'));
+
+  for(const kind in GATES){
+    const b = byId('unlock_'+kind);
+    if(b) b.onclick = ()=> openAdGate(kind);
+  }
 
   TIER_INFO.forEach(info=>{
-    byId('t_'+info.t).onchange = e=>{
+    const el = byId('t_'+info.t);
+    if(!el) return;              // ロック中で描画されていないジャンル
+    el.onchange = e=>{
       // ライン超え枠：ONで強めの確認。断ったらトグルを戻す
       if(e.target.checked && info.danger){
         const msg = info.drink

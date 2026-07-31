@@ -1,5 +1,5 @@
 /* sw.js — のみゲー ルーレット 簡易サービスワーカー（オフライン対応 / インストール可能化） */
-const CACHE = 'nomigame-web-v1';
+const CACHE = 'nomigame-v6';
 const ASSETS = [
   './',
   './index.html',
