@@ -81,7 +81,7 @@
       const lv = tourneyLevel();
       const handsLeft = HANDS_PER_LEVEL - (((G ? G.handNo : 1) - 1) % HANDS_PER_LEVEL);
       const next = lv < TOURNEY_LEVELS.length - 1 ? `・あと${handsLeft}ハンドで上昇` : '・最終レベル';
-      base = `🏆Lv.${lv + 1}　${base}${next}`;
+      base = `Lv.${lv + 1}　${base}${next}`;
     }
     return base;
   }
@@ -238,6 +238,71 @@
     return betsEqual && live.every((i) => H.actedSinceRaise.has(i) || H.allIn[i]);
   }
 
+  // ---- ホーム画面に追加（Android / デスクトップChrome はワンタップで追加できる） ----
+  // iOS Safari はこのAPIが無いので、ホーム画面の説明どおり手動で追加してもらう。
+  let installPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    installPrompt = e;
+    const btn = document.getElementById('a2hs-install');
+    if (btn) btn.hidden = false;
+  });
+  window.addEventListener('appinstalled', () => { installPrompt = null; });
+  function wireInstallButton() {
+    const btn = document.getElementById('a2hs-install');
+    if (!btn) return;
+    btn.hidden = !installPrompt;
+    btn.onclick = async () => {
+      if (!installPrompt) return;
+      sfx('click');
+      installPrompt.prompt();
+      try { await installPrompt.userChoice; } catch (e) { /* 無視 */ }
+      installPrompt = null;
+      btn.hidden = true;
+    };
+  }
+
+  // ---- ホームに戻るボタン（対局中・結果画面の中央帯に置く） ----
+  // 上下どちら向きでも読めるよう、回転しない中央帯の隅に固定する。
+  // アイコンは Lucide（ISC）の house。絵文字は端末ごとに見た目が変わるので使わない。
+  const HOUSE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    </svg>`;
+  const homeBtnHTML = `<button class="homebtn" data-home aria-label="ホームに戻る" title="ホームに戻る">${HOUSE_SVG}</button>`;
+  function wireHomeBtn() {
+    document.querySelectorAll('[data-home]').forEach((b) => {
+      b.onclick = () => { sfx('click'); askLeave(); };
+    });
+  }
+
+  // 中断確認。ブラウザ標準の confirm() はPWAだとドメイン名が出て興ざめなので自前で出す。
+  function askLeave() {
+    if (document.querySelector('.modal-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.innerHTML = `
+      <div class="modal" role="dialog" aria-modal="true">
+        <p class="modal-title">ホームに戻りますか？</p>
+        <p class="modal-body">対局を中断します。今のチップ状況はリセットされます。</p>
+        <div class="modal-btns">
+          <button class="btn" data-leave-no>つづける</button>
+          <button class="btn fold" data-leave-yes>ホームに戻る</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const close = () => wrap.remove();
+    wrap.querySelector('[data-leave-no]').onclick = () => { sfx('click'); close(); };
+    wrap.querySelector('[data-leave-yes]').onclick = () => { sfx('click'); close(); renderHome(); };
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+  }
+
+  // 増額アクションの呼び方。プリフロップはブラインドが既にベットなので、
+  // コール額が0（BBに option が回ってきた場面など）でも「レイズ」。
+  function raiseWord(toCall) {
+    return (toCall === 0 && H.street !== 'preflop') ? 'ベット' : 'レイズ';
+  }
+
   function act(type, amount) {
     const i = H.toAct;
     if (H.finished) return;
@@ -287,7 +352,7 @@
       if (G.stacks[i] === 0) H.allIn[i] = true;
       if (add > 0) chipFx = { player: i, add };
       sfx(H.allIn[i] ? 'allin' : 'chips');
-      const word = toCall === 0 ? 'ベット' : 'レイズ';
+      const word = raiseWord(toCall);
       pushLog(`${settings.names[i]} が${word} ${target}${H.allIn[i] ? ' (オールイン)' : ''}。`);
       // レイズが入ったので相手は再び行動が必要
       H.actedSinceRaise = new Set([i]);
@@ -461,7 +526,7 @@
       const isActor = (p === actor);
       const tc = Math.max(0, H.bet[1 - p] - H.bet[p]);
       const cr = G.stacks[p] > tc && !H.allIn[1 - p];
-      const rw = tc === 0 ? 'ベット' : 'レイズ';
+      const rw = raiseWord(tc);
       const dis = isActor ? '' : 'disabled';
       const callOrCheck = tc > 0
         ? `<button class="btn call" data-act="call" ${dis}>コール<span class="amt">${fmt(Math.min(tc, G.stacks[p]))}</span></button>`
@@ -529,6 +594,7 @@
       <div class="table2">
         ${seatHTML(1)}
         <div class="center">
+          ${homeBtnHTML}
           ${tableBetHTML(1, 'bet-top')}
           <div class="center-mid">
             <div class="blinds-line">${blindsLabel()}</div>
@@ -541,6 +607,8 @@
         </div>
         ${seatHTML(0)}
       </div>`;
+
+    wireHomeBtn();
 
     // GGポーカー風スクイーズ。手札エリアをスワイプすると2枚同時に角がめくれる。指を離すと自動で伏せる。
     document.querySelectorAll('.peek').forEach((peek) => {
@@ -769,6 +837,7 @@
       <div class="table2 ended">
         ${endSeatHTML(1)}
         <div class="center">
+          ${homeBtnHTML}
           <div class="center-mid">
             <div class="blinds-line">${blindsLabel()}</div>
             <div class="pot">POT <b>${fmt(r.pot)}</b></div>
@@ -780,6 +849,8 @@
         ${endSeatHTML(0)}
       </div>`;
 
+    wireHomeBtn();
+
     const cont = over ? showGameOver : () => { G.button = 1 - G.button; startHand(); };
     document.querySelectorAll('[data-cont]').forEach((b) => { b.onclick = cont; });
   }
@@ -788,7 +859,7 @@
     const winner = G.stacks[0] > G.stacks[1] ? 0 : 1;
     $('#app').innerHTML = `
       <div class="gameover">
-        <h1>🏆 ゲーム終了</h1>
+        <h1><img class="go-trophy" src="./icons/ui/trophy.png" width="48" height="48" alt=""> ゲーム終了</h1>
         <p class="big-win">${settings.names[winner]} の勝利！</p>
         <p>${settings.names[0]}: ${fmt(G.stacks[0])}　/　${settings.names[1]}: ${fmt(G.stacks[1])}</p>
         <button class="btn big primary" id="restart">もう一度遊ぶ</button>
@@ -802,6 +873,43 @@
     const bbCount = Math.round((settings.startStack / b.bb) * 10) / 10;
     const ante = b.ante > 0 ? ` (ante ${b.ante.toLocaleString('en-US')})` : '';
 
+    // ホーム画面に追加する手順。すでにアプリとして起動していれば出さない。
+    // 端末に応じて自分の手順が先頭に来るように並べ替える。
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const ua = navigator.userAgent;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    const a2hsSteps = {
+      ios: `<div class="a2hs-os">iPhone / iPad（<b>Safari</b>で開いてください）</div>
+          <ol class="a2hs-steps">
+            <li>画面下（iPadは右上）の<b>共有ボタン</b> <span class="a2hs-ico">⬆️</span>（四角から上向き矢印）をタップ</li>
+            <li>メニューを下にスクロールして <b>「ホーム画面に追加」</b> をタップ</li>
+            <li>右上の <b>「追加」</b> をタップ</li>
+          </ol>
+          <p class="a2hs-note">※ Chrome など Safari 以外のブラウザからは追加できません。</p>`,
+      android: `<div class="a2hs-os">Android（Chrome）</div>
+          <ol class="a2hs-steps">
+            <li>右上の <b>⋮</b>（メニュー）をタップ</li>
+            <li><b>「ホーム画面に追加」</b>（または「アプリをインストール」）をタップ</li>
+            <li><b>「追加」</b> → <b>「自動的に追加」</b> をタップ</li>
+          </ol>`,
+      pc: `<div class="a2hs-os">パソコン（Chrome / Edge）</div>
+          <ol class="a2hs-steps">
+            <li>アドレスバー右端の<b>インストールアイコン</b>（画面に下向き矢印）をクリック</li>
+            <li><b>「インストール」</b> をクリック</li>
+          </ol>`,
+    };
+    const a2hsOrder = isIOS ? ['ios', 'android', 'pc'] : isAndroid ? ['android', 'ios', 'pc'] : ['pc', 'ios', 'android'];
+    const a2hsHTML = isStandalone ? '' : `
+        <details class="rules panel a2hs">
+          <summary>ホーム画面に追加する（アプリのように使う）</summary>
+          <div class="rules-body">
+            <p>ホーム画面に追加すると、アドレスバーの無い全画面で起動でき、電波がなくても遊べます。</p>
+            <button class="btn a2hs-install" id="a2hs-install" hidden>ホーム画面に追加する</button>
+            ${a2hsOrder.map((k) => a2hsSteps[k]).join('')}
+          </div>
+        </details>`;
+
     const optToggle = (settingKey, label, sub) =>
       `<label class="check paid">
           <input type="checkbox" id="${settingKey}" ${settings[settingKey] ? 'checked' : ''}>
@@ -814,7 +922,7 @@
         <p class="tag">オフライン・対面プレイ（正面通し）</p>
 
         <div class="panel">
-          <div class="fmt-line">フォーマット：<b>${b.sb.toLocaleString('en-US')}-${b.bb.toLocaleString('en-US')}${ante}</b>　スタック <b>${settings.startStack.toLocaleString('en-US')}</b>（${bbCount}BB）${settings.tournament ? '　🏆トーナメント' : ''}</div>
+          <div class="fmt-line">フォーマット：<b>${b.sb.toLocaleString('en-US')}-${b.bb.toLocaleString('en-US')}${ante}</b>　スタック <b>${settings.startStack.toLocaleString('en-US')}</b>（${bbCount}BB）${settings.tournament ? '　トーナメント' : ''}</div>
         </div>
 
         <div class="panel settings">
@@ -854,8 +962,11 @@
             </ul>
           </div>
         </details>
-        <p class="version">v1.1 ・ ホーム画面に追加するとアプリのように起動できます</p>
+        ${a2hsHTML}
+        <p class="version">v1.1</p>
       </div>`;
+
+    wireInstallButton();
 
     $('#start').onclick = () => {
       settings.names[0] = ($('#n0').value || 'プレイヤー1').trim();
@@ -869,9 +980,41 @@
       settings.anteOff = $('#anteOff').checked;
       settings.tournament = $('#tournament').checked;
       saveSettings(settings);
-      newMatch();
-      startHand();
+      startMatch();
     };
+  }
+
+  // ---- 対局開始（広告が有効なら開始前に1枚はさむ） ----
+  function startMatch() {
+    if (window.ADS && window.ADS.available()) { renderStartAd(); return; }
+    newMatch();
+    startHand();
+  }
+
+  // 広告画面。読み込めなかった場合は待たせず即開始する。
+  const AD_WAIT_SEC = 5;
+  function renderStartAd() {
+    $('#app').innerHTML = `
+      <div class="adscreen">
+        <div class="ad-label">広告</div>
+        <div class="ad-slot" id="adslot"></div>
+        <div class="ad-foot">
+          <button class="btn big primary" id="adgo" disabled>まもなく開始（<span id="adcount">${AD_WAIT_SEC}</span>）</button>
+        </div>
+      </div>`;
+    const begin = () => { sfx('click'); newMatch(); startHand(); };
+    if (!window.ADS.render($('#adslot'))) { begin(); return; }
+
+    const go = $('#adgo');
+    let left = AD_WAIT_SEC;
+    const timer = setInterval(() => {
+      left -= 1;
+      if (left > 0) { $('#adcount').textContent = left; return; }
+      clearInterval(timer);
+      go.disabled = false;
+      go.textContent = 'ゲームを始める';
+    }, 1000);
+    go.onclick = () => { if (!go.disabled) begin(); };
   }
 
   function clampInt(v, lo, hi, dflt) {
