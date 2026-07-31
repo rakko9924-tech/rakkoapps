@@ -26,6 +26,8 @@
 <link rel="stylesheet" href="/css/tokens.css">
 <link rel="stylesheet" href="/css/styles.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1975437480047330" crossorigin="anonymous"></script>
+<script src="./solver.js"></script>
+<script src="./book.js"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -120,6 +122,94 @@
   .legend .k1 i{ background:var(--x-tint-strong) } .legend .k2 i{ background:var(--x-tint) }
   .legend .k3 i{ background:var(--o-tint-strong) } .legend .k4 i{ background:var(--o-tint) }
 
+  /* ---- GTOアシスタント（対話盤） ---- */
+  .asst{
+    display:flex; gap:26px; align-items:flex-start; margin-top:18px; flex-wrap:wrap;
+    background:var(--color-card); border:1px solid var(--color-rule); border-radius:var(--radius-lg); padding:22px;
+    box-shadow: var(--shadow-card);
+  }
+  .asst-left{ flex:none; width:min(100%, 320px); }
+  .aboard{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:6px;
+    background:var(--board-bg); border:1px solid var(--color-rule); border-radius:var(--radius-md); padding:9px;
+    width:100%; aspect-ratio:1; touch-action:manipulation;
+  }
+  .aboard .asq{
+    background:var(--cell-bg); border-radius:9px; position:relative; border:0; padding:0; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font:inherit;
+  }
+  .aboard .asq:focus-visible{ outline:2px solid var(--color-focus); outline-offset:1px; }
+  .aboard .asq.sel{ outline:3px solid var(--color-accent); outline-offset:-3px; }
+  .aboard .asq.tgt::before{
+    content:""; position:absolute; inset:0; border-radius:9px;
+    border:2.5px dashed color-mix(in oklab, var(--color-accent) 55%, var(--color-rule)); pointer-events:none;
+  }
+  .aboard .asq.best::after{
+    content:"★"; position:absolute; top:3px; right:6px; font-size:12px; color:var(--x-deep); pointer-events:none;
+  }
+  .aboard .under{
+    position:absolute; bottom:4px; left:0; right:0; display:flex; gap:3px; justify-content:center; pointer-events:none;
+  }
+  .aboard .under i{ width:7px; height:7px; border-radius:50%; display:block; }
+  .aboard .under i.ux{ background:var(--x); } .aboard .under i.uo{ background:var(--o); }
+  .hands{ display:flex; justify-content:space-between; gap:10px; margin-top:12px; }
+  .hand{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .hand .who{ font-size:var(--text-xs); font-weight:700; color:var(--color-muted); margin-right:2px; }
+  .hand button{
+    border:2px solid transparent; background:var(--color-paper-2); border-radius:var(--radius-pill);
+    padding:4px; cursor:pointer; display:grid; place-items:center; font:inherit;
+    transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .hand button:disabled{ opacity:.35; cursor:default; }
+  .hand button.sel{ border-color:var(--color-accent); transform:translateY(-2px); }
+  .hand button:focus-visible{ outline:2px solid var(--color-focus); outline-offset:2px; }
+  .hand .hp{ border-radius:50%; position:relative; }
+  .hand .hp::after{ content:""; position:absolute; inset:18%; border-radius:50%; border:2px solid rgba(255,255,255,.45); }
+  .hand .hp.x{ background:var(--x); } .hand .hp.o{ background:var(--o); }
+  .hand .hp.L{ width:34px; height:34px; } .hand .hp.M{ width:26px; height:26px; } .hand .hp.S{ width:18px; height:18px; }
+  .asst-right{ flex:1; min-width:260px; }
+  .verdict{ font-family:var(--font-display); font-weight:700; font-size:var(--text-md); margin:0 0 4px; color:var(--color-ink); }
+  .verdict .vx{ color:var(--x-deep); } .verdict .vo{ color:var(--o-deep); }
+  .asst-status{ font-size:var(--text-xs); color:var(--color-muted); min-height:1.4em; margin:0 0 10px; }
+  .asst-status .spin{
+    display:inline-block; width:10px; height:10px; border:2px solid var(--color-rule-strong);
+    border-top-color:var(--color-accent); border-radius:50%; margin-right:6px; vertical-align:-1px;
+    animation:aspin .8s linear infinite;
+  }
+  @keyframes aspin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .asst-status .spin{ animation:none; } }
+  .mv-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .mv-chip{
+    border:1.5px solid var(--color-rule); background:var(--color-card); border-radius:var(--radius-pill);
+    padding:4px 11px; font-size:var(--text-xs); font-variant-numeric:tabular-nums; cursor:pointer; font:inherit;
+    color:var(--color-body); display:inline-flex; gap:6px; align-items:center;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+  .mv-chip:hover{ border-color:var(--color-accent); }
+  .mv-chip:focus-visible{ outline:2px solid var(--color-focus); outline-offset:1px; }
+  .mv-chip .mono{ font-weight:700; color:var(--color-ink); }
+  .mv-chip.best{ background:var(--x-tint); border-color:color-mix(in oklab, var(--x) 45%, var(--color-rule)); }
+  .mv-chip.best .mono{ color:var(--x-deep); }
+  .mv-chip .vv{ color:var(--color-muted); }
+  .mv-chip.vwin .vv{ color:var(--x-deep); font-weight:700; }
+  .mv-chip.vloss .vv{ color:var(--o-deep); }
+  .asst-ctl{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .asst-ctl button{
+    font:inherit; font-weight:700; font-size:var(--text-sm); padding:7px 14px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--color-rule-strong); background:var(--color-card); color:var(--color-ink); cursor:pointer;
+    transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .asst-ctl button:hover:not(:disabled){ border-color:var(--color-accent); transform:translateY(-1px); }
+  .asst-ctl button:disabled{ opacity:.35; cursor:default; }
+  .asst-ctl button:focus-visible{ outline:2px solid var(--color-focus); outline-offset:2px; }
+  .asst-ctl .primary{ background:var(--color-accent-strong); border-color:var(--color-accent-strong); color:var(--color-on-accent); }
+  .hist{ margin-top:12px; font-family:"SF Mono",Menlo,Consolas,monospace; font-size:11.5px; color:var(--color-muted); line-height:1.9; word-break:break-all; min-height:1.6em; }
+  .gameover{
+    margin-top:10px; padding:10px 14px; border-radius:var(--radius-md); font-weight:700; font-size:var(--text-sm);
+    background:var(--x-tint); color:var(--x-deep); display:none;
+  }
+  .gameover.olose{ background:var(--o-tint); color:var(--o-deep); }
+
   /* ---- 最善進行ステッパー ---- */
   .stepper{
     display:flex; gap:24px; align-items:flex-start; margin-top:18px; flex-wrap:wrap;
@@ -170,7 +260,8 @@
   }
   .report-meta{ margin-top:var(--space-2xl); padding-top:16px; border-top:1px solid var(--color-rule); font-size:var(--text-xs); color:var(--color-muted); letter-spacing:.03em; }
 
-  .ad-box{ margin: var(--space-xl) auto 0; max-width: 900px; padding: 0 20px; }
+  .ad-box{ margin: var(--space-xl) auto 0; max-width: 900px; padding: 0 20px; overflow-x: hidden; }
+  .ad-box ins{ max-width: 100%; }
   .ad-box__label{ font-size:10px; letter-spacing:.14em; color:var(--color-muted); text-align:center; margin-bottom:4px; }
   ins.adsbygoogle[data-ad-status="unfilled"]{ display:none; }
   .ad-box:has(ins.adsbygoogle[data-ad-status="unfilled"]){ display:none; }
@@ -241,6 +332,30 @@
       <span class="k2"><i></i>15手で先手勝ち</span>
       <span class="k3"><i></i>12手で先手負け</span>
       <span class="k4"><i></i>14手で先手負け</span>
+    </div>
+
+    <h2 id="assistant">GTOアシスタント <span class="sub">相手がどこに置いても、最善手がその場でわかる</span></h2>
+    <p class="lab-p">実戦の手をそのまま盤に入力してください（<strong>先手でも後手でも</strong>使えます）。自分の手番になったら<strong>★付きの手が証明済みの最善</strong>。「GTOに打たせる」で相手役や自分役をエンジンに任せて練習もできます。序盤2手までは事前計算ブック、3手目以降はこの端末の中でソルバーがその場で厳密に証明します（数秒かかることがあります）。</p>
+    <div class="asst">
+      <div class="asst-left">
+        <div class="aboard" id="aboard" aria-label="対話盤"></div>
+        <div class="hands">
+          <div class="hand" id="handX"><span class="who">先手</span></div>
+          <div class="hand" id="handO"><span class="who">後手</span></div>
+        </div>
+      </div>
+      <div class="asst-right">
+        <p class="verdict" id="verdict"></p>
+        <p class="asst-status" id="astatus"></p>
+        <div class="mv-chips" id="mvchips"></div>
+        <div class="asst-ctl">
+          <button class="primary" id="btnGto" type="button">GTOに打たせる</button>
+          <button id="btnUndo" type="button">ひとつ戻す</button>
+          <button id="btnReset" type="button">最初から</button>
+        </div>
+        <p class="hist" id="hist"></p>
+        <p class="gameover" id="gameover"></p>
+      </div>
     </div>
 
     <h2>証明済み最善進行 <span class="sub">両者最善・13手で終局</span></h2>
@@ -374,6 +489,285 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowRight"&&cur<STEPS.length-1){cur++;render();}
 });
 render();
+</script>
+
+<script>
+/* ================= GTOアシスタント（対話盤） ================= */
+(function(){
+  const S = GobbletSolver;
+  const $ = (id)=>document.getElementById(id);
+  const boardEl=$("aboard"), verdictEl=$("verdict"), statusEl=$("astatus"),
+        chipsEl=$("mvchips"), histEl=$("hist"), overEl=$("gameover"),
+        btnGto=$("btnGto"), btnUndo=$("btnUndo"), btnReset=$("btnReset");
+  const BUDGET = (navigator.hardwareConcurrency||4) >= 8 ? 30000000 : 15000000;
+  const NAMEJ = ["先手","後手"];
+
+  let hist=[];          // {m, str}
+  let pos=S.initialPos();
+  let over=0;           // 直前の手の判定（±1で終局）
+  let sel=null;         // {kind:'hand',lvl} | {kind:'board',from,lvl}
+  let legal=[];         // 現局面の合法手
+  let vals=new Map();   // str -> {m,val,resolved,optimal,pending}
+  let posval=null;      // {val,resolved} 手番側視点
+  let evalId=0, evaluating=false;
+  let worker=null, workerFailed=false;
+
+  function ensureWorker(){
+    if(worker||workerFailed) return worker;
+    try{ worker=new Worker("./solver.js"); }
+    catch(e){ workerFailed=true; return null; }
+    worker.onmessage=(e)=>{
+      const d=e.data;
+      if(d.id!==evalId) return; // 古い解析は捨てる
+      if(d.type==="phase1"){
+        posval = d.posval;
+        for(const mv of d.moves) mergeVal(mv);
+        evaluating = d.moves.some(mv=>!mv.resolved);
+        render();
+      }else if(d.type==="phase2"){
+        for(const mv of d.moves) mergeVal(mv);
+        render();
+      }else if(d.type==="done"){
+        for(const mv of d.moves) mergeVal(mv);
+        evaluating=false;
+        render();
+      }else if(d.type==="error"){
+        evaluating=false;
+        statusEl.textContent="解析エラー: "+d.message;
+      }
+    };
+    worker.onerror=()=>{ workerFailed=true; worker=null; evaluating=false; render(); };
+    return worker;
+  }
+  function mergeVal(mv){
+    const e=vals.get(mv.str); if(!e) return;
+    e.val = mv.resolved ? mv.val : null;
+    e.resolved = mv.resolved; e.optimal = !!mv.optimal; e.pending = !mv.resolved;
+    e.provedTo = mv.provedTo;
+  }
+
+  // 良い順のキー（小さいほど良い）: 勝ちd → d, 未決着/不明 → 1000, 負けd → 2000-d
+  const rankOf=(v)=> v==null?1500 : v>0? v : v===0? 1000 : 2000+v;
+
+  function markOptimalByRank(){
+    let best=Infinity;
+    for(const e of vals.values()) best=Math.min(best, rankOf(e.resolved?e.val:(e.val===0?0:null)));
+    for(const e of vals.values()){
+      const r=rankOf(e.resolved?e.val:(e.val===0?0:null));
+      e.optimal = (r===best && r<1500);
+    }
+  }
+
+  function pathKey(){
+    if(hist.length===0) return "";
+    if(hist.length===1) return hist[0].str;
+    return null;
+  }
+
+  function requestEval(){
+    evalId++; posval=null; evaluating=false;
+    vals=new Map();
+    legal = over? [] : S.genMoves(pos);
+    for(const m of legal){ const s=S.moveStr(m); vals.set(s, {m, str:s, val:null, resolved:false, optimal:false, pending:true}); }
+    if(over){ render(); return; }
+    const bk=pathKey();
+    if(bk!==null && typeof GOBBLET_BOOK!=="undefined" && GOBBLET_BOOK[bk]){
+      const tbl=GOBBLET_BOOK[bk];
+      for(const [s,e] of vals){
+        const v=tbl[s];
+        if(v===undefined){ e.pending=false; continue; }
+        e.val=v; e.resolved=(v!==0); e.pending=false;
+      }
+      markOptimalByRank();
+      // 局面値 = 最善手の値
+      let bv=null; for(const e of vals.values()) if(e.optimal){ bv=e.val; break; }
+      posval={ val:bv==null?0:bv, resolved:bv!=null&&bv!==0 };
+      render(); return;
+    }
+    const w=ensureWorker();
+    if(!w){ statusEl.textContent="このブラウザではライブ解析を利用できません（序盤ブックのみ対応）"; render(); return; }
+    evaluating=true;
+    w.postMessage({id:evalId, type:"evaluate", pos, cap:17, budget:BUDGET});
+    render();
+  }
+
+  // ---- 盤描画 ----
+  const cells=[];
+  for(let r=2;r>=0;r--)for(let c=0;c<3;c++){
+    const idx=r*3+c;
+    const b=document.createElement("button");
+    b.className="asq"; b.dataset.cell=idx;
+    b.setAttribute("aria-label", String.fromCharCode(97+c)+(r+1));
+    b.addEventListener("click",()=>onCell(idx));
+    boardEl.appendChild(b);
+    cells[idx]=b;
+  }
+  const handEls={0:$("handX"),1:$("handO")};
+  const handBtns={0:[],1:[]};
+  for(const who of [0,1]){
+    for(let l=2;l>=0;l--){
+      const b=document.createElement("button");
+      b.type="button";
+      b.innerHTML='<span class="hp '+(who?"o":"x")+" "+("SML"[l])+'"></span>';
+      b.setAttribute("aria-label",NAMEJ[who]+"の"+["小","中","大"][l]);
+      b.addEventListener("click",()=>onHand(who,l));
+      handEls[who].appendChild(b);
+      handBtns[who].push({lvl:l,el:b});
+    }
+  }
+
+  function stackAt(idx){
+    const st=[];
+    for(let l=2;l>=0;l--){
+      if((pos[l]>>idx)&1) st.push({who:0,lvl:l});
+      else if((pos[3+l]>>idx)&1) st.push({who:1,lvl:l});
+    }
+    return st; // 上から順
+  }
+  function handCount(who,l){ return 2 - (((pos[who*3+l]>>0&1)+(pos[who*3+l]>>1&1)+(pos[who*3+l]>>2&1)+(pos[who*3+l]>>3&1)+(pos[who*3+l]>>4&1)+(pos[who*3+l]>>5&1)+(pos[who*3+l]>>6&1)+(pos[who*3+l]>>7&1)+(pos[who*3+l]>>8&1))); }
+
+  function legalTargets(){
+    const set=new Set();
+    if(!sel) return set;
+    for(const m of legal){
+      if(sel.kind==="hand" && S.mvFrom(m)===-1 && S.mvLvl(m)===sel.lvl) set.add(S.mvTo(m));
+      if(sel.kind==="board" && S.mvFrom(m)===sel.from && S.mvLvl(m)===sel.lvl) set.add(S.mvTo(m));
+    }
+    return set;
+  }
+
+  function playMove(m){
+    hist.push({m, str:S.moveStr(m)});
+    pos=S.applyMove(pos,m);
+    over=S.adjudicate(pos);
+    sel=null;
+    requestEval();
+  }
+
+  function onCell(idx){
+    if(over) return;
+    const tg=legalTargets();
+    if(sel && tg.has(idx)){
+      const from = sel.kind==="hand" ? -1 : sel.from;
+      const m = legal.find(mm=>S.mvFrom(mm)===from && S.mvLvl(mm)===sel.lvl && S.mvTo(mm)===idx);
+      if(m!=null){ playMove(m); return; }
+    }
+    // 自分の見えている駒を選択/解除
+    const st=stackAt(idx);
+    if(st.length && st[0].who===pos[6]){
+      if(sel && sel.kind==="board" && sel.from===idx){ sel=null; }
+      else sel={kind:"board", from:idx, lvl:st[0].lvl};
+      render(); return;
+    }
+    sel=null; render();
+  }
+  function onHand(who,l){
+    if(over||who!==pos[6]||handCount(who,l)<=0) return;
+    if(sel && sel.kind==="hand" && sel.lvl===l) sel=null;
+    else sel={kind:"hand", lvl:l};
+    render();
+  }
+
+  btnGto.addEventListener("click",()=>{
+    if(over) return;
+    const opts=[...vals.values()].filter(e=>e.optimal);
+    if(!opts.length) return;
+    playMove(opts[Math.floor(Math.random()*opts.length)].m);
+  });
+  btnUndo.addEventListener("click",()=>{
+    if(!hist.length) return;
+    hist.pop();
+    pos=S.initialPos();
+    for(const h of hist) pos=S.applyMove(pos,h.m);
+    over=hist.length?S.adjudicate(pos):0;
+    sel=null;
+    requestEval();
+  });
+  btnReset.addEventListener("click",()=>{ hist=[]; pos=S.initialPos(); over=0; sel=null; requestEval(); });
+
+  function fmtVal(e){
+    if(e.pending) return "…";
+    if(!e.resolved) return "決着なし(±17)";
+    if(e.val>0) return "勝ち・あと"+e.val+"手";
+    return "負け・あと"+(-e.val)+"手";
+  }
+
+  function render(){
+    const tg=legalTargets();
+    const bestTo=new Set();
+    for(const e of vals.values()) if(e.optimal) bestTo.add(S.mvTo(e.m));
+    for(let i=0;i<9;i++){
+      const b=cells[i], st=stackAt(i);
+      b.innerHTML="";
+      if(st.length){
+        const p=document.createElement("span");
+        p.className="pc "+(st[0].who?"o":"x")+" "+("SML"[st[0].lvl]);
+        b.appendChild(p);
+        if(st.length>1){
+          const u=document.createElement("span"); u.className="under";
+          for(let k=1;k<st.length;k++){ const d=document.createElement("i"); d.className=st[k].who?"uo":"ux"; u.appendChild(d); }
+          b.appendChild(u);
+        }
+      }
+      b.classList.toggle("sel", !!(sel&&sel.kind==="board"&&sel.from===i));
+      b.classList.toggle("tgt", tg.has(i));
+      b.classList.toggle("best", !over && bestTo.has(i));
+    }
+    for(const who of [0,1]){
+      for(const {lvl,el} of handBtns[who]){
+        const n=handCount(who,lvl);
+        el.disabled = over||who!==pos[6]||n<=0;
+        el.style.opacity = n<=0? .18 : "";
+        el.classList.toggle("sel", !!(sel&&sel.kind==="hand"&&who===pos[6]&&sel.lvl===lvl));
+        el.title=NAMEJ[who]+"の"+["小","中","大"][lvl]+"（残り"+n+"）";
+      }
+    }
+    // 勝敗・評価表示
+    if(over){
+      const mover=pos[6]^1;
+      overEl.style.display="block";
+      if(over>0){ overEl.className="gameover"+(mover?" olose":""); overEl.textContent="3並び完成！ "+NAMEJ[mover]+"の勝ちです。"; }
+      else { overEl.className="gameover"+(mover?"":" olose"); overEl.textContent=NAMEJ[mover]+"の手で相手のラインが見えてしまいました（露出ルール）。"+NAMEJ[mover^1]+"の勝ちです。"; }
+      verdictEl.textContent="終局";
+      statusEl.textContent="「ひとつ戻す」または「最初から」でつづけられます。";
+    }else{
+      overEl.style.display="none";
+      const t=NAMEJ[pos[6]];
+      if(posval&&posval.resolved){
+        if(posval.val>0) verdictEl.innerHTML="<span class='"+(pos[6]?"vo":"vx")+"'>"+t+"の勝ち確定</span> — 最短あと"+posval.val+"手";
+        else verdictEl.innerHTML="<span class='"+(pos[6]?"vo":"vx")+"'>"+t+"は敗勢</span> — 最善でもあと"+(-posval.val)+"手（相手が最善の場合）";
+      }else if(posval){
+        verdictEl.textContent=t+"の番 — ±17手以内の強制決着なし";
+      }else{
+        verdictEl.textContent=t+"の番";
+      }
+      statusEl.innerHTML = evaluating? "<span class='spin'></span>解析中…（最善手確定後、残りの手も順次確定します）" : (workerFailed?"このブラウザではライブ解析を利用できません（序盤ブックのみ）":"");
+    }
+    // 手チップ
+    chipsEl.innerHTML="";
+    if(!over){
+      const list=[...vals.values()].sort((a,b)=>{
+        if(a.optimal!==b.optimal) return a.optimal? -1: 1;
+        return rankOf(a.resolved?a.val:null)-rankOf(b.resolved?b.val:null);
+      });
+      for(const e of list){
+        const c=document.createElement("button");
+        c.type="button";
+        c.className="mv-chip"+(e.optimal?" best":"")+(e.resolved?(e.val>0?" vwin":e.val<0?" vloss":""):"");
+        c.innerHTML=(e.optimal?"★ ":"")+"<span class='mono'>"+e.str+"</span><span class='vv'>"+fmtVal(e)+"</span>";
+        c.title="この手を打つ";
+        c.addEventListener("click",()=>playMove(e.m));
+        chipsEl.appendChild(c);
+      }
+    }
+    // 棋譜
+    histEl.textContent = hist.length? hist.map((h,i)=>(i+1)+"."+h.str).join(" "): "（まだ手はありません）";
+    btnUndo.disabled=!hist.length;
+    btnGto.disabled=!!over || ![...vals.values()].some(e=>e.optimal);
+  }
+
+  requestEval();
+})();
 </script>
 </body>
 </html>
