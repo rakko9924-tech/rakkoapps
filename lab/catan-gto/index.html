@@ -299,7 +299,7 @@
       <div class="paintbar" id="paintbar" hidden></div>
       <div class="toolbar" id="playerbar"></div>
       <p class="mode-hint" id="modehint"></p>
-      <div class="board-wrap"><svg id="board" viewBox="-244 -232 488 464" role="img" aria-label="カタン盤面"></svg></div>
+      <div class="board-wrap"><svg id="board" viewBox="-232 -244 464 488" role="img" aria-label="カタン盤面"></svg></div>
       <div class="legend" id="hexlegend"></div>
       <div class="toolbar" style="margin-top:8px">
         <button id="btn-vlabels">頂点名を表示</button>
@@ -367,9 +367,9 @@
         <h4>手番の有利不利（先攻・後攻）</h4>
         <p>スネークドラフト（2人: 1→2→2→1、4人: 1→2→3→4→4→3→2→1）は手番の格差を抑える設計ですが、レースモデルで測ると差は残ります。ソルバータブの「手番の有利不利」で、現在の盤面での各手番の均衡到達Tを2〜4人分比較できます。参考値（標準初心者盤面・港プリセットあり）:</p>
         <ul>
-          <li><b>2人（厳密）:</b> 先手 58.1T vs 後手 59.5T — <b>先手が+1.4T有利</b>。</li>
-          <li><b>3人（ビーム近似・拡幅安定）:</b> 58.1 / 59.2 / 59.9T — 1番手有利、3番手が−1.8T。</li>
-          <li><b>4人（ビーム近似）:</b> 58.3 / 59.2 / 61.0 / 62.9T — 1・2番手はほぼ互角（探索幅により順位が入れ替わることがある）、<b>3番手−2.7T・4番手−4.6Tと後ろの手番ほど明確に不利</b>。</li>
+          <li><b>2人（厳密）:</b> 先手 52.5T vs 後手 53.4T — <b>先手が+0.9T有利</b>。</li>
+          <li><b>3人（ビーム近似）:</b> 52.5 / 53.4 / 53.8T — 1番手有利、3番手が−1.3T。</li>
+          <li><b>4人（ビーム近似・拡幅安定）:</b> 58.0 / 53.4 / 58.3 / 57.5T — この盤面では<b>2番手が突出して有利（+4T以上）</b>。良スポットと港の巡り合わせ次第で「何番手が最強か」は大きく変わる好例。</li>
         </ul>
         <p>ただしこれは盤面依存です。良スポットの数・質・港との組合せ次第で後手有利にもなります（実際、ランダム盤面では2人で先手が−2.3T不利になる例も観測されます。後手は2連続ピックで最良の相補ペアを確保できるため）。一般論としてではなく、その都度この盤面で計算してください。</p>
         <h4>配置セオリー（均衡解200盤面からの理論化）</h4>
@@ -426,11 +426,14 @@ function buildGeometry() {
   for (let r = -2; r <= 2; r++) {
     const qmin = Math.max(-2, -r - 2), qmax = Math.min(2, -r + 2);
     for (let q = qmin; q <= qmax; q++) {
-      const cx = HEX_S * Math.sqrt(3) * (q + r / 2), cy = HEX_S * 1.5 * r;
+      // 盤面全体を90°回転して描画（全体六角形の頂点が上下に来る向き = 実卓の標準的な置き方）
+      const cx0 = HEX_S * Math.sqrt(3) * (q + r / 2), cy0 = HEX_S * 1.5 * r;
+      const cx = -cy0, cy = cx0;
       const corners = [];
       for (let i = 0; i < 6; i++) {
         const a = (Math.PI / 180) * (60 * i - 90);
-        corners.push([cx + HEX_S * Math.cos(a), cy + HEX_S * Math.sin(a)]);
+        const px = cx0 + HEX_S * Math.cos(a), py = cy0 + HEX_S * Math.sin(a);
+        corners.push([-py, px]);
       }
       hexes.push({ id: hexes.length, q, r, cx, cy, corners });
     }
@@ -1205,6 +1208,9 @@ function initState() {
       if (saved.ports && typeof saved.ports === "object")
         for (const [k, p] of Object.entries(saved.ports))
           if (GEO.vmap.has(k) && (p === "any" || RES.includes(p))) ports[k] = p;
+      // 旧バージョン（回転前の座標系）の保存データ: 港キーが全滅していたら枠の港を再配置
+      if (saved.ports && Object.keys(saved.ports).length > 0 && Object.keys(ports).length === 0)
+        Object.assign(ports, framePorts());
       if (saved.buildings && typeof saved.buildings === "object")
         for (const [k, b] of Object.entries(saved.buildings))
           if (GEO.vmap.has(k) && b && [0, 1, 2, 3].includes(b.player) && [1, 2].includes(b.level))
@@ -2214,6 +2220,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
