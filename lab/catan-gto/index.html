@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>カタン戦略計算機｜交渉なしEV・確率エンジン - らっこアプリ攻略ラボ</title>
-<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に配置を練習できるトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
+<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に配置を練習できるトレーニングモード、実卓の写真から盤面を読み取る写真入力、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
 <link rel="canonical" href="https://rakkoapps.com/lab/catan-gto/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#f2694b">
@@ -282,6 +282,10 @@
   .docs h4 { font-size: 12.5px; margin: 14px 0 4px; }
   .docs p, .docs li { font-size: 12.5px; color: var(--sub); margin: 4px 0; }
   .docs code { font-family: var(--mono); font-size: 11.5px; background: var(--line-soft); border-radius: 4px; padding: 0 4px; color: var(--ink); }
+  #photo-panel { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-top: 8px; }
+  #photo-canvas { width: 100%; display: block; border-radius: 6px; cursor: crosshair; touch-action: manipulation; background: #111; }
+  .ph-step { font-size: 12px; color: var(--sub); margin: 0 0 6px; }
+  .ph-step b { color: var(--ink); }
   .pulse { animation: pulse 1s ease-out 2; }
   @keyframes pulse { 0% { stroke-width: 2.5; opacity: 1; } 100% { stroke-width: 10; opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
@@ -313,6 +317,13 @@
           <button data-nm="spiral" title="公式の可変セットアップ。数字トークンはA〜Rの固定数列を外周の角から反時計回りにスパイラル配置（砂漠は飛ばす）">公式スパイラル</button>
           <button data-nm="random" title="数字も完全シャッフル（6/8の隣接は回避）">完全ランダム</button>
         </span>
+        <button id="btn-photo" title="実卓の写真から地形と数字を読み取って盤面に反映">📷 写真から盤面入力</button>
+        <input type="file" id="photo-file" accept="image/*" hidden>
+      </div>
+      <div id="photo-panel" hidden>
+        <p class="ph-step" id="ph-hint"></p>
+        <canvas id="photo-canvas"></canvas>
+        <div class="toolbar" id="ph-controls" style="margin-top:6px"></div>
       </div>
     </section>
 
@@ -364,6 +375,8 @@
           <li>距離ルール（隣接頂点に建物があると建設不可）を満たす頂点のみ表示。</li>
         </ul>
         <p>重み付けの係数（0.04, 8%, 0.45, 逓減定数6）は理論値ではなく、実戦則を透明化したヒューリスティックです。素のピップ合計も常に併記します。</p>
+        <h4>写真からの盤面入力</h4>
+        <p>「📷 写真から盤面入力」は実卓の写真（真上に近い角度推奨）から盤面を読み取ります。すべて端末内で処理され、画像はどこにも送信されません。手順: <b>①</b> 盤面の中心をタップ → <b>②</b> 陸地の一番上の角をタップ（この2点で位置・大きさ・回転を合わせます）→ <b>③</b> 地形を色解析で自動判定（タイル構成 木4土3羊4麦4鉱3砂1 の制約つき。誤りはタップで修正）→ <b>④</b> 数字トークン「2」のヘクスを1つタップすると、公式A〜Rスパイラルを全12通り照合して数字を自動入力 → 反映。スパイラルでない盤面は「地形のみ反映」→ 数字モードで手入力してください。建物・街道・港の読取りは非対応です（港は枠プリセットを使用）。</p>
         <h4>手番の有利不利（先攻・後攻）</h4>
         <p>スネークドラフト（2人: 1→2→2→1、4人: 1→2→3→4→4→3→2→1）は手番の格差を抑える設計ですが、レースモデルで測ると差は残ります。ソルバータブの「手番の有利不利」で、現在の盤面での各手番の均衡到達Tを2〜4人分比較できます。参考値（標準初心者盤面・港プリセットあり）:</p>
         <ul>
@@ -523,12 +536,24 @@ function spiralPath(cornerIdx, dir) { // dir=-1: 反時計回り(公式), +1: �
   path.push(GEO.hexes.find(h => h.q === 0 && h.r === 0));
   return path;
 }
-function assignSpiralNumbers(tiles, cornerIdx) {
+function assignSpiralNumbers(tiles, cornerIdx, dir) {
+  dir = dir || -1; // 公式は反時計回り
   let k = 0;
-  for (const h of spiralPath(cornerIdx, -1)) {
+  for (const h of spiralPath(cornerIdx, dir)) {
     if (tiles[h.id].res === "desert") { tiles[h.id].num = null; continue; }
     tiles[h.id].num = NUMBER_SPIRAL[k++];
   }
+}
+// 写真読取用: 地形配列に対する全スパイラル仮説（開始角6 × 回転方向2 = 12通り）の数字配置
+function spiralHypotheses(tiles) {
+  const out = [];
+  for (let c = 0; c < 6; c++)
+    for (const dir of [-1, 1]) {
+      const t2 = tiles.map(t => ({ res: t.res, num: null }));
+      assignSpiralNumbers(t2, c, dir);
+      out.push({ corner: c, dir, nums: t2.map(x => x.num) });
+    }
+  return out;
 }
 function randomBoard(mode, rand) {
   mode = mode || "spiral";
@@ -2105,6 +2130,235 @@ function renderProb() {
   $("#in-devn").addEventListener("change", e => { ui.devN = Math.max(1, Math.min(25, +e.target.value || 1)); renderProb(); });
 }
 
+/* ---------- 写真からの盤面入力（完全クライアントサイド） ---------- */
+const PH = { active: false, off: null, px: null, iw: 0, ih: 0, step: 0,
+             center: null, tip: null, T: null, tiles: null, hyps: null, hypIdx: -1 };
+const PH_R = Math.max(...GEO.verts.map(v => Math.hypot(v.x, v.y))); // 陸地の角までの距離
+const PH_CYC = ["wood", "brick", "sheep", "wheat", "ore", "desert"];
+const PH_K = { wood: "木", brick: "土", sheep: "羊", wheat: "麦", ore: "鉱", desert: "砂" };
+function rgb2hsv(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d > 0) {
+    if (mx === r) h = ((g - b) / d + 6) % 6;
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return [h, mx ? d / mx : 0, mx];
+}
+// 地形ごとの色らしさ（実物タイルの典型色に合わせたヒューリスティック）
+function terrainScore(cls, h, s, v) {
+  const g = (x, mu, sig) => Math.exp(-((x - mu) ** 2) / (2 * sig * sig));
+  const hue = (mu, sig) => g(Math.min(Math.abs(h - mu), 360 - Math.abs(h - mu)), 0, sig);
+  switch (cls) {
+    case "wheat":  return hue(48, 16) * g(s, .62, .22) * g(v, .72, .2);
+    case "desert": return hue(46, 22) * g(s, .27, .13) * g(v, .72, .2);
+    case "brick":  return hue(24, 13) * g(s, .55, .2) * g(v, .55, .2);
+    case "wood":   return hue(100, 45) * g(s, .5, .25) * g(v, .3, .13);
+    case "sheep":  return hue(88, 32) * g(s, .55, .22) * g(v, .62, .17);
+    case "ore":    return Math.max(hue(285, 45) * g(s, .25, .14) * g(v, .5, .2),
+                                   g(s, .12, .08) * g(v, .5, .18));
+  }
+  return 0;
+}
+async function phLoad(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch (err) {
+    bmp = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  const w = Math.min(1280, bmp.width), k = w / bmp.width, h = Math.round(bmp.height * k);
+  const off = document.createElement("canvas");
+  off.width = w; off.height = h;
+  const octx = off.getContext("2d", { willReadFrequently: true });
+  octx.drawImage(bmp, 0, 0, w, h);
+  PH.off = off; PH.iw = w; PH.ih = h;
+  PH.px = octx.getImageData(0, 0, w, h).data;
+  PH.step = 1; PH.center = PH.tip = PH.T = null; PH.tiles = null; PH.hyps = null; PH.hypIdx = -1;
+  PH.active = true;
+  $("#photo-panel").hidden = false;
+  phDraw(); phControls();
+}
+function phSetTransform() {
+  const dx = PH.tip.x - PH.center.x, dy = PH.tip.y - PH.center.y;
+  PH.T = { s: Math.hypot(dx, dy) / PH_R, rot: Math.atan2(dy, dx) + Math.PI / 2,
+           cx: PH.center.x, cy: PH.center.y };
+}
+function b2p(x, y) {
+  const { s, rot, cx, cy } = PH.T, c = Math.cos(rot), sn = Math.sin(rot);
+  return [(x * c - y * sn) * s + cx, (x * sn + y * c) * s + cy];
+}
+function p2b(px, py) {
+  const { s, rot, cx, cy } = PH.T, c = Math.cos(-rot), sn = Math.sin(-rot);
+  const x = (px - cx) / s, y = (py - cy) / s;
+  return [x * c - y * sn, x * sn + y * c];
+}
+function phClassify() {
+  const scores = GEO.hexes.map(hx => {
+    let R = 0, G = 0, B = 0, n = 0;
+    for (let a = 0; a < 18; a++)
+      for (const rr of [0.5, 0.66, 0.82]) {
+        const ang = a / 18 * 2 * Math.PI;
+        const [px, py] = b2p(hx.cx + Math.cos(ang) * HEX_S * rr, hx.cy + Math.sin(ang) * HEX_S * rr);
+        const xi = Math.round(px), yi = Math.round(py);
+        if (xi < 0 || yi < 0 || xi >= PH.iw || yi >= PH.ih) continue;
+        const o = (yi * PH.iw + xi) * 4;
+        R += PH.px[o]; G += PH.px[o + 1]; B += PH.px[o + 2]; n++;
+      }
+    const [h, s, v] = n ? rgb2hsv(R / n, G / n, B / n) : [0, 0, 0];
+    const sc = {};
+    for (const c of PH_CYC) sc[c] = terrainScore(c, h, s, v);
+    return sc;
+  });
+  // 構成制約（木4土3羊4麦4鉱3砂1）つきの貪欲割当: 確信度の高いヘクスから確定
+  const remain = { wood: 4, brick: 3, sheep: 4, wheat: 4, ore: 3, desert: 1 };
+  const margin = id => {
+    const ss = Object.values(scores[id]).sort((x, y) => y - x);
+    return ss[0] - ss[1];
+  };
+  const order = GEO.hexes.map(h => h.id).sort((a, b) => margin(b) - margin(a));
+  const tiles = new Array(19);
+  for (const id of order) {
+    const ranked = PH_CYC.slice().sort((a, b) => scores[id][b] - scores[id][a]);
+    const pick = ranked.find(c => remain[c] > 0);
+    remain[pick]--;
+    tiles[id] = { res: pick, num: null };
+  }
+  PH.tiles = tiles;
+}
+function phDraw() {
+  const cv = $("#photo-canvas"), ctx = cv.getContext("2d");
+  cv.width = PH.iw; cv.height = PH.ih;
+  ctx.drawImage(PH.off, 0, 0);
+  const dot = (p, color) => {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+  };
+  if (PH.center) dot(PH.center, "#e5484d");
+  if (PH.tip) dot(PH.tip, "#30a46c");
+  if (!PH.T || !PH.tiles) return;
+  const fs = Math.max(11, HEX_S * PH.T.s * 0.42);
+  for (const hx of GEO.hexes) {
+    ctx.beginPath();
+    hx.corners.forEach(([x, y], i) => {
+      const [px, py] = b2p(x, y);
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    });
+    ctx.closePath();
+    ctx.lineWidth = 2; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.stroke();
+    const t = PH.tiles[hx.id];
+    const [cx0, cy0] = b2p(hx.cx, hx.cy);
+    const cx = cx0, cy = cy0 + HEX_S * PH.T.s * 0.5; // トークンを隠さないよう少し下に
+    const label = PH_K[t.res] + (PH.step >= 4 && t.num ? " " + t.num : "");
+    ctx.font = `700 ${fs}px sans-serif`;
+    const w = ctx.measureText(label).width + 10;
+    ctx.fillStyle = "rgba(255,255,255,.88)";
+    ctx.fillRect(cx - w / 2, cy - fs * 0.8, w, fs * 1.5);
+    ctx.fillStyle = "#1a1a1a";
+    ctx.textAlign = "center";
+    ctx.fillText(label, cx, cy + fs * 0.35);
+  }
+}
+function phHintText() {
+  switch (PH.step) {
+    case 1: return "① 盤面の<b>中心</b>（中央ヘクスのあたり）をタップしてください。";
+    case 2: return "② <b>陸地の一番上の角</b>（全体六角形の上の頂点）をタップしてください。";
+    case 3: return "③ 地形の自動判定結果を確認。<b>違うヘクスはタップで切替</b>（木→土→羊→麦→鉱→砂）。よければ「数字へ」。";
+    case 4: return PH.hyps && PH.hyps.length > 1
+      ? "④ 候補が" + PH.hyps.length + "つあります。<b>「12」のヘクスをタップすると確定</b>します（または「別候補」で切替・数字表示を写真と見比べて確認）。"
+      : "④ <b>数字「2」のヘクスをタップ</b>すると公式スパイラルで全数字を自動入力します。合わない盤面は「地形のみ反映」→ 数字モードで手入力を。";
+  }
+  return "";
+}
+function phControls() {
+  $("#ph-hint").innerHTML = phHintText();
+  const c = $("#ph-controls");
+  let html = "";
+  if (PH.step === 3) html += `<button id="ph-tonum" class="on">数字へ進む</button>`;
+  if (PH.step === 4) {
+    if (PH.hyps && PH.hyps.length > 1)
+      html += `<button id="ph-alt">別候補 (${PH.hypIdx + 1}/${PH.hyps.length})</button>`;
+    if (PH.hyps && PH.hyps.length)
+      html += `<button id="ph-apply" class="on">盤面に反映</button>`;
+    html += `<button id="ph-applyterrain">地形のみ反映</button>`;
+  }
+  if (PH.step >= 2) html += `<button id="ph-restart" class="ghost">タップやり直し</button>`;
+  html += `<button id="ph-close" class="ghost">閉じる</button>`;
+  c.innerHTML = html;
+  const on = (id, fn) => { const el = $("#" + id); if (el) el.addEventListener("click", fn); };
+  on("ph-tonum", () => { PH.step = 4; phDraw(); phControls(); });
+  on("ph-alt", () => {
+    PH.hypIdx = (PH.hypIdx + 1) % PH.hyps.length;
+    PH.hyps[PH.hypIdx].nums.forEach((n, i) => PH.tiles[i].num = n);
+    phDraw(); phControls();
+  });
+  on("ph-apply", () => phApply(true));
+  on("ph-applyterrain", () => phApply(false));
+  on("ph-restart", () => { PH.step = 1; PH.center = PH.tip = PH.T = null; PH.tiles = null; PH.hyps = null; phDraw(); phControls(); });
+  on("ph-close", phClose);
+}
+function phClick(e) {
+  if (!PH.active) return;
+  const cv = $("#photo-canvas"), r = cv.getBoundingClientRect();
+  const x = (e.clientX - r.left) * cv.width / r.width;
+  const y = (e.clientY - r.top) * cv.height / r.height;
+  if (PH.step === 1) { PH.center = { x, y }; PH.step = 2; }
+  else if (PH.step === 2) { PH.tip = { x, y }; phSetTransform(); phClassify(); PH.step = 3; }
+  else if (PH.step >= 3) {
+    const [bx, by] = p2b(x, y);
+    let hid = -1, bd = 1e9;
+    for (const hx of GEO.hexes) {
+      const d = Math.hypot(hx.cx - bx, hx.cy - by);
+      if (d < bd) { bd = d; hid = hx.id; }
+    }
+    if (bd > HEX_S) return;
+    if (PH.step === 3) {
+      PH.tiles[hid] = { res: PH_CYC[(PH_CYC.indexOf(PH.tiles[hid].res) + 1) % 6], num: null };
+    } else {
+      // 候補が複数残っている間は「12」タップで絞り込み、それ以外は「2」タップとして再フィット
+      if (PH.hyps && PH.hyps.length > 1) {
+        const narrowed = PH.hyps.filter(hp => hp.nums[hid] === 12);
+        if (narrowed.length) {
+          PH.hyps = narrowed; PH.hypIdx = 0;
+          narrowed[0].nums.forEach((n, i) => PH.tiles[i].num = n);
+          phDraw(); phControls();
+          return;
+        }
+      }
+      const hyps = spiralHypotheses(PH.tiles).filter(hp => hp.nums[hid] === 2);
+      if (!hyps.length) {
+        $("#ph-hint").innerHTML = "そのヘクスが「2」になるスパイラルが見つかりません（砂漠の位置を確認するか、地形のみ反映して数字モードで入力してください）。";
+        return;
+      }
+      PH.hyps = hyps; PH.hypIdx = 0;
+      hyps[0].nums.forEach((n, i) => PH.tiles[i].num = n);
+    }
+  }
+  phDraw(); phControls();
+}
+function phApply(withNums) {
+  board.tiles = PH.tiles.map(t => ({ res: t.res, num: withNums ? t.num : null }));
+  const d = board.tiles.findIndex(t => t.res === "desert");
+  board.robber = d >= 0 ? d : 0;
+  save();
+  phClose();
+  renderAll();
+  flashHint(withNums ? "写真から盤面を反映しました" : "地形を反映しました。数字は「数字」モードで入力してください");
+}
+function phClose() {
+  PH.active = false;
+  $("#photo-panel").hidden = true;
+  $("#photo-file").value = "";
+}
+
 /* ---------- glue ---------- */
 const PANE_RENDER = { solver: renderSolver, train: renderTraining, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
 function renderAll() {
@@ -2140,6 +2394,12 @@ function bindGlobal() {
   const syncVb = () => { vb.classList.toggle("on", ui.showVLabels); vb.setAttribute("aria-pressed", ui.showVLabels); };
   syncVb();
   vb.addEventListener("click", () => { ui.showVLabels = !ui.showVLabels; syncVb(); renderBoard(); });
+  $("#btn-photo").addEventListener("click", () => $("#photo-file").click());
+  $("#photo-file").addEventListener("change", e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) phLoad(f).catch(() => flashHint("画像を読み込めませんでした"));
+  });
+  $("#photo-canvas").addEventListener("click", phClick);
   $("#btn-standard").addEventListener("click", () => {
     const keep = board.buildings; board = standardBoard(); board.buildings = keep; save(); renderAll();
   });
@@ -2220,6 +2480,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
