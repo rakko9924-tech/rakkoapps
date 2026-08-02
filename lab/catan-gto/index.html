@@ -282,6 +282,22 @@
   .docs h4 { font-size: 12.5px; margin: 14px 0 4px; }
   .docs p, .docs li { font-size: 12.5px; color: var(--sub); margin: 4px 0; }
   .docs code { font-family: var(--mono); font-size: 11.5px; background: var(--line-soft); border-radius: 4px; padding: 0 4px; color: var(--ink); }
+  .hx-empty { fill: var(--line-soft); stroke-dasharray: 4 3; }
+  #setup-panel { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-top: 8px; }
+  .su-tray { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 8px; }
+  .su-chip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 7px;
+             padding: 4px 8px; font-size: 12px; cursor: grab; user-select: none; -webkit-user-select: none;
+             background: var(--surface); touch-action: none; }
+  .su-chip .sw { width: 11px; height: 11px; border-radius: 3px; }
+  .su-chip .ct { font-family: var(--mono); color: var(--sub); }
+  .su-chip.empty { opacity: .35; cursor: not-allowed; }
+  .su-chip.sel { outline: 2px solid var(--accent); }
+  .su-num { font-family: var(--mono); font-weight: 700; }
+  .su-num.red { color: var(--red-num); }
+  .su-note { font-size: 11.5px; color: var(--sub); margin: 4px 0; }
+  #su-ghost { position: fixed; z-index: 80; pointer-events: none; display: none;
+              background: var(--surface); border: 1.5px solid var(--accent); border-radius: 8px;
+              padding: 5px 10px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
   .pulse { animation: pulse 1s ease-out 2; }
   @keyframes pulse { 0% { stroke-width: 2.5; opacity: 1; } 100% { stroke-width: 10; opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
@@ -302,6 +318,7 @@
       <div class="board-wrap"><svg id="board" viewBox="-232 -244 464 488" role="img" aria-label="カタン盤面"></svg></div>
       <div class="legend" id="hexlegend"></div>
       <div class="toolbar" style="margin-top:8px">
+        <button id="btn-setup">盤面を組む（ドラッグ配置）</button>
         <button id="btn-vlabels">頂点名を表示</button>
         <button id="btn-standard">標準盤面に戻す</button>
         <button id="btn-random">ランダム盤面</button>
@@ -314,6 +331,7 @@
           <button data-nm="random" title="数字も完全シャッフル（6/8の隣接は回避）">完全ランダム</button>
         </span>
       </div>
+      <div id="setup-panel" hidden></div>
     </section>
 
     <section class="panel">
@@ -353,7 +371,7 @@
         <h4>基本確率</h4>
         <p>2個のサイコロで出目 n が出る確率は <code>P(n) = (6 − |7 − n|) / 36</code>。「ピップ」はその分子（36分率）で、6と8が5ピップ、2と12が1ピップです。</p>
         <h4>盤面生成</h4>
-        <p>「ランダム盤面」は既定で公式の可変セットアップに従います: 地形タイルのみをシャッフルし、数字トークンは裏のアルファベット順の固定数列 <code>5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11</code>（A〜R）を、外周の任意の角から反時計回りに、砂漠を飛ばしてスパイラル配置します。つまり数字の並び自体は固定で、変わるのは地形と開始角だけです。設定で「完全ランダム」（数字もシャッフル・6/8隣接回避つき）にも切替できます。なお「標準盤面」はルールブック記載の初心者用固定配置で、これはスパイラルとは別物です。数字は「数字」モードで手動編集もできます。</p>
+        <p>「ランダム盤面」は既定で公式の可変セットアップに従います: 地形タイルのみをシャッフルし、数字トークンは裏のアルファベット順の固定数列 <code>5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11</code>（A〜R）を、外周の任意の角から反時計回りに、砂漠を飛ばしてスパイラル配置します。つまり数字の並び自体は固定で、変わるのは地形と開始角だけです。設定で「完全ランダム」（数字もシャッフル・6/8隣接回避つき）にも切替できます。「盤面を組む（ドラッグ配置）」では、正確な枚数の地形タイル（木4土3羊4麦4鉱3砂1）と数字トークン18枚をトレイから盤面へドラッグして自由に組めます（個数は残数表示つきで厳密に管理。全部置き切ると反映可能。移動は盤上ドラッグ、取り外しは盤外へドラッグ）。なお「標準盤面」はルールブック記載の初心者用固定配置で、これはスパイラルとは別物です。数字は「数字」モードで手動編集もできます。</p>
         <h4>入植地候補スコア</h4>
         <p><code>スコア = (Σ_r ピップ_r × w_r × 逓減_r) × 多様性 + 港ボーナス</code></p>
         <ul>
@@ -1223,6 +1241,7 @@ function initState() {
   ui = { mode: "inspect", player: 0, tab: "solver", paintRes: "wood", paintNum: 6,
          nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false, showVLabels: true,
          numMode: "spiral", trFirst: 0, trOpp: "gto", tr: null, seatAdv: null,
+         setup: null, setupSel: null,
          strategy: "balanced", useScarcity: true, useDimin: true, usePorts: true,
          placeRobber: false, prodRobber: true,
          hand: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
@@ -1281,14 +1300,16 @@ function cityPath(x, y, s) {
   return `M${x - s * 1.2},${y + s} L${x - s * 1.2},${y - s * 0.1} L${x - s * 0.55},${y - s * 0.75} L${x + s * 0.1},${y - s * 0.1} L${x + s * 1.2},${y - s * 0.1} L${x + s * 1.2},${y + s} Z`;
 }
 function renderBoard() {
-  const top3 = ui.tab === "place" ? ui.evalRows.slice(0, 3) : [];
+  const inSetup = !!ui.setup;
+  const tiles = inSetup ? ui.setup.tiles : board.tiles;
+  const top3 = !inSetup && ui.tab === "place" ? ui.evalRows.slice(0, 3) : [];
   let s = "";
   for (const h of GEO.hexes) {
-    const t = board.tiles[h.id];
-    s += `<path class="hexcell hx-${t.res}" d="${hexPath(h)}" data-hex="${h.id}"></path>`;
+    const t = tiles[h.id];
+    s += `<path class="hexcell ${t.res ? "hx-" + t.res : "hx-empty"}" d="${hexPath(h)}" data-hex="${h.id}"></path>`;
   }
   for (const h of GEO.hexes) {
-    const t = board.tiles[h.id];
+    const t = tiles[h.id];
     if (t.num) {
       const red = t.num === 6 || t.num === 8;
       s += `<g pointer-events="none"><circle class="tok" cx="${h.cx}" cy="${h.cy}" r="15"></circle>
@@ -1298,7 +1319,7 @@ function renderBoard() {
         s += `<circle class="pipdot ${red ? "red" : ""}" cx="${h.cx - w / 2 + i * 4.4}" cy="${h.cy + 9.5}" r="1.4"></circle>`;
       s += `</g>`;
     }
-    if (board.robber === h.id)
+    if (!inSetup && board.robber === h.id)
       s += `<g class="robber" pointer-events="none" transform="translate(${h.cx + (t.num ? 20 : 0)},${h.cy - (t.num ? 14 : 0)})">
               <circle cx="0" cy="-6.5" r="4"></circle><path d="M-5.5,7 Q-5.5,-3 0,-3 Q5.5,-3 5.5,7 Z"></path></g>`;
   }
@@ -1320,7 +1341,7 @@ function renderBoard() {
           <line x1="${v.x}" y1="${v.y}" x2="${bx}" y2="${by}" stroke="var(--sub)" stroke-width="1" stroke-dasharray="2 2" pointer-events="none"></line>`;
   }
   // vertex name labels（トグル）
-  if (ui.showVLabels) {
+  if (ui.showVLabels && !inSetup) {
     s += `<g class="vlab" pointer-events="none">`;
     for (const v of GEO.verts) {
       const w = v.label.length * 5.2 + 6;
@@ -1331,8 +1352,9 @@ function renderBoard() {
     s += `</g>`;
   }
   // vertex hit-dots
-  for (const v of GEO.verts)
-    s += `<circle class="vdot" cx="${v.x}" cy="${v.y}" r="6.5" data-v="${v.key}"></circle>`;
+  if (!inSetup)
+    for (const v of GEO.verts)
+      s += `<circle class="vdot" cx="${v.x}" cy="${v.y}" r="6.5" data-v="${v.key}"></circle>`;
   // top-3 rank badges
   const rankFill = ["#B3341E", "#A66109", "#5C665B"];
   top3.forEach((row, i) => {
@@ -1341,7 +1363,7 @@ function renderBoard() {
       <text x="${row.v.x}" y="${row.v.y + 3.4}" text-anchor="middle">${i + 1}</text></g>`;
   });
   // solver equilibrium pick badges
-  if (ui.tab === "solver" && ui.solverPicks) for (const pk of ui.solverPicks) {
+  if (!inSetup && ui.tab === "solver" && ui.solverPicks) for (const pk of ui.solverPicks) {
     const v = GEO.vmap.get(pk.key);
     if (!v) continue;
     s += `<g class="rankb" pointer-events="none">
@@ -1349,13 +1371,13 @@ function renderBoard() {
       <text x="${v.x}" y="${v.y + 3.4}" text-anchor="middle">${pk.order}</text></g>`;
   }
   // buildings
-  for (const [vkey, b] of Object.entries(board.buildings)) {
+  if (!inSetup) for (const [vkey, b] of Object.entries(board.buildings)) {
     const v = GEO.vmap.get(vkey);
     if (!v) continue;
     const path = b.level === 2 ? cityPath(v.x, v.y, 7.5) : settlementPath(v.x, v.y, 6);
     s += `<path class="bld" d="${path}" fill="${PVAR[b.player]}"></path>`;
   }
-  if (ui.selV) {
+  if (ui.selV && !inSetup) {
     const v = GEO.vmap.get(ui.selV);
     if (v) s += `<circle class="vring pulse" cx="${v.x}" cy="${v.y}" r="10"></circle>`;
   }
@@ -1428,6 +1450,7 @@ function vertexTipHTML(vkey) {
 /* ---------- board interaction ---------- */
 const PORT_CYCLE = [null, "any", "wood", "brick", "sheep", "wheat", "ore"];
 function onBoardClick(e) {
+  if (ui.setup) return; // セットアップ中はドラッグ系ハンドラが処理
   const vEl = e.target.closest("[data-v]"), hEl = e.target.closest("[data-hex]");
   if (vEl) {
     const vkey = vEl.dataset.v, v = GEO.vmap.get(vkey), b = board.buildings[vkey];
@@ -1469,6 +1492,7 @@ function flashHint(msg) {
   hintTimer = setTimeout(() => { el.textContent = MODE_HINT[ui.mode] || ""; }, 2200);
 }
 function onBoardHover(e) {
+  if (ui.setup) return;
   const vEl = e.target.closest("[data-v]");
   if (vEl) showTip(vertexTipHTML(vEl.dataset.v), e.clientX, e.clientY);
   else {
@@ -2106,6 +2130,201 @@ function renderProb() {
   $("#in-devn").addEventListener("change", e => { ui.devN = Math.max(1, Math.min(25, +e.target.value || 1)); renderProb(); });
 }
 
+/* ---------- 盤面セットアップ（ドラッグ配置・個数制約） ---------- */
+const SETUP_QUOTA = { wood: 4, brick: 3, sheep: 4, wheat: 4, ore: 3, desert: 1 };
+const SETUP_NUM_VALUES = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
+function setupRemain() {
+  const r = Object.assign({}, SETUP_QUOTA);
+  const n = {};
+  for (const v of [2,3,3,4,4,5,5,6,6,8,8,9,9,10,10,11,11,12]) n[v] = (n[v] || 0) + 1;
+  for (const t of ui.setup.tiles) {
+    if (t.res) r[t.res]--;
+    if (t.num) n[t.num]--;
+  }
+  return { r, n };
+}
+function setupComplete() {
+  const { r, n } = setupRemain();
+  return ui.setup.tiles.every(t => t.res) &&
+    Object.values(r).every(x => x === 0) && Object.values(n).every(x => x === 0);
+}
+function startSetup(fromBoard) {
+  ui.setup = { tiles: fromBoard
+    ? board.tiles.map(t => ({ res: t.res, num: t.num }))
+    : Array.from({ length: 19 }, () => ({ res: null, num: null })) };
+  ui.setupSel = null;
+  renderAll();
+}
+function setupExit() { ui.setup = null; ui.setupSel = null; renderAll(); }
+function setupAutoFill() {
+  const t = ui.setup.tiles;
+  const { r, n } = setupRemain();
+  const pool = [];
+  for (const [k, c] of Object.entries(r)) for (let i = 0; i < c; i++) pool.push(k);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  for (const tile of t) if (!tile.res && pool.length) tile.res = pool.pop();
+  for (const tile of t) if (tile.res === "desert") tile.num = null;
+  if (t.every(x => x.res) && t.every(x => !x.num)) {
+    assignSpiralNumbers(t, Math.floor(Math.random() * 6)); // まっさらなら公式スパイラル
+  } else {
+    const np = [];
+    const { n: n2 } = setupRemain();
+    for (const [v, c] of Object.entries(n2)) for (let i = 0; i < c; i++) np.push(+v);
+    for (let i = np.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [np[i], np[j]] = [np[j], np[i]]; }
+    for (const tile of t) if (tile.res && tile.res !== "desert" && !tile.num && np.length) tile.num = np.pop();
+  }
+  ui.setupSel = null;
+  renderAll();
+}
+function setupCommit() {
+  if (!setupComplete()) return flashHint("個数が合っていません（残数をすべて0にしてください）");
+  board.tiles = ui.setup.tiles.map(t => ({ res: t.res, num: t.num }));
+  board.robber = Math.max(0, board.tiles.findIndex(t => t.res === "desert"));
+  ui.setup = null; ui.setupSel = null;
+  save();
+  renderAll();
+  flashHint("組んだ盤面を反映しました");
+}
+// 配置ルールの適用（ドラッグ/タップ共通）。成功したら true
+function setupApply(kind, val, hexId) {
+  const t = ui.setup.tiles, { r, n } = setupRemain();
+  if (kind === "res") {
+    if (!(r[val] > 0 || t[hexId].res === val)) { flashHint(RES_JA[val] + "はもう残っていません"); return false; }
+    t[hexId].res = val;
+    if (val === "desert") t[hexId].num = null;
+    return true;
+  }
+  if (kind === "num") {
+    if (!t[hexId].res || t[hexId].res === "desert") { flashHint("数字は砂漠以外の地形タイルの上に置きます"); return false; }
+    if (!(n[val] > 0 || t[hexId].num === val)) { flashHint(val + "のトークンはもう残っていません"); return false; }
+    t[hexId].num = val;
+    return true;
+  }
+  if (kind === "move") { // val = 移動元hexId
+    if (val === hexId) return false;
+    [t[val], t[hexId]] = [t[hexId], t[val]]; // 入替え
+    if (t[val].res === "desert") t[val].num = null;
+    if (t[hexId].res === "desert") t[hexId].num = null;
+    return true;
+  }
+  if (kind === "remove") { t[val] = { res: null, num: null }; return true; }
+  return false;
+}
+function renderSetupPanel() {
+  const panel = $("#setup-panel");
+  if (!ui.setup) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const { r, n } = setupRemain();
+  const placed = ui.setup.tiles.filter(t => t.res).length;
+  const numsPlaced = ui.setup.tiles.filter(t => t.num).length;
+  const over = Object.values(r).some(x => x < 0) || Object.values(n).some(x => x < 0);
+  const selKey = ui.setupSel ? ui.setupSel.kind + ":" + ui.setupSel.val : "";
+  panel.innerHTML = `
+    <p class="su-note"><b>盤面セットアップ:</b> タイルを盤面へ<b>ドラッグ</b>（タップで選択→ヘクスを連打でも可）。盤面上のタイルはドラッグで移動・入替え、盤外へドラッグで外せます。地形 ${placed}/19・数字 ${numsPlaced}/18${over ? '　<span style="color:var(--bad)">個数超過があります</span>' : ""}</p>
+    <div class="su-tray">${["wood","brick","sheep","wheat","ore","desert"].map(k => `
+      <span class="su-chip ${(r[k] ?? 0) <= 0 ? "empty" : ""} ${selKey === "res:" + k ? "sel" : ""}" data-su-res="${k}">
+        <span class="sw" style="background:var(--hx-${k})"></span>${RES_JA[k]}
+        <span class="ct" style="${(r[k] ?? 0) < 0 ? "color:var(--bad)" : ""}">×${r[k]}</span></span>`).join("")}</div>
+    <div class="su-tray">${SETUP_NUM_VALUES.map(v => `
+      <span class="su-chip ${(n[v] ?? 0) <= 0 ? "empty" : ""} ${selKey === "num:" + v ? "sel" : ""}" data-su-num="${v}">
+        <span class="su-num ${v === 6 || v === 8 ? "red" : ""}">${v}</span>
+        <span class="ct" style="${(n[v] ?? 0) < 0 ? "color:var(--bad)" : ""}">×${n[v]}</span></span>`).join("")}</div>
+    <div class="toolbar">
+      <button id="su-commit" class="${setupComplete() ? "on" : ""}" ${setupComplete() ? "" : "disabled"}>盤面に反映</button>
+      <button id="su-fill">残りを自動で埋める</button>
+      <button id="su-load">現在の盤面を読み込む</button>
+      <button id="su-clear" class="ghost">全て空にする</button>
+      <button id="su-cancel" class="ghost">キャンセル</button>
+    </div>`;
+  $("#su-commit").addEventListener("click", setupCommit);
+  $("#su-fill").addEventListener("click", setupAutoFill);
+  $("#su-load").addEventListener("click", () => startSetup(true));
+  $("#su-clear").addEventListener("click", () => startSetup(false));
+  $("#su-cancel").addEventListener("click", setupExit);
+}
+/* --- ドラッグ機構（ポインタ共通・タッチ対応） --- */
+let SU_DRAG = null;
+function suHexAt(clientX, clientY) {
+  const svg = $("#board"), rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const x = vb.x + (clientX - rect.left) / rect.width * vb.width;
+  const y = vb.y + (clientY - rect.top) / rect.height * vb.height;
+  let hid = null, bd = HEX_S * 0.98;
+  for (const h of GEO.hexes) {
+    const d = Math.hypot(h.cx - x, h.cy - y);
+    if (d < bd) { bd = d; hid = h.id; }
+  }
+  return hid;
+}
+function suGhost() {
+  let g = $("#su-ghost");
+  if (!g) { g = document.createElement("div"); g.id = "su-ghost"; document.body.appendChild(g); }
+  return g;
+}
+function suGhostText(dr) {
+  if (dr.kind === "res") return RES_JA[dr.val];
+  if (dr.kind === "num") return String(dr.val);
+  const t = ui.setup.tiles[dr.val];
+  return RES_JA[t.res] + (t.num ? " " + t.num : "");
+}
+function setupPointerDown(e) {
+  if (!ui.setup) return;
+  const chip = e.target.closest("[data-su-res],[data-su-num]");
+  if (chip) {
+    const kind = chip.dataset.suRes ? "res" : "num";
+    const val = chip.dataset.suRes || +chip.dataset.suNum;
+    SU_DRAG = { kind, val, sx: e.clientX, sy: e.clientY, moved: false, fromChip: true };
+  } else if (e.target.closest("#board")) {
+    const hid = suHexAt(e.clientX, e.clientY);
+    if (hid === null) return;
+    if (ui.setupSel) { // 選択中チップのタップ配置
+      setupApply(ui.setupSel.kind, ui.setupSel.val, hid);
+      renderAll();
+      return;
+    }
+    if (ui.setup.tiles[hid].res)
+      SU_DRAG = { kind: "hex", val: hid, sx: e.clientX, sy: e.clientY, moved: false };
+    else return;
+  } else return;
+  e.preventDefault();
+  document.addEventListener("pointermove", setupPointerMove);
+  document.addEventListener("pointerup", setupPointerUp);
+}
+function setupPointerMove(e) {
+  if (!SU_DRAG) return;
+  if (!SU_DRAG.moved && Math.hypot(e.clientX - SU_DRAG.sx, e.clientY - SU_DRAG.sy) > 6) SU_DRAG.moved = true;
+  if (SU_DRAG.moved) {
+    const g = suGhost();
+    g.style.display = "block";
+    g.textContent = suGhostText(SU_DRAG);
+    g.style.left = (e.clientX + 12) + "px";
+    g.style.top = (e.clientY + 12) + "px";
+  }
+}
+function setupPointerUp(e) {
+  document.removeEventListener("pointermove", setupPointerMove);
+  document.removeEventListener("pointerup", setupPointerUp);
+  const g = $("#su-ghost"); if (g) g.style.display = "none";
+  const dr = SU_DRAG; SU_DRAG = null;
+  if (!dr) return;
+  if (!dr.moved) {
+    if (dr.fromChip) { // タップ = 選択トグル
+      const same = ui.setupSel && ui.setupSel.kind === dr.kind && ui.setupSel.val === dr.val;
+      ui.setupSel = same ? null : { kind: dr.kind, val: dr.val };
+      renderAll();
+    }
+    return;
+  }
+  const hid = suHexAt(e.clientX, e.clientY);
+  if (dr.kind === "hex") {
+    if (hid === null) setupApply("remove", dr.val, null); // 盤外へ = 取り外し
+    else setupApply("move", dr.val, hid);
+  } else if (hid !== null) {
+    setupApply(dr.kind, dr.val, hid);
+  }
+  renderAll();
+}
+
 /* ---------- glue ---------- */
 const PANE_RENDER = { solver: renderSolver, train: renderTraining, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
 function renderAll() {
@@ -2113,6 +2332,7 @@ function renderAll() {
   renderTabs();
   PANE_RENDER[ui.tab]();
   renderBoard(); // 評価後に描画（上位3バッジのため）
+  renderSetupPanel();
 }
 function bindGlobal() {
   $("#modebar").addEventListener("click", e => {
@@ -2133,6 +2353,8 @@ function bindGlobal() {
     const b = e.target.closest("[data-tab]");
     if (b) { ui.tab = b.dataset.tab; renderAll(); }
   });
+  $("#btn-setup").addEventListener("click", () => startSetup(false));
+  document.addEventListener("pointerdown", setupPointerDown);
   const svg = $("#board");
   svg.addEventListener("click", onBoardClick);
   svg.addEventListener("mousemove", onBoardHover);
@@ -2221,6 +2443,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
