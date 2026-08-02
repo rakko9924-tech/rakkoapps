@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>カタン戦略計算機｜交渉なしEV・確率エンジン - らっこアプリ攻略ラボ</title>
-<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に配置を練習できるトレーニングモード、実卓の写真から盤面を読み取る写真入力、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
+<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に配置を練習できるトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
 <link rel="canonical" href="https://rakkoapps.com/lab/catan-gto/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#f2694b">
@@ -282,10 +282,6 @@
   .docs h4 { font-size: 12.5px; margin: 14px 0 4px; }
   .docs p, .docs li { font-size: 12.5px; color: var(--sub); margin: 4px 0; }
   .docs code { font-family: var(--mono); font-size: 11.5px; background: var(--line-soft); border-radius: 4px; padding: 0 4px; color: var(--ink); }
-  #photo-panel { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-top: 8px; }
-  #photo-canvas { width: 100%; display: block; border-radius: 6px; cursor: crosshair; touch-action: manipulation; background: #111; }
-  .ph-step { font-size: 12px; color: var(--sub); margin: 0 0 6px; }
-  .ph-step b { color: var(--ink); }
   .pulse { animation: pulse 1s ease-out 2; }
   @keyframes pulse { 0% { stroke-width: 2.5; opacity: 1; } 100% { stroke-width: 10; opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
@@ -317,13 +313,6 @@
           <button data-nm="spiral" title="公式の可変セットアップ。数字トークンはA〜Rの固定数列を外周の角から反時計回りにスパイラル配置（砂漠は飛ばす）">公式スパイラル</button>
           <button data-nm="random" title="数字も完全シャッフル（6/8の隣接は回避）">完全ランダム</button>
         </span>
-        <button id="btn-photo" title="実卓の写真から地形と数字を読み取って盤面に反映">📷 写真から盤面入力</button>
-        <input type="file" id="photo-file" accept="image/*" hidden>
-      </div>
-      <div id="photo-panel" hidden>
-        <p class="ph-step" id="ph-hint"></p>
-        <canvas id="photo-canvas"></canvas>
-        <div class="toolbar" id="ph-controls" style="margin-top:6px"></div>
       </div>
     </section>
 
@@ -375,9 +364,6 @@
           <li>距離ルール（隣接頂点に建物があると建設不可）を満たす頂点のみ表示。</li>
         </ul>
         <p>重み付けの係数（0.04, 8%, 0.45, 逓減定数6）は理論値ではなく、実戦則を透明化したヒューリスティックです。素のピップ合計も常に併記します。</p>
-        <h4>写真からの盤面入力</h4>
-        <p>「📷 写真から盤面入力」は実卓の写真から盤面を読み取ります。すべて端末内で処理され、画像はどこにも送信されません。手順: <b>①〜⑥</b> 陸地の6つの角を時計回りにタップ（<b>射影変換</b>で斜めからの写真の遠近も補正。マーカーはドラッグで微調整可）→ <b>⑦</b> 地形を色解析で自動判定 → <b>⑧</b> 数字トークン「2」のヘクスをタップすると公式A〜Rスパイラル全12通りと照合して数字を自動入力（候補が複数なら「12」のヘクスで確定）→ 反映。</p>
-        <p>地形判定の中身: 各ヘクスをリング状に120点サンプリングし、<b>輝度の中間50%のトリム平均</b>でトークン・駒・影・白飛びの影響を除去。盤面全体の明度・彩度の中央値からゲインを推定して<b>照明を正規化</b>し、色ヒューリスティックの尤度を計算。<b>タイル構成の制約（木4土3羊4麦4鉱3砂1）の下で貪欲割当＋2-opt交換</b>で全体最適に近づけます。自信の低いヘクスは黄色の「?」で表示されるので、そこだけタップで確認・修正してください。スパイラルでない盤面は「地形のみ反映」→ 数字モードで手入力を。建物・街道・港の読取りは非対応です（港は枠プリセットを使用）。</p>
         <h4>手番の有利不利（先攻・後攻）</h4>
         <p>スネークドラフト（2人: 1→2→2→1、4人: 1→2→3→4→4→3→2→1）は手番の格差を抑える設計ですが、レースモデルで測ると差は残ります。ソルバータブの「手番の有利不利」で、現在の盤面での各手番の均衡到達Tを2〜4人分比較できます。参考値（標準初心者盤面・港プリセットあり）:</p>
         <ul>
@@ -544,17 +530,6 @@ function assignSpiralNumbers(tiles, cornerIdx, dir) {
     if (tiles[h.id].res === "desert") { tiles[h.id].num = null; continue; }
     tiles[h.id].num = NUMBER_SPIRAL[k++];
   }
-}
-// 写真読取用: 地形配列に対する全スパイラル仮説（開始角6 × 回転方向2 = 12通り）の数字配置
-function spiralHypotheses(tiles) {
-  const out = [];
-  for (let c = 0; c < 6; c++)
-    for (const dir of [-1, 1]) {
-      const t2 = tiles.map(t => ({ res: t.res, num: null }));
-      assignSpiralNumbers(t2, c, dir);
-      out.push({ corner: c, dir, nums: t2.map(x => x.num) });
-    }
-  return out;
 }
 function randomBoard(mode, rand) {
   mode = mode || "spiral";
@@ -2131,393 +2106,6 @@ function renderProb() {
   $("#in-devn").addEventListener("change", e => { ui.devN = Math.max(1, Math.min(25, +e.target.value || 1)); renderProb(); });
 }
 
-/* ---------- 写真からの盤面入力（完全クライアントサイド） ---------- */
-const PH = { active: false, off: null, px: null, iw: 0, ih: 0, step: 0,
-             corners: [], H: null, Hi: null, tiles: null, conf: null,
-             manual: {}, scores: null, hyps: null, hypIdx: -1, drag: -1, moved: false };
-const PH_CYC = ["wood", "brick", "sheep", "wheat", "ore", "desert"];
-const PH_K = { wood: "木", brick: "土", sheep: "羊", wheat: "麦", ore: "鉱", desert: "砂" };
-const PH_CORNER_JA = ["上", "右上", "右下", "下", "左下", "左上"];
-// 陸地の6つの角（全体六角形の頂点）を厳密に取得（上から時計回り）
-const PH_TIPS = (() => {
-  return [-90, -30, 30, 90, 150, 210].map(deg => {
-    const th = deg * Math.PI / 180;
-    let best = null, bd = -Infinity;
-    for (const v of GEO.verts) {
-      const dp = v.x * Math.cos(th) + v.y * Math.sin(th);
-      if (dp > bd) { bd = dp; best = v; }
-    }
-    return [best.x, best.y];
-  });
-})();
-/* --- 射影変換（ホモグラフィ）: 盤面座標6点 ↔ 写真6点 の最小二乗DLT --- */
-function solveHomography(src, dst) {
-  // 正規化（数値安定用）
-  const norm = pts => {
-    const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length;
-    const cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
-    const sc = pts.reduce((a, p) => a + Math.hypot(p[0] - cx, p[1] - cy), 0) / pts.length || 1;
-    const s = Math.SQRT2 / sc;
-    return { T: [s, 0, -s * cx, 0, s, -s * cy, 0, 0, 1], pts: pts.map(p => [(p[0] - cx) * s, (p[1] - cy) * s]) };
-  };
-  const A = norm(src), B = norm(dst);
-  // 8未知数 h11..h32 (h33=1) の正規方程式
-  const M = Array.from({ length: 8 }, () => new Array(9).fill(0)); // [A|b] 拡大
-  const addEq = (row, rhs) => {
-    for (let i = 0; i < 8; i++) { for (let j = 0; j < 8; j++) M[i][j] += row[i] * row[j]; M[i][8] += row[i] * rhs; }
-  };
-  for (let k = 0; k < A.pts.length; k++) {
-    const [X, Y] = A.pts[k], [u, v] = B.pts[k];
-    addEq([X, Y, 1, 0, 0, 0, -u * X, -u * Y], u);
-    addEq([0, 0, 0, X, Y, 1, -v * X, -v * Y], v);
-  }
-  // ガウス消去（部分ピボット）
-  for (let c = 0; c < 8; c++) {
-    let p = c;
-    for (let r = c + 1; r < 8; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
-    [M[c], M[p]] = [M[p], M[c]];
-    if (Math.abs(M[c][c]) < 1e-12) return null;
-    for (let r = 0; r < 8; r++) {
-      if (r === c) continue;
-      const f = M[r][c] / M[c][c];
-      for (let j = c; j < 9; j++) M[r][j] -= f * M[c][j];
-    }
-  }
-  const h = []; for (let i = 0; i < 8; i++) h.push(M[i][8] / M[i][i]);
-  const Hn = [h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7], 1];
-  // H = B.T⁻¹ · Hn · A.T
-  const inv3 = m => {
-    const [a, b, c, d, e, f, g, hh, i] = m;
-    const det = a * (e * i - f * hh) - b * (d * i - f * g) + c * (d * hh - e * g);
-    return [ (e * i - f * hh) / det, (c * hh - b * i) / det, (b * f - c * e) / det,
-             (f * g - d * i) / det, (a * i - c * g) / det, (c * d - a * f) / det,
-             (d * hh - e * g) / det, (b * g - a * hh) / det, (a * e - b * d) / det ];
-  };
-  const mul3 = (m, n) => {
-    const o = new Array(9);
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++)
-      o[r * 3 + c] = m[r * 3] * n[c] + m[r * 3 + 1] * n[3 + c] + m[r * 3 + 2] * n[6 + c];
-    return o;
-  };
-  return mul3(inv3(B.T), mul3(Hn, A.T));
-}
-function applyH(H, x, y) {
-  const w = H[6] * x + H[7] * y + H[8];
-  return [(H[0] * x + H[1] * y + H[2]) / w, (H[3] * x + H[4] * y + H[5]) / w];
-}
-function b2p(x, y) { return applyH(PH.H, x, y); }
-function p2b(x, y) { return applyH(PH.Hi, x, y); }
-function inv3x3(m) {
-  const [a, b, c, d, e, f, g, h, i] = m;
-  const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
-  return [ (e * i - f * h) / det, (c * h - b * i) / det, (b * f - c * e) / det,
-           (f * g - d * i) / det, (a * i - c * g) / det, (c * d - a * f) / det,
-           (d * h - e * g) / det, (b * g - a * h) / det, (a * e - b * d) / det ];
-}
-function phSetTransform() {
-  PH.H = solveHomography(PH_TIPS, PH.corners.map(c => [c.x, c.y]));
-  PH.Hi = PH.H ? inv3x3(PH.H) : null;
-}
-/* --- 色解析 --- */
-function rgb2hsv(r, g, b) {
-  r /= 255; g /= 255; b /= 255;
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
-  let h = 0;
-  if (d > 0) {
-    if (mx === r) h = ((g - b) / d + 6) % 6;
-    else if (mx === g) h = (b - r) / d + 2;
-    else h = (r - g) / d + 4;
-    h *= 60;
-  }
-  return [h, mx ? d / mx : 0, mx];
-}
-function terrainScore(cls, h, s, v) {
-  const g = (x, mu, sig) => Math.exp(-((x - mu) ** 2) / (2 * sig * sig));
-  const hue = (mu, sig) => g(Math.min(Math.abs(h - mu), 360 - Math.abs(h - mu)), 0, sig);
-  switch (cls) {
-    case "wheat":  return hue(46, 15) * g(s, .62, .2) * g(v, .7, .2);
-    case "desert": return hue(47, 22) * g(s, .25, .12) * g(v, .72, .2);
-    case "brick":  return hue(23, 12) * g(s, .55, .2) * g(v, .55, .2);
-    case "wood":   return hue(105, 42) * g(s, .48, .24) * g(v, .3, .13);
-    case "sheep":  return hue(88, 30) * g(s, .55, .22) * g(v, .6, .17);
-    case "ore":    return Math.max(hue(285, 45) * g(s, .22, .13) * g(v, .5, .2),
-                                   g(s, .11, .075) * g(v, .5, .18));
-  }
-  return 0;
-}
-// ロバスト標本: 多点サンプル→輝度の中間50%のトリム平均（トークン・駒・影・白飛びを除外）
-function phSampleHex(hx) {
-  const pts = [];
-  for (let a = 0; a < 30; a++)
-    for (const rr of [0.42, 0.56, 0.7, 0.84]) {
-      const ang = a / 30 * 2 * Math.PI;
-      const [px, py] = b2p(hx.cx + Math.cos(ang) * HEX_S * rr, hx.cy + Math.sin(ang) * HEX_S * rr);
-      const xi = Math.round(px), yi = Math.round(py);
-      if (xi < 1 || yi < 1 || xi >= PH.iw - 1 || yi >= PH.ih - 1) continue;
-      const o = (yi * PH.iw + xi) * 4;
-      const r = PH.px[o], g = PH.px[o + 1], b = PH.px[o + 2];
-      pts.push([r, g, b, 0.299 * r + 0.587 * g + 0.114 * b]);
-    }
-  if (!pts.length) return [0, 0, 0];
-  pts.sort((p, q) => p[3] - q[3]);
-  const lo = Math.floor(pts.length * 0.25), hi = Math.ceil(pts.length * 0.75);
-  let R = 0, G = 0, B = 0, n = 0;
-  for (let i = lo; i < hi; i++) { R += pts[i][0]; G += pts[i][1]; B += pts[i][2]; n++; }
-  return [R / n, G / n, B / n];
-}
-function phClassify() {
-  const rgbs = GEO.hexes.map(phSampleHex);
-  let hsvs = rgbs.map(([r, g, b]) => rgb2hsv(r, g, b));
-  // 照明適応: 盤面全体の明度・彩度の中央値を標準値に合わせるゲイン補正
-  const med = a => { const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
-  const gv = Math.min(1.8, Math.max(0.6, 0.55 / Math.max(med(hsvs.map(x => x[2])), 0.05)));
-  const gs = Math.min(1.8, Math.max(0.6, 0.5 / Math.max(med(hsvs.map(x => x[1])), 0.05)));
-  hsvs = hsvs.map(([h, s, v]) => [h, Math.min(1, s * gs), Math.min(1, v * gv)]);
-  const scores = hsvs.map(([h, s, v]) => {
-    const sc = {};
-    for (const c of PH_CYC) sc[c] = terrainScore(c, h, s, v) + 1e-9;
-    return sc;
-  });
-  // 構成制約つき貪欲割当 → 2-opt交換で局所最適化（対数尤度和を最大化）
-  const remain = { wood: 4, brick: 3, sheep: 4, wheat: 4, ore: 3, desert: 1 };
-  const margin = id => { const ss = Object.values(scores[id]).sort((x, y) => y - x); return ss[0] - ss[1]; };
-  const order = GEO.hexes.map(h => h.id).sort((a, b) => margin(b) - margin(a));
-  const res = new Array(19);
-  for (const id of order) {
-    const ranked = PH_CYC.slice().sort((a, b) => scores[id][b] - scores[id][a]);
-    const pick = ranked.find(c => remain[c] > 0);
-    remain[pick]--;
-    res[id] = pick;
-  }
-  const L = (id, c) => Math.log(scores[id][c]);
-  let improved = true;
-  while (improved) {
-    improved = false;
-    for (let i = 0; i < 19; i++)
-      for (let j = i + 1; j < 19; j++) {
-        if (res[i] === res[j]) continue;
-        if (L(i, res[j]) + L(j, res[i]) > L(i, res[i]) + L(j, res[j]) + 1e-12) {
-          [res[i], res[j]] = [res[j], res[i]];
-          improved = true;
-        }
-      }
-  }
-  // 手動修正を再適用
-  for (const [id, c] of Object.entries(PH.manual)) res[+id] = c;
-  PH.scores = scores;
-  PH.tiles = res.map(c => ({ res: c, num: null }));
-  // 確信度: 採用クラスと最良クラスの尤度差（小さいほど怪しい）
-  PH.conf = res.map((c, id) => {
-    const best = Math.max(...Object.values(scores[id]));
-    return scores[id][c] / best;
-  });
-}
-/* --- UI --- */
-async function phLoad(file) {
-  let bmp;
-  try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
-  catch (err) {
-    bmp = await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = URL.createObjectURL(file);
-    });
-  }
-  const w = Math.min(1280, bmp.width), k = w / bmp.width, h = Math.round(bmp.height * k);
-  const off = document.createElement("canvas");
-  off.width = w; off.height = h;
-  const octx = off.getContext("2d", { willReadFrequently: true });
-  octx.drawImage(bmp, 0, 0, w, h);
-  PH.off = off; PH.iw = w; PH.ih = h;
-  PH.px = octx.getImageData(0, 0, w, h).data;
-  PH.step = 1; PH.corners = []; PH.H = PH.Hi = null; PH.tiles = null; PH.conf = null;
-  PH.manual = {}; PH.hyps = null; PH.hypIdx = -1; PH.drag = -1;
-  PH.active = true;
-  $("#photo-panel").hidden = false;
-  phDraw(); phControls();
-}
-function phDraw() {
-  const cv = $("#photo-canvas"), ctx = cv.getContext("2d");
-  cv.width = PH.iw; cv.height = PH.ih;
-  ctx.drawImage(PH.off, 0, 0);
-  PH.corners.forEach((p, i) => {
-    ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
-    ctx.fillStyle = "#e5484d"; ctx.fill();
-    ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
-    ctx.font = "700 12px sans-serif"; ctx.fillStyle = "#fff"; ctx.textAlign = "center";
-    ctx.fillText(String(i + 1), p.x, p.y + 4);
-  });
-  if (!PH.H || !PH.tiles) return;
-  const [ax, ay] = b2p(0, 0), [bx2, by2] = b2p(HEX_S, 0);
-  const fs = Math.max(11, Math.hypot(bx2 - ax, by2 - ay) * 0.42);
-  for (const hx of GEO.hexes) {
-    ctx.beginPath();
-    hx.corners.forEach(([x, y], i) => {
-      const [px, py] = b2p(x, y);
-      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-    });
-    ctx.closePath();
-    ctx.lineWidth = 2; ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.stroke();
-    const t = PH.tiles[hx.id];
-    const low = PH.conf && PH.conf[hx.id] < 0.55 && PH.manual[hx.id] === undefined;
-    const [cx0, cy0] = b2p(hx.cx, hx.cy);
-    const cx = cx0, cy = cy0 + fs * 1.35;
-    const label = PH_K[t.res] + (low ? "?" : "") + (PH.step >= 8 && t.num ? " " + t.num : "");
-    ctx.font = `700 ${fs}px sans-serif`;
-    const w = ctx.measureText(label).width + 10;
-    ctx.fillStyle = low ? "rgba(255,225,160,.92)" : "rgba(255,255,255,.88)";
-    ctx.fillRect(cx - w / 2, cy - fs * 0.8, w, fs * 1.5);
-    ctx.fillStyle = low ? "#8a4b00" : "#1a1a1a";
-    ctx.textAlign = "center";
-    ctx.fillText(label, cx, cy + fs * 0.35);
-  }
-}
-function phHintText() {
-  if (PH.step >= 1 && PH.step <= 6)
-    return `①〜⑥ 陸地の角を時計回りにタップ: 次は <b>${PH_CORNER_JA[PH.step - 1]}の角</b>（${PH.step}/6）。ずれたら後でマーカーをドラッグして直せます。`;
-  if (PH.step === 7)
-    return "⑦ 地形の判定結果を確認。<b>黄色の「?」は自信が低いヘクス</b>です。違うヘクスはタップで切替（木→土→羊→麦→鉱→砂）。角マーカーのドラッグで位置調整も可。よければ「数字へ」。";
-  if (PH.step === 8)
-    return PH.hyps && PH.hyps.length > 1
-      ? `⑧ 候補が${PH.hyps.length}つあります。<b>「12」のヘクスをタップすると確定</b>します（「別候補」で切替可・数字を写真と見比べて確認）。`
-      : "⑧ <b>数字「2」のヘクスをタップ</b>すると公式スパイラルで全数字を自動入力します。合わない盤面は「地形のみ反映」→ 数字モードで手入力を。";
-  return "";
-}
-function phControls() {
-  $("#ph-hint").innerHTML = phHintText();
-  const c = $("#ph-controls");
-  let html = "";
-  if (PH.step === 7) html += `<button id="ph-tonum" class="on">数字へ進む</button>`;
-  if (PH.step === 8) {
-    if (PH.hyps && PH.hyps.length > 1)
-      html += `<button id="ph-alt">別候補 (${PH.hypIdx + 1}/${PH.hyps.length})</button>`;
-    if (PH.hyps && PH.hyps.length)
-      html += `<button id="ph-apply" class="on">盤面に反映</button>`;
-    html += `<button id="ph-applyterrain">地形のみ反映</button>`;
-  }
-  if (PH.step > 1) html += `<button id="ph-restart" class="ghost">タップやり直し</button>`;
-  html += `<button id="ph-close" class="ghost">閉じる</button>`;
-  c.innerHTML = html;
-  const on = (id, fn) => { const el = $("#" + id); if (el) el.addEventListener("click", fn); };
-  on("ph-tonum", () => { PH.step = 8; phDraw(); phControls(); });
-  on("ph-alt", () => {
-    PH.hypIdx = (PH.hypIdx + 1) % PH.hyps.length;
-    PH.hyps[PH.hypIdx].nums.forEach((n, i) => PH.tiles[i].num = n);
-    phDraw(); phControls();
-  });
-  on("ph-apply", () => phApply(true));
-  on("ph-applyterrain", () => phApply(false));
-  on("ph-restart", () => {
-    PH.step = 1; PH.corners = []; PH.H = PH.Hi = null; PH.tiles = null;
-    PH.manual = {}; PH.hyps = null; PH.hypIdx = -1;
-    phDraw(); phControls();
-  });
-  on("ph-close", phClose);
-}
-function phCanvasXY(e) {
-  const cv = $("#photo-canvas"), r = cv.getBoundingClientRect();
-  return { x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height };
-}
-function phPointerDown(e) {
-  if (!PH.active || !PH.corners.length) return;
-  const { x, y } = phCanvasXY(e);
-  const cv = $("#photo-canvas"), r = cv.getBoundingClientRect();
-  const tol = 16 * cv.width / r.width;
-  let k = -1, bd = tol;
-  PH.corners.forEach((p, i) => {
-    const d = Math.hypot(p.x - x, p.y - y);
-    if (d < bd) { bd = d; k = i; }
-  });
-  if (k >= 0) {
-    PH.drag = k; PH.moved = false;
-    e.preventDefault();
-    try { e.target.setPointerCapture(e.pointerId); } catch (err) { /* no-op */ }
-  }
-}
-function phPointerMove(e) {
-  if (PH.drag < 0) return;
-  const { x, y } = phCanvasXY(e);
-  PH.corners[PH.drag] = { x, y };
-  PH.moved = true;
-  if (PH.corners.length === 6) { phSetTransform(); }
-  phDraw();
-}
-function phPointerUp() {
-  if (PH.drag < 0) return;
-  const wasMoved = PH.moved;
-  PH.drag = -1;
-  if (wasMoved && PH.corners.length === 6 && PH.H) {
-    phClassify();
-    if (PH.step >= 8 && PH.hyps && PH.hyps.length)
-      PH.hyps[PH.hypIdx].nums.forEach((n, i) => PH.tiles[i].num = n);
-    phDraw(); phControls();
-  }
-}
-function phClick(e) {
-  if (!PH.active) return;
-  if (PH.moved) { PH.moved = false; return; } // ドラッグ直後のclickは無視
-  const { x, y } = phCanvasXY(e);
-  if (PH.step >= 1 && PH.step <= 6) {
-    PH.corners.push({ x, y });
-    if (PH.corners.length === 6) {
-      phSetTransform();
-      if (!PH.H) {
-        $("#ph-hint").innerHTML = "位置合わせに失敗しました。「タップやり直し」で6つの角をもう一度。";
-        PH.corners.pop();
-        return;
-      }
-      phClassify();
-      PH.step = 7;
-    } else PH.step = PH.corners.length + 1;
-  } else if (PH.step >= 7 && PH.Hi) {
-    const [bx, by] = p2b(x, y);
-    let hid = -1, bd = 1e9;
-    for (const hx of GEO.hexes) {
-      const d = Math.hypot(hx.cx - bx, hx.cy - by);
-      if (d < bd) { bd = d; hid = hx.id; }
-    }
-    if (bd > HEX_S) return;
-    if (PH.step === 7) {
-      const next = PH_CYC[(PH_CYC.indexOf(PH.tiles[hid].res) + 1) % 6];
-      PH.tiles[hid] = { res: next, num: null };
-      PH.manual[hid] = next;
-    } else {
-      if (PH.hyps && PH.hyps.length > 1) {
-        const narrowed = PH.hyps.filter(hp => hp.nums[hid] === 12);
-        if (narrowed.length) {
-          PH.hyps = narrowed; PH.hypIdx = 0;
-          narrowed[0].nums.forEach((n, i) => PH.tiles[i].num = n);
-          phDraw(); phControls();
-          return;
-        }
-      }
-      const hyps = spiralHypotheses(PH.tiles).filter(hp => hp.nums[hid] === 2);
-      if (!hyps.length) {
-        $("#ph-hint").innerHTML = "そのヘクスが「2」になるスパイラルが見つかりません（砂漠の位置を確認するか、地形のみ反映して数字モードで入力してください）。";
-        return;
-      }
-      PH.hyps = hyps; PH.hypIdx = 0;
-      hyps[0].nums.forEach((n, i) => PH.tiles[i].num = n);
-    }
-  }
-  phDraw(); phControls();
-}
-function phApply(withNums) {
-  board.tiles = PH.tiles.map(t => ({ res: t.res, num: withNums ? t.num : null }));
-  const d = board.tiles.findIndex(t => t.res === "desert");
-  board.robber = d >= 0 ? d : 0;
-  save();
-  phClose();
-  renderAll();
-  flashHint(withNums ? "写真から盤面を反映しました" : "地形を反映しました。数字は「数字」モードで入力してください");
-}
-function phClose() {
-  PH.active = false;
-  $("#photo-panel").hidden = true;
-  $("#photo-file").value = "";
-}
-
 /* ---------- glue ---------- */
 const PANE_RENDER = { solver: renderSolver, train: renderTraining, place: renderPlace, prod: renderProd, build: renderBuild, robber: renderRobber, prob: renderProb };
 function renderAll() {
@@ -2553,15 +2141,6 @@ function bindGlobal() {
   const syncVb = () => { vb.classList.toggle("on", ui.showVLabels); vb.setAttribute("aria-pressed", ui.showVLabels); };
   syncVb();
   vb.addEventListener("click", () => { ui.showVLabels = !ui.showVLabels; syncVb(); renderBoard(); });
-  $("#btn-photo").addEventListener("click", () => $("#photo-file").click());
-  $("#photo-file").addEventListener("change", e => {
-    const f = e.target.files && e.target.files[0];
-    if (f) phLoad(f).catch(() => flashHint("画像を読み込めませんでした"));
-  });
-  $("#photo-canvas").addEventListener("click", phClick);
-  $("#photo-canvas").addEventListener("pointerdown", phPointerDown);
-  $("#photo-canvas").addEventListener("pointermove", phPointerMove);
-  $("#photo-canvas").addEventListener("pointerup", phPointerUp);
   $("#btn-standard").addEventListener("click", () => {
     const keep = board.buildings; board = standardBoard(); board.buildings = keep; save(); renderAll();
   });
@@ -2642,6 +2221,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
