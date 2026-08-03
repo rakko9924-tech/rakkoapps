@@ -105,9 +105,19 @@ strong { font-weight: 700; color: var(--color-ink); }
 .nav__link { font-size: var(--text-sm); font-weight: 500; color: var(--color-muted); padding: 0.4rem 0.2rem; transition: color var(--dur) var(--ease-out); white-space: nowrap; }
 .nav__link:hover { color: var(--color-ink); }
 .nav__cta { margin-left: 0.25rem; }
+/* スマホでは2段組み: 1段目にワードマーク、2段目にタブを横並び（入り切らなければ横スクロール）。
+   「探す」CTAは「アプリ一覧」と行き先が同じなので畳んで、タブ用の幅を確保する。 */
 @media (max-width: 720px) {
-  .nav__links .nav__link { display: none; }
-  .nav__links .nav__cta { display: inline-flex; }
+  .nav__inner { flex-wrap: wrap; min-height: 0; padding-block: 0.5rem; row-gap: 0.15rem; }
+  .nav__links {
+    order: 3; width: 100%; margin-left: 0; gap: 1.15rem;
+    overflow-x: auto; overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .nav__links::-webkit-scrollbar { display: none; }
+  .nav__link { padding-block: 0.45rem; }
+  .nav__links .nav__cta { display: none; }
+  .nav__link[aria-current="page"] { color: var(--color-accent-ink); font-weight: 700; }
 }
 
 /* ============ Hero ============ */

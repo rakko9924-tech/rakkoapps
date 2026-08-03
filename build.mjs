@@ -312,6 +312,19 @@ for (const app of apps) {
   writeFileSync(join(dir, "index.html"), detailPage(app));
 }
 
+// 攻略ラボの手書きページ: 共通CSSの ?v= だけを最新に貼り替える（中身は編集しない）。
+// これをしないと、共通CSSを直したのに既訪問者のブラウザが古いCSSを使い続ける。
+const LAB_PAGES = ["lab/index.html", "lab/privacy.html", "lab/gobblet-gto/index.html", "lab/catan-gto/index.html"];
+for (const rel of LAB_PAGES) {
+  const file = join(__dir, rel);
+  let src;
+  try { src = readFileSync(file, "utf8"); } catch { continue; }
+  const out = src
+    .replace(/\/css\/tokens\.css(\?v=[\w.]+)?/g, CSS_TOKENS)
+    .replace(/\/css\/styles\.css(\?v=[\w.]+)?/g, CSS_STYLES);
+  if (out !== src) writeFileSync(file, out);
+}
+
 // sitemap（トップ + 全個別ページ）
 const urls = [`${BASE}/`, ...apps.map((a) => detailAbs(a.folder)), ...apps.filter(isWeb).map(playAbs), ...LAB_URLS.map((p) => `${BASE}${p}`)];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
