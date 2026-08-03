@@ -392,9 +392,40 @@
     function snap(e) { return { m: e.m, str: e.str, val: e.val, resolved: e.resolved, optimal: e.optimal, provedTo: e.provedTo }; }
   }
 
+  // ---- 気楽なCPU（対戦モード用）----
+  // 方針: 即勝ちがあれば取る / 即負けの手と「相手に次のターンの即勝ちを許す」手は
+  // 避ける / 残りから一様ランダム（= GTO比でミスはするが、1手詰めは渡さない）。
+  // 安全な手が無ければ即負けでない手 → それも無ければ全手からランダム。
+  function cpuPick(pos, rnd) {
+    rnd = rnd || Math.random;
+    setPos(pos);
+    const n0 = genMovesInto(0);
+    const mvs = [];
+    for (let i = 0; i < n0; i++) mvs.push(MVBUF[i]);
+    const wins = [], safe = [], notLosing = [];
+    for (const m of mvs) {
+      setPos(pos); make(m);
+      const a = adjudicateP();
+      if (a > 0) { wins.push(m); continue; }
+      if (a < 0) continue; // 即負け（露出ルール等）
+      notLosing.push(m);
+      const rn = genMovesInto(0);
+      let danger = false;
+      for (let j = 0; j < rn && !danger; j++) {
+        const rm = MVBUF[j];
+        make(rm);
+        if (adjudicateP() > 0) danger = true;
+        unmake(rm);
+      }
+      if (!danger) safe.push(m);
+    }
+    const pool = wins.length ? wins : safe.length ? safe : notLosing.length ? notLosing : mvs;
+    return pool[Math.floor(rnd() * pool.length)];
+  }
+
   const API = {
     initialPos, genMoves, applyMove, adjudicate, exactValue, analyze, perft,
-    evaluatePosition, moveStr, cellName, memoInit,
+    evaluatePosition, cpuPick, moveStr, cellName, memoInit,
     mvFrom, mvLvl, mvTo,
     visMask: (pos, who) => visMaskOf(pos, who),
     get nodes() { return nodes; },

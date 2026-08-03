@@ -26,8 +26,8 @@
 <link rel="stylesheet" href="/css/tokens.css">
 <link rel="stylesheet" href="/css/styles.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1975437480047330" crossorigin="anonymous"></script>
-<script src="./solver.js"></script>
-<script src="./book.js"></script>
+<script src="./solver.js?v=2"></script>
+<script src="./book.js?v=1"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -209,6 +209,23 @@
     background:var(--x-tint); color:var(--x-deep); display:none;
   }
   .gameover.olose{ background:var(--o-tint); color:var(--o-deep); }
+  .mode-row{ display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 2px; }
+  .mode-row button{
+    font:inherit; font-weight:700; font-size:var(--text-sm); padding:8px 16px;
+    border-radius:var(--radius-pill); border:1.5px solid var(--color-rule-strong);
+    background:var(--color-card); color:var(--color-body); cursor:pointer;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+  .mode-row button:hover{ border-color:var(--color-accent); }
+  .mode-row button:focus-visible{ outline:2px solid var(--color-focus); outline-offset:2px; }
+  .mode-row button[aria-pressed="true"]{
+    background:var(--color-accent-soft); border-color:var(--color-accent); color:var(--color-accent-ink);
+  }
+  .hint-tgl{
+    display:inline-flex; gap:7px; align-items:center; font-size:var(--text-xs);
+    color:var(--color-muted); margin-top:12px; cursor:pointer; user-select:none;
+  }
+  .hint-tgl input{ accent-color: var(--color-accent-strong); width:15px; height:15px; margin:0; }
 
   /* ---- 最善進行ステッパー ---- */
   .stepper{
@@ -335,7 +352,12 @@
     </div>
 
     <h2 id="assistant">GTOアシスタント <span class="sub">相手がどこに置いても、最善手がその場でわかる</span></h2>
-    <p class="lab-p">実戦の手をそのまま盤に入力してください（<strong>先手でも後手でも</strong>使えます）。自分の手番になったら<strong>★付きの手が証明済みの最善</strong>。「GTOに打たせる」で相手役や自分役をエンジンに任せて練習もできます。序盤2手までは事前計算ブック、3手目以降はこの端末の中でソルバーがその場で厳密に証明します（数秒かかることがあります）。</p>
+    <p class="lab-p"><strong>解析モード</strong>では実戦の手をそのまま入力すると、★付きの<strong>証明済み最善手</strong>と全合法手の厳密値が出ます（序盤2手はブック即答、以降は端末内ソルバーで数秒）。<strong>CPU対戦</strong>では、わざとミスはするけれど<strong>「次の1手で詰み」だけは絶対に許さない</strong>CPUと、先手・後手どちらでも対戦できます。行き詰まったらヒント表示をオンに。</p>
+    <div class="mode-row" role="group" aria-label="モード切り替え">
+      <button type="button" data-mode="free" aria-pressed="true">解析モード</button>
+      <button type="button" data-mode="cpu1" aria-pressed="false">CPU対戦｜自分が先手</button>
+      <button type="button" data-mode="cpu2" aria-pressed="false">CPU対戦｜自分が後手</button>
+    </div>
     <div class="asst">
       <div class="asst-left">
         <div class="aboard" id="aboard" aria-label="対話盤"></div>
@@ -353,6 +375,7 @@
           <button id="btnUndo" type="button">ひとつ戻す</button>
           <button id="btnReset" type="button">最初から</button>
         </div>
+        <label class="hint-tgl" id="hintTgl" hidden><input type="checkbox" id="hintChk"> ヒント（最善手・評価）を表示</label>
         <p class="hist" id="hist"></p>
         <p class="gameover" id="gameover"></p>
       </div>
@@ -511,10 +534,18 @@ render();
   let posval=null;      // {val,resolved} 手番側視点
   let evalId=0, evaluating=false;
   let worker=null, workerFailed=false;
+  let mode="free";           // free | cpu1(自分が先手) | cpu2(自分が後手)
+  let hintOn=false, cpuTimer=0, cpuThinking=false;
+  const hintTgl=$("hintTgl"), hintChk=$("hintChk");
+  const modeBtns=[...document.querySelectorAll(".mode-row button")];
+  const inMatch=()=>mode!=="free";
+  const humanSide=()=>mode==="cpu1"?0:mode==="cpu2"?1:null;
+  const showHints=()=>!inMatch()||hintOn;
+  const nameOf=(who)=>inMatch()?(who===humanSide()?"あなた":"CPU"):NAMEJ[who];
 
   function ensureWorker(){
     if(worker||workerFailed) return worker;
-    try{ worker=new Worker("./solver.js"); }
+    try{ worker=new Worker("./solver.js?v=2"); }
     catch(e){ workerFailed=true; return null; }
     worker.onmessage=(e)=>{
       const d=e.data;
@@ -568,8 +599,10 @@ render();
     evalId++; posval=null; evaluating=false;
     vals=new Map();
     legal = over? [] : S.genMoves(pos);
-    for(const m of legal){ const s=S.moveStr(m); vals.set(s, {m, str:s, val:null, resolved:false, optimal:false, pending:true}); }
     if(over){ render(); return; }
+    // CPU対戦中はヒントONかつ自分の手番のときだけ評価を回す
+    if(inMatch() && (!hintOn || pos[6]!==humanSide())){ render(); return; }
+    for(const m of legal){ const s=S.moveStr(m); vals.set(s, {m, str:s, val:null, resolved:false, optimal:false, pending:true}); }
     const bk=pathKey();
     if(bk!==null && typeof GOBBLET_BOOK!=="undefined" && GOBBLET_BOOK[bk]){
       const tbl=GOBBLET_BOOK[bk];
@@ -642,10 +675,32 @@ render();
     over=S.adjudicate(pos);
     sel=null;
     requestEval();
+    scheduleCpu();
+  }
+
+  function scheduleCpu(){
+    cpuTimer++;
+    cpuThinking=false;
+    if(!inMatch() || over || pos[6]===humanSide()) return;
+    const my=cpuTimer;
+    cpuThinking=true;
+    setTimeout(()=>{
+      if(my!==cpuTimer || !inMatch() || over || pos[6]===humanSide()) return;
+      cpuThinking=false;
+      playMove(S.cpuPick(pos));
+    }, 650);
+  }
+
+  function rebuild(){
+    pos=S.initialPos();
+    for(const h of hist) pos=S.applyMove(pos,h.m);
+    over=hist.length?S.adjudicate(pos):0;
+    sel=null;
   }
 
   function onCell(idx){
     if(over) return;
+    if(inMatch() && (cpuThinking || pos[6]!==humanSide())) return;
     const tg=legalTargets();
     if(sel && tg.has(idx)){
       const from = sel.kind==="hand" ? -1 : sel.from;
@@ -663,6 +718,7 @@ render();
   }
   function onHand(who,l){
     if(over||who!==pos[6]||handCount(who,l)<=0) return;
+    if(inMatch() && (cpuThinking || pos[6]!==humanSide())) return;
     if(sel && sel.kind==="hand" && sel.lvl===l) sel=null;
     else sel={kind:"hand", lvl:l};
     render();
@@ -676,14 +732,22 @@ render();
   });
   btnUndo.addEventListener("click",()=>{
     if(!hist.length) return;
-    hist.pop();
-    pos=S.initialPos();
-    for(const h of hist) pos=S.applyMove(pos,h.m);
-    over=hist.length?S.adjudicate(pos):0;
-    sel=null;
+    hist.pop(); rebuild();
+    // CPU対戦では自分の手番まで戻す（CPUの手もまとめて取り消し）
+    while(inMatch() && hist.length && pos[6]!==humanSide()){ hist.pop(); rebuild(); }
     requestEval();
+    scheduleCpu();
   });
-  btnReset.addEventListener("click",()=>{ hist=[]; pos=S.initialPos(); over=0; sel=null; requestEval(); });
+  btnReset.addEventListener("click",()=>{ hist=[]; pos=S.initialPos(); over=0; sel=null; requestEval(); scheduleCpu(); });
+  modeBtns.forEach(b=>b.addEventListener("click",()=>{
+    const m=b.dataset.mode;
+    if(m===mode) return;
+    mode=m; hintOn=false; hintChk.checked=false;
+    hist=[]; pos=S.initialPos(); over=0; sel=null;
+    requestEval();
+    scheduleCpu();
+  }));
+  hintChk.addEventListener("change",()=>{ hintOn=hintChk.checked; requestEval(); });
 
   function fmtVal(e){
     if(e.pending) return "…";
@@ -716,7 +780,7 @@ render();
     for(const who of [0,1]){
       for(const {lvl,el} of handBtns[who]){
         const n=handCount(who,lvl);
-        el.disabled = over||who!==pos[6]||n<=0;
+        el.disabled = over||who!==pos[6]||n<=0||(inMatch()&&pos[6]!==humanSide());
         el.style.opacity = n<=0? .18 : "";
         el.classList.toggle("sel", !!(sel&&sel.kind==="hand"&&who===pos[6]&&sel.lvl===lvl));
         el.title=NAMEJ[who]+"の"+["小","中","大"][lvl]+"（残り"+n+"）";
@@ -726,26 +790,29 @@ render();
     if(over){
       const mover=pos[6]^1;
       overEl.style.display="block";
-      if(over>0){ overEl.className="gameover"+(mover?" olose":""); overEl.textContent="3並び完成！ "+NAMEJ[mover]+"の勝ちです。"; }
-      else { overEl.className="gameover"+(mover?"":" olose"); overEl.textContent=NAMEJ[mover]+"の手で相手のラインが見えてしまいました（露出ルール）。"+NAMEJ[mover^1]+"の勝ちです。"; }
+      if(over>0){ overEl.className="gameover"+(mover?" olose":""); overEl.textContent="3並び完成！ "+nameOf(mover)+"の勝ちです。"; }
+      else { overEl.className="gameover"+(mover?"":" olose"); overEl.textContent=nameOf(mover)+"の手で相手のラインが見えてしまいました（露出ルール）。"+nameOf(mover^1)+"の勝ちです。"; }
       verdictEl.textContent="終局";
-      statusEl.textContent="「ひとつ戻す」または「最初から」でつづけられます。";
+      statusEl.textContent = inMatch()? "「最初から」でもう一局。「ひとつ戻す」で待ったもできます。"
+                                      : "「ひとつ戻す」または「最初から」でつづけられます。";
     }else{
       overEl.style.display="none";
-      const t=NAMEJ[pos[6]];
+      const t=nameOf(pos[6]);
       if(posval&&posval.resolved){
         if(posval.val>0) verdictEl.innerHTML="<span class='"+(pos[6]?"vo":"vx")+"'>"+t+"の勝ち確定</span> — 最短あと"+posval.val+"手";
         else verdictEl.innerHTML="<span class='"+(pos[6]?"vo":"vx")+"'>"+t+"は敗勢</span> — 最善でもあと"+(-posval.val)+"手（相手が最善の場合）";
       }else if(posval){
         verdictEl.textContent=t+"の番 — ±17手以内の強制決着なし";
       }else{
-        verdictEl.textContent=t+"の番";
+        verdictEl.textContent=t+"の番"+(inMatch()&&pos[6]===humanSide()&&!hist.length&&mode==="cpu1"?"です — 盤か手駒をタップ":"");
       }
-      statusEl.innerHTML = evaluating? "<span class='spin'></span>解析中…（最善手確定後、残りの手も順次確定します）" : (workerFailed?"このブラウザではライブ解析を利用できません（序盤ブックのみ）":"");
+      statusEl.innerHTML = cpuThinking? "<span class='spin'></span>CPUが考えています…"
+        : evaluating? "<span class='spin'></span>解析中…（最善手確定後、残りの手も順次確定します）"
+        : (workerFailed?"このブラウザではライブ解析を利用できません（序盤ブックのみ）":"");
     }
-    // 手チップ
+    // 手チップ（CPU対戦中はヒントONのときだけ）
     chipsEl.innerHTML="";
-    if(!over){
+    if(!over && showHints()){
       const list=[...vals.values()].sort((a,b)=>{
         if(a.optimal!==b.optimal) return a.optimal? -1: 1;
         return rankOf(a.resolved?a.val:null)-rankOf(b.resolved?b.val:null);
@@ -763,7 +830,10 @@ render();
     // 棋譜
     histEl.textContent = hist.length? hist.map((h,i)=>(i+1)+"."+h.str).join(" "): "（まだ手はありません）";
     btnUndo.disabled=!hist.length;
+    btnGto.style.display = inMatch()? "none" : "";
     btnGto.disabled=!!over || ![...vals.values()].some(e=>e.optimal);
+    hintTgl.hidden = !inMatch();
+    modeBtns.forEach(b=>b.setAttribute("aria-pressed", b.dataset.mode===mode? "true":"false"));
   }
 
   requestEval();
