@@ -560,6 +560,9 @@ render();
         render();
       }else if(d.type==="done"){
         for(const mv of d.moves) mergeVal(mv);
+        for(const e of vals.values()) e.pending=false; // 未決着も評価完了扱いに
+        // 引き分け模様などで★が付いていなければランクで付与（GTOに打たせる用）
+        if(![...vals.values()].some(e=>e.optimal)) markOptimalByRank();
         evaluating=false;
         render();
       }else if(d.type==="error"){
@@ -581,11 +584,15 @@ render();
   const rankOf=(v)=> v==null?1500 : v>0? v : v===0? 1000 : 2000+v;
 
   function markOptimalByRank(){
+    // 評価済みの手の中で最良ランクに★（全手が負けなら最長抵抗が★＝後攻のGTO）
     let best=Infinity;
-    for(const e of vals.values()) best=Math.min(best, rankOf(e.resolved?e.val:(e.val===0?0:null)));
     for(const e of vals.values()){
-      const r=rankOf(e.resolved?e.val:(e.val===0?0:null));
-      e.optimal = (r===best && r<1500);
+      if(e.pending) continue;
+      best=Math.min(best, rankOf(e.resolved? e.val : 0));
+    }
+    for(const e of vals.values()){
+      const r = e.pending? Infinity : rankOf(e.resolved? e.val : 0);
+      e.optimal = (best<Infinity && r===best);
     }
   }
 
