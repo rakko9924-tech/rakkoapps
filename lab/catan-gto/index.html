@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>カタン戦略計算機｜交渉なしEV・確率エンジン - らっこアプリ攻略ラボ</title>
-<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー、GTO相手に2〜4人で配置を練習できるトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
+<meta name="description" content="カタン（交渉なし）の無料戦略計算機。初期配置スネークドラフトのGTOソルバー（勝率ベース・2人は厳密）、GTO相手に2〜4人で配置を練習できるトレーニングモード、生産力評価、建設速度シミュレーション、盗賊EV、発展カード確率まで。ブラウザだけで動くEV・確率エンジンです。">
 <link rel="canonical" href="https://rakkoapps.com/lab/catan-gto/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#f2694b">
@@ -315,7 +315,7 @@
 <div class="wrap">
   <header class="top">
     <h1>カタン戦略計算機 <span class="sub-t">交渉なしEV・確率エンジン</span></h1>
-    <p class="gto-note"><b>解いているもの:</b> 交渉なしカタンの初期配置フェーズは隠れ情報のない有限の完全情報ゲームなので、後ろ向き帰納法で解けます。本ツールは<b>初期配置ドラフトの部分ゲーム完全均衡</b>（2人=厳密全数探索、明示した評価関数のレースモデル）を計算し、加えて正確な確率計算・EV・モンテカルロを備えます。ゲーム全体の厳密GTOが計算不能である理由も下部「計算モデル」に明記しています。</p>
+    <p class="gto-note"><b>解いているもの:</b> 交渉なしカタンの初期配置フェーズは隠れ情報のない有限の完全情報ゲームなので、後ろ向き帰納法で解けます。本ツールは<b>初期配置ドラフトの部分ゲーム完全均衡</b>を<b>勝率</b>（自分が最初に10VPへ到達する確率）で評価して計算します（2人はα-βで厳密）。加えて正確な確率計算・EV・モンテカルロを備えます。ゲーム全体の厳密GTOが計算不能である理由も下部「計算モデル」に明記しています。</p>
   </header>
 
   <main class="app">
@@ -363,20 +363,29 @@
         <p>カタン全体の厳密な均衡解は計算不能です。1ターンごとにサイコロで最大11分岐、建設・発展カードの選択肢、隠れた山札が掛け合わさり、ゲーム木は10<sup>100</sup>を優に超えます（比較: 完全解析済みのチェッカーは約10<sup>20</sup>局面）。これは近似ではどうにもならない規模であり、「カタンのGTO」を厳密に解いたと主張するツールはすべて何らかの評価関数への置き換えを含みます。</p>
         <p>一方で交渉なしカタンの<b>初期配置フェーズは、隠れ情報のない有限の完全情報ゲーム</b>です（ゲーム本編で非公開になるのは購入後の発展カードのみで、交渉なしなら同時手番もほぼありません）。ゆえに配置の部分ゲームは後ろ向き帰納法（バックワードインダクション）で厳密に解けます。本ツールが「解く」のは次の部分です。</p>
         <ul>
-          <li><b>初期配置ドラフト（GTO配置ソルバー）:</b> スネークドラフト（2人なら P1→P2→P2→P1）は有限の完全情報ゲームです。下記のレース評価関数の下で、2人の場合は<b>到達時間差のゼロ和ゲームとして全数探索し、部分ゲーム完全均衡を厳密に計算</b>します（先手の全候補 × 後手の全ペア × 先手の最適応手。相手を完全封鎖する手も評価対象）。残り3手以下なら人数によらず全数探索。3〜4人のフル読みのみ、各手番を静的評価上位に絞るビーム探索（近似と明記）です。なお生産も港もない頂点は候補から除外します（自己生産を放棄する純ブロック配置は非考慮。候補が極端に少ない盤面では全合法頂点に自動フォールバック）。</li>
+          <li><b>初期配置ドラフト（GTO配置ソルバー）:</b> スネークドラフト（2人なら P1→P2→P2→P1）は有限の完全情報ゲームです。下記の勝率評価関数の下で、2人の場合は<b>ゼロ和ゲームとしてα-β探索で部分ゲーム完全均衡を厳密に計算</b>します（置換表・手順並べ替え付き。途中局面でも厳密）。3〜4人は max^n をビーム幅つきで解き、時間予算内で幅を自動的に広げます（近似と明記）。なお生産も港もない頂点は候補から除外します（自己生産を放棄する純ブロック配置は非考慮。候補が極端に少ない盤面では全合法頂点に自動フォールバック）。</li>
           <li><b>確率計算:</b> サイコロ分布・生産期待値・山札の超幾何分布は厳密値です。</li>
           <li><b>建設速度:</b> 方策固定のモンテカルロ推定（2万試行）です。</li>
         </ul>
-        <h4>ソルバーの評価関数（10VP到達の段階的レースモデル）</h4>
+        <h4>ソルバーの評価関数（勝率 = 10VP一番乗りの確率）</h4>
+        <p>探索が最大化するのは<b>勝率</b>です。各プレイヤーの10VP到達時刻を、平均T・標準偏差σの分布として扱い、
+        「誰が最初に到達するか」を計算します（2人は閉形式 <code>Φ((T₂−T₁)/√(σ₁²+σ₂²))</code>、3〜4人は数値積分）。
+        合計が1の定和ゲームなので、2人はゼロ和として<b>α-βで厳密に</b>解けます。3〜4人は max^n をビーム幅つきで解き、
+        相手の到達時間も自分の勝率に効くため<b>ブロックの価値が自然に評価に入ります</b>。
+        σは各ステージの所要時間 Δtᵢ から <code>σ = √Σ(0.50·Δtᵢ)²</code> として求めます（係数0.50は
+        本ツールのモンテカルロで実測した単発建設の変動係数 sd/mean の中央値。ステージ間はほぼ独立なので分散を加算）。
+        この分散モデルにより「劣勢なら分散の大きい配置のほうが勝ちやすい」といった判断も自然に反映されます。</p>
+        <h4>10VP到達時間 T の計算（段階的レースモデル）</h4>
         <p>各プレイヤーの配置の価値は「<b>10VPに到達する最小ターン数 T</b>」で測ります。初期2軒（2VP）から+8VPへ至る固定順序のプランを3種用意し、最速のものを採用します。</p>
         <ul>
           <li><b>都市・発展型:</b> 都市化×2 → 3軒目の入植（街道2+入植） → 3軒目を都市化 → 発展カード（騎士3枚＋勝利点2枚が揃うまでの期待 <b><span data-deve="armyVp2">?</span>枚</b>）で最大騎士力+VP2。</li>
           <li><b>拡張型:</b> 入植×3（各 街道2+入植） → 都市化×3 → 最長交易路（+街道2、計8本）。</li>
           <li><b>バランス型:</b> 都市化 → 入植 → 都市化 → 入植 → 都市化 → 発展カード（騎士3+VP1の期待 <span data-deve="armyVp1">?</span>枚）。</li>
         </ul>
-        <p>T の計算は<b>段階的流体モデル</b>です: 毎ターン期待枚数 <code>ピップ/36</code> を連続量として獲得し、余剰を銀行/港レートで交換。各段階の最小所要 Δt は <code>Σ 余剰_r/レート_r ≥ Σ 不足_r</code>（Δt について単調）を二分探索で解き、購入後の余りは次段階へ繰り越します。<b>都市化するとその頂点の生産が実際に2倍になり、以後の段階が速くなります</b>（複利効果を反映）。3軒目以降の新規入植地は「盤面の頂点をピップ順に並べた8番手の地点」の生産を得ると仮定します（盤面ごとの定数・出典明示のための近似）。<b>2軒目の入植地の初期資源</b>（隣接する砂漠以外の各タイルから1枚）も初期手札として算入し、2手連続で置くプレイヤーはどちらを2軒目にするかも最適化・探索されます。</p>
+        <p>T の計算は<b>段階的流体モデル</b>です: 毎ターン期待枚数 <code>ピップ/36</code> を連続量として獲得し、余剰を銀行/港レートで交換。各段階の最小所要 Δt は <code>Σ 余剰_r/レート_r ≥ Σ 不足_r</code>（Δt について単調）を二分探索で解き、購入後の余りは次段階へ繰り越します。<b>都市化するとその頂点の生産が実際に2倍になり、以後の段階が速くなります</b>（複利効果を反映）。3軒目以降の新規入植地は<b>実際に到達可能なスポット</b>を使います: 自分の建物からの街道距離をBFSで求め、「生産量 ÷ 街道コスト」が最大の空き頂点を選び、その<b>実距離ぶんの街道コスト</b>と<b>その頂点の実生産</b>をプランに計上します（既に取られた頂点と距離ルール違反は除外。街道が他家の建物で分断される効果と、探索中の他家の仮置きとの競合は無視する近似）。<b>2軒目の入植地の初期資源</b>（隣接する砂漠以外の各タイルから1枚）も初期手札として算入し、2手連続で置くプレイヤーはどちらを2軒目にするかも最適化・探索されます。</p>
         <p><b>発展カードは中身まで評価します:</b> 山札25枚の構成に対し「騎士3枚かつ勝利点k枚が揃うまでの期待購入枚数」を多変量の負の超幾何分布として厳密に計算し（確率・山札タブに定数を表示）、その枚数分のコスト（羊麦鉱×枚数）をプランに計上します。単一種の場合は閉形式 <code>j(N+1)/(K+1)</code> に一致します。</p>
-        <p><b>この均衡が「厳密」なのは評価関数の内側の話です。</b>残る限界: 街道の具体的な位置取り、盗賊・騎士による妨害、最大騎士力・最長交易路の他家との競争、サイコロの分散（分散は建設速度タブのモンテカルロで確認できます）、相手の拡張による将来スポットの競合は含みません。</p>
+        <p><b>この均衡が「厳密」なのは評価関数の内側の話です。</b>残る限界: 街道の具体的な経路（他家の建物による分断は無視）、盗賊・騎士による妨害、最大騎士力・最長交易路の他家との競争、探索中の他家の仮置きと将来の拡張先の競合（確定済みの建物は考慮）。サイコロの分散は勝率モデルに取り込み済みですが、建設速度タブのモンテカルロでも直接確認できます。</p>
+        <p>表示上の注意: 「候補比較」は静的評価の上位候補＋厳密PVの最善手を評価した一覧で、全合法手を並べたものではありません（最善手は必ず含まれます）。トレーニングであなたが一覧外の手を選んだ場合も、その手を個別に厳密評価して採点します。</p>
         <h4>基本確率</h4>
         <p>2個のサイコロで出目 n が出る確率は <code>P(n) = (6 − |7 − n|) / 36</code>。「ピップ」はその分子（36分率）で、6と8が5ピップ、2と12が1ピップです。</p>
         <h4>盤面生成</h4>
@@ -849,7 +858,7 @@ function fluidTurns(perTurn, rates, cost) {
 // 余剰があれば交換に使った分（余剰の大きい資源から充当）を引いて繰り越す。prodAdd で生産が成長する。
 function stagedTurns(h0, p0, rates, stages) {
   const h = Object.assign({}, h0), p = Object.assign({}, p0);
-  let total = 0;
+  let total = 0, lastDt = 0;
   const detail = [];
   for (const st of stages) {
     const cost = st.cost;
@@ -868,7 +877,7 @@ function stagedTurns(h0, p0, rates, stages) {
         if (RES.reduce((a, r) => a + p[r], 0) <= 1e-12) return { turns: 9999, detail: null };
         let lo = 0, hi = 40000;
         if (!feasible(hi)) return { turns: 9999, detail: null };
-        for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (feasible(m)) hi = m; else lo = m; }
+        for (let i = 0; i < 34; i++) { const m = (lo + hi) / 2; if (feasible(m)) hi = m; else lo = m; }
         dt = hi;
       }
       let need = 0;
@@ -885,66 +894,204 @@ function stagedTurns(h0, p0, rates, stages) {
         h[r] = s - use; need -= use / rates[r];
       }
       total += dt;
+      lastDt = dt;
       if (total > 9000) return { turns: 9999, detail: null };
     }
     if (st.prodAdd) for (const r of RES) p[r] += st.prodAdd[r];
-    detail.push({ label: st.label, t: total });
+    detail.push({ label: st.label, t: total, dt: lastDt });
   }
   return { turns: total, detail };
 }
-// 3軒目以降の入植地の生産見積り: 盤面全体の頂点をピップ降順に並べた8番手の生産ベクトル（盤面定数）
-function estimateNewSpot(board) {
-  const arr = GEO.verts
-    .map(v => vertexPips(board, v.key, false))
-    .map(p => ({ p, t: RES.reduce((a, r) => a + p[r], 0) }))
-    .filter(x => x.t > 0)
-    .sort((a, b) => b.t - a.t);
-  if (!arr.length) return { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
-  return arr[Math.min(7, arr.length - 1)].p;
+// 盤面ごとの頂点ピップを一度だけ計算してキャッシュ（評価関数が何万回も呼ばれるため）
+let PIPS_SIG = null, PIPS_MAP = null;
+function boardPips(board) {
+  const sig = board.tiles.map(t => (t.res || "-") + (t.num || 0)).join(",");
+  if (sig !== PIPS_SIG) {
+    PIPS_SIG = sig;
+    PIPS_MAP = new Map();
+    for (const v of GEO.verts) {
+      const p = vertexPips(board, v.key, false);
+      PIPS_MAP.set(v.key, { p, total: RES.reduce((a, r) => a + p[r], 0) });
+    }
+  }
+  return PIPS_MAP;
+}
+// 自分の建物群からの街道距離（辺数）をBFS。同じ自分の建物集合なら不変なのでキャッシュする。
+// 注: 他家の建物による街道の分断は無視（近似）。こうしないと「探索中の仮置き」と「確定済みの配置」で
+// 同じ最終形の評価が食い違い、部分ゲームの整合性が壊れるため。
+let BFS_SIG = null, BFS_CACHE = null;
+function roadDist(board, ownKeys) {
+  boardPips(board); // PIPS_SIG を確定させてからキャッシュ世代を判定する
+  if (PIPS_SIG !== BFS_SIG) { BFS_SIG = PIPS_SIG; BFS_CACHE = new Map(); }
+  const key = ownKeys.slice().sort().join(",");
+  let d = BFS_CACHE.get(key);
+  if (d) return d;
+  d = new Map();
+  const q = [];
+  for (const k of ownKeys) { d.set(k, 0); q.push(k); }
+  for (let qi = 0; qi < q.length; qi++) {
+    const k = q[qi], dd = d.get(k), v = GEO.vmap.get(k);
+    if (!v) continue;
+    for (const nb of v.adj) {
+      if (d.has(nb)) continue;
+      d.set(nb, dd + 1);
+      q.push(nb);
+    }
+  }
+  BFS_CACHE.set(key, d);
+  return d;
+}
+// 拡張先の候補ランキング（自分の建物集合ごとにメモ化）。到達可能な頂点を「生産量 ÷ 街道コスト」順に。
+let EXR_SIG = null, EXR_CACHE = null;
+function expansionRanked(board, ownKeys) {
+  boardPips(board);
+  if (PIPS_SIG !== EXR_SIG) { EXR_SIG = PIPS_SIG; EXR_CACHE = new Map(); }
+  const key = ownKeys.slice().sort().join(",");
+  let list = EXR_CACHE.get(key);
+  if (list) return list;
+  const pm = boardPips(board), dist = roadDist(board, ownKeys);
+  list = [];
+  for (const [k, d] of dist) {
+    if (d === 0) continue;
+    const info = pm.get(k);
+    if (!info || info.total <= 0) continue;
+    const roads = Math.max(1, d);
+    list.push({ key: k, pips: info.p, roads, score: info.total / (1 + 0.55 * roads) });
+  }
+  // 同点時もキーで一意に決める（Mapの挿入順に依存すると、同じ局面が解析履歴で別解になる）
+  list.sort((a, b) => (b.score - a.score) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+  EXR_CACHE.set(key, list);
+  return list;
+}
+// 占有状況を踏まえて上位から need 個の拡張先を選ぶ（距離ルール・他家の建物・選んだ同士の隣接を考慮）
+function pickSpots(ranked, occSet, board, need) {
+  const out = [];
+  for (const c of ranked) {
+    if (out.length >= need) break;
+    if (occSet.has(c.key) || board.buildings[c.key]) continue;
+    const v = GEO.vmap.get(c.key);
+    let bad = false;
+    for (const nb of v.adj) if (occSet.has(nb) || board.buildings[nb]) { bad = true; break; }
+    if (bad) continue;
+    if (out.some(o => v.adj.has(o.key))) continue;
+    out.push(c);
+  }
+  while (out.length < need) // 拡張余地なし: 実質詰み
+    out.push({ key: null, pips: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 }, roads: 6 });
+  return out;
+}
+function expansionSpots(board, ownKeys, occSet, need) {
+  return pickSpots(expansionRanked(board, ownKeys), occSet, board, need);
 }
 const PLAN_JA = { cityDev: "都市・発展型", expansion: "拡張型", balance: "バランス型" };
-// 10VP到達プラン（初期2軒=2VPから+8VP）。順序は固定（生産成長を先行）。
-// 最大騎士力・最長交易路は他家との競争を無視（期待枚数/本数のみ計上）。
-function racePlans(board, vertKeys, newSpot) {
+const PLAN_KEYS = ["cityDev", "expansion", "balance"];
+// 1ステージあたりの到達時間の変動係数（モンテカルロ実測: 単発建設の sd/mean は 0.40〜0.64、中央値 0.50）。
+// 各ステージの待ち時間はほぼ独立なので分散は加算: Var(T) = Σ (CV·Δt_i)²。
+const CV_STAGE = 0.50;
+// 10VP到達プラン（初期2軒=2VPから+8VP）。拡張先は実際に到達可能なスポットと街道本数を用いる。
+function racePlans(board, vertKeys, spots) {
+  const pm = boardPips(board);
   const info = vertKeys.map(k => {
-    const p = vertexPips(board, k, false);
-    return { k, p, t: RES.reduce((a, r) => a + p[r], 0), lbl: (GEO.vmap.get(k) || {}).label || "?" };
+    const e = pm.get(k) || { p: { wood:0,brick:0,sheep:0,wheat:0,ore:0 }, total: 0 };
+    return { k, p: e.p, t: e.total, lbl: (GEO.vmap.get(k) || {}).label || "?" };
   }).sort((a, b) => b.t - a.t);
   const v1 = info[0], v2 = info[1] || null;
   const mul = (b, n) => { const c = {}; for (const r of RES) c[r] = COST[b][r] * n; return c; };
   const add = (...cs) => { const c = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
     for (const x of cs) for (const r of RES) c[r] += x[r] || 0; return c; };
   const perTurnOf = p => { const q = {}; for (const r of RES) q[r] = p[r] / 36; return q; };
-  const S = lbl => ({ label: lbl, cost: add(mul("road", 2), mul("settlement", 1)), prodAdd: perTurnOf(newSpot) });
+  // 拡張入植: 実距離ぶんの街道 + 入植地
+  const S = (i, ord) => {
+    const sp = spots[i];
+    const nm = sp.key ? (GEO.vmap.get(sp.key) || {}).label || "?" : "—";
+    return { label: `${ord}軒目の入植 ${nm}(街道${sp.roads})`,
+             cost: add(mul("road", sp.roads), mul("settlement", 1)), prodAdd: perTurnOf(sp.pips) };
+  };
   const C = (v, lbl) => v ? { label: lbl, cost: mul("city", 1), prodAdd: perTurnOf(v.p) } : null;
-  const CN = lbl => ({ label: lbl, cost: mul("city", 1), prodAdd: perTurnOf(newSpot) });
+  const CS = (i, lbl) => ({ label: lbl, cost: mul("city", 1), prodAdd: perTurnOf(spots[i].pips) });
   const D = (n, lbl) => ({ label: lbl, cost: { wood: 0, brick: 0, sheep: n, wheat: n, ore: n }, prodAdd: null });
   return {
     cityDev: [ // 2VP→ 都市2(+2) 入植(+1) 都市(+1) 最大騎士力+VP札2(+4) = 10VP
       C(v1, `都市化 ${v1 ? v1.lbl : ""}`), v2 && C(v2, `都市化 ${v2.lbl}`),
-      S("3軒目の入植(街道2)"), CN("3軒目を都市化"),
+      S(0, 3), CS(0, "3軒目を都市化"),
       D(DEV_E.armyVp2, `発展${DEV_E.armyVp2.toFixed(1)}枚(騎士3+VP2の期待)`),
     ].filter(Boolean),
     expansion: [ // 2VP→ 入植3(+3) 都市3(+3) 最長交易路(+2) = 10VP
-      S("3軒目の入植(街道2)"), S("4軒目の入植(街道2)"), S("5軒目の入植(街道2)"),
-      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), v2 && C(v2, `都市化 ${v2.lbl}`), CN("新入植地を都市化"),
+      S(0, 3), S(1, 4), S(2, 5),
+      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), v2 && C(v2, `都市化 ${v2.lbl}`), CS(0, "3軒目を都市化"),
       { label: "最長交易路(+街道2)", cost: mul("road", 2), prodAdd: null },
     ].filter(Boolean),
     balance: [ // 2VP→ 都市(+1) 入植(+1) 都市(+1) 入植(+1) 都市(+1) 最大騎士力+VP札1(+3) = 10VP
-      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), S("3軒目の入植(街道2)"),
-      v2 && C(v2, `都市化 ${v2.lbl}`), S("4軒目の入植(街道2)"), CN("新入植地を都市化"),
+      C(v1, `都市化 ${v1 ? v1.lbl : ""}`), S(0, 3),
+      v2 && C(v2, `都市化 ${v2.lbl}`), S(1, 4), CS(0, "3軒目を都市化"),
       D(DEV_E.armyVp1, `発展${DEV_E.armyVp1.toFixed(1)}枚(騎士3+VP1の期待)`),
     ].filter(Boolean),
   };
 }
-// 頂点集合の価値: 10VPに最速で到達するプランの所要ターン（小さいほど良い）。
-// secondKey = 2軒目として置いた頂点（公式ルール通り、隣接する砂漠以外の各タイルから資源1枚を初期手札に）
-function draftValue(board, vertKeys, secondKey) {
+/* --- 勝率モデル: 到達時刻を平均T・標準偏差σの正規分布とみなし「誰が最初に着くか」を数値積分 --- */
+function normCdf(z) { // Abramowitz–Stegun 7.1.26 相当（絶対誤差 < 1.5e-7）
+  const s = z < 0 ? -1 : 1, x = Math.abs(z) / Math.SQRT2;
+  const t = 1 / (1 + 0.3275911 * x);
+  const y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+  return 0.5 * (1 + s * y);
+}
+function normPdf(z) { return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI); }
+// entries: [{turns, sd}] → 各プレイヤーが最初に10VPへ到達する確率（合計1）
+function winProbs(entries) {
+  const n = entries.length;
+  const live = entries.map(e => e.turns < 9000 && e.sd > 1e-9);
+  if (!live.some(Boolean)) return entries.map(() => 1 / n);
+  if (n === 2) { // 2人は閉形式: P(T1 < T2) = Φ((T2−T1)/√(σ1²+σ2²))
+    if (!live[0]) return [0, 1];
+    if (!live[1]) return [1, 0];
+    const p = normCdf((entries[1].turns - entries[0].turns) /
+                      Math.sqrt(entries[0].sd ** 2 + entries[1].sd ** 2));
+    return [p, 1 - p];
+  }
+  const lo = Math.min(...entries.filter((e, i) => live[i]).map(e => e.turns - 4 * e.sd));
+  const hi = Math.max(...entries.filter((e, i) => live[i]).map(e => e.turns + 4 * e.sd));
+  const STEPS = 64, dt = (hi - lo) / STEPS;
+  const out = new Array(n).fill(0);
+  for (let s = 0; s < STEPS; s++) {
+    const t = lo + (s + 0.5) * dt;
+    for (let i = 0; i < n; i++) {
+      if (!live[i]) continue;
+      const e = entries[i];
+      let dens = normPdf((t - e.turns) / e.sd) / e.sd;
+      if (dens < 1e-12) continue;
+      for (let j = 0; j < n; j++) {
+        if (j === i) continue;
+        dens *= live[j] ? (1 - normCdf((t - entries[j].turns) / entries[j].sd)) : 1;
+        if (dens < 1e-12) break;
+      }
+      out[i] += dens * dt;
+    }
+  }
+  const sum = out.reduce((a, b) => a + b, 0);
+  return sum > 1e-9 ? out.map(x => x / sum) : entries.map(() => 1 / n);
+}
+// 頂点集合の価値: 10VP到達の最速プランの所要ターンT・そのばらつきσ。
+// secondKey = 2軒目として置いた頂点（隣接する砂漠以外の各タイルから資源1枚が初期手札）。
+// 拡張先スポットは「自分の建物＋盤上に確定済みの建物」を避けて選ぶ（探索中の他家の仮置きは考慮しない
+// 近似。こうすることで局面に依存しないメモ化ができ、探索を数百倍深く回せる）。
+let DV_SIG = null, DV_CACHE = null;
+function draftValue(board, vertKeys, secondKey, occupied) {
+  boardPips(board);
+  const sig = PIPS_SIG + "|" + Object.keys(board.buildings).sort().join(",");
+  if (sig !== DV_SIG) { DV_SIG = sig; DV_CACHE = new Map(); }
+  const own = vertKeys.join(",");
+  const occ = occupied || new Set(vertKeys);
+  // 拡張先の選択だけが占有に依存する。選ばれたスポットまで含めてキーにすれば正しさと再利用を両立できる
+  const spots = pickSpots(expansionRanked(board, vertKeys), occ, board, 3);
+  const ck = own + "#" + (secondKey || "") + "#" + spots.map(s => s.key || "-").join(",");
+  const hit = DV_CACHE.get(ck);
+  if (hit) return hit;
+  const pm = boardPips(board);
   const perTurn = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
   const rates = { wood: 4, brick: 4, sheep: 4, wheat: 4, ore: 4 };
   for (const k of vertKeys) {
-    const p = vertexPips(board, k, false);
-    for (const r of RES) perTurn[r] += p[r] / 36;
+    const e = pm.get(k);
+    if (e) for (const r of RES) perTurn[r] += e.p[r] / 36;
     const port = board.ports[k];
     if (port === "any") { for (const r of RES) rates[r] = Math.min(rates[r], 3); }
     else if (port) rates[port] = Math.min(rates[port], 2);
@@ -955,15 +1102,22 @@ function draftValue(board, vertKeys, secondKey) {
       const t = board.tiles[hid];
       if (t && t.res !== "desert") h0[t.res] += 1;
     }
-  const plans = racePlans(board, vertKeys, estimateNewSpot(board));
-  let best = { turns: Infinity, bundle: null, ja: null, detail: null };
-  for (const [key, stages] of Object.entries(plans)) {
-    const r = stagedTurns(h0, perTurn, rates, stages);
-    if (r.turns < best.turns) best = { turns: r.turns, bundle: key, ja: PLAN_JA[key], detail: r.detail };
+  const plans = racePlans(board, vertKeys, spots);
+  let best = { turns: Infinity, bundle: null, ja: null, detail: null, sd: 1 };
+  for (const key of PLAN_KEYS) {
+    const r = stagedTurns(h0, perTurn, rates, plans[key]);
+    if (r.turns < best.turns) {
+      let varT = 0;
+      if (r.detail) for (const d of r.detail) varT += (CV_STAGE * (d.dt || 0)) ** 2;
+      best = { turns: r.turns, bundle: key, ja: PLAN_JA[key], detail: r.detail,
+               sd: Math.max(0.6, Math.sqrt(varT)) };
+    }
   }
-  if (!isFinite(best.turns)) best = { turns: 9999, bundle: null, ja: null, detail: null }; // 番兵値
+  if (!isFinite(best.turns)) best = { turns: 9999, bundle: null, ja: null, detail: null, sd: 1 };
+  DV_CACHE.set(ck, best);
   return best;
 }
+
 function snakeSeq(n) { const a = [...Array(n).keys()]; return a.concat([...a].reverse()); }
 // 既存の建物を「消化済みのドラフト手」とみなし、残りの手番列を返す
 function remainingSlots(board, n) {
@@ -971,130 +1125,6 @@ function remainingSlots(board, n) {
   for (const b of Object.values(board.buildings)) if (b.player < n) used[b.player]++;
   const rem = [];
   for (const p of snakeSeq(n)) { if (used[p] > 0) used[p]--; else rem.push(p); }
-  return rem;
-}
-function draftCandidates(board) {
-  const free = GEO.verts.filter(v =>
-    !board.buildings[v.key] && ![...v.adj].some(k => board.buildings[k]));
-  const cands = free.filter(v => {
-    const p = vertexPips(board, v.key, false);
-    return RES.some(r => p[r] > 0) || board.ports[v.key];
-  });
-  return cands.length >= 8 ? cands : free; // 縮退盤面では全合法頂点にフォールバック
-}
-// メイン: 残りドラフトを解く。2人は常に厳密、3-4人は残り3手以下なら厳密・
-// それ以上は時間予算内でビーム幅を反復拡幅する近似（拡幅しても結果が不変なら「安定」と報告）。
-function solveDraft(board, n, opts) {
-  const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
-  const t0 = now();
-  const slots = remainingSlots(board, n);
-  const cands = draftCandidates(board);
-  const baseSets = Array.from({ length: n }, (_, p) =>
-    Object.keys(board.buildings).filter(k => board.buildings[k].player === p));
-  const cache = new Map();
-  const setVal = (keys, secondKey) => {
-    const key = keys.slice().sort().join("|") + "#" + (secondKey || "");
-    let v = cache.get(key);
-    if (v === undefined) { v = draftValue(board, keys, secondKey); cache.set(key, v); }
-    return v;
-  };
-  const turnsOf = mine => setVal(mine, mine.length >= 2 ? mine[1] : null);
-  if (slots.length === 0)
-    return { slots, picks: [], exact: true, ms: now() - t0,
-             turns: baseSets.map(turnsOf), alts: [] };
-
-  const fresh2 = n === 2 && slots.length === 4 && baseSets.every(s => s.length === 0);
-  let result = fresh2 ? solveFresh2(board, cands, setVal) : null;
-  if (!result && (slots.length <= 3 || fresh2))
-    result = solveBeam(board, n, slots, cands, baseSets, setVal, Infinity);
-  if (!result) {
-    const budget = (opts && opts.budgetMs) || 2500;
-    let beam = 4, last = null;
-    while (true) {
-      const tb = now();
-      const r = solveBeam(board, n, slots, cands, baseSets, setVal, beam);
-      const dt = now() - tb;
-      r.converged = !!last &&
-        JSON.stringify(r.picks.map(x => x.vert.key)) === JSON.stringify(last.picks.map(x => x.vert.key));
-      r.beamUsed = beam;
-      last = r;
-      const next = beam + 2;
-      // 次の拡幅の所要見積り。キャッシュ再利用と並べ替え効果で実際は指数より軽いため指数を2つ緩める
-      const est = dt * Math.pow(next / beam, Math.max(2, slots.length - 2));
-      const spent = now() - t0;
-      if (next > 24) break;
-      // 初回(幅4)はコールドスタートで見積りが過大になりがち。予算の15%未満なら1段だけ強制拡幅
-      if (spent + est > budget && !(beam === 4 && spent < budget * 0.15)) break;
-      beam = next;
-    }
-    result = last;
-  }
-  result.slots = slots;
-  result.turns = Array.from({ length: n }, (_, p) =>
-    turnsOf(baseSets[p].concat(result.picks.filter(x => x.player === p).map(x => x.vert.key))));
-  result.ms = now() - t0;
-  return result;
-}
-// 2人・未配置: P1,P2,P2,P1 の完全探索（P2の2手は非順序ペア＋2軒目の選択、P1の応手は argmax）
-function solveFresh2(board, cands, setVal) {
-  const m = cands.length;
-  const T1 = (i, j) => setVal([cands[i].key, cands[j].key], cands[j].key).turns; // P1: 2軒目=4手目のj
-  const T2pick = (a, b) => { // P2は2手連続なのでどちらを2軒目(初期資源)にするか選べる
-    const tb = setVal([cands[a].key, cands[b].key], cands[b].key).turns;
-    const ta = setVal([cands[a].key, cands[b].key], cands[a].key).turns;
-    return tb <= ta ? { t: tb, second: b } : { t: ta, second: a };
-  };
-  const adj = Array.from({ length: m }, (_, i) =>
-    cands.map((v, j) => i !== j && cands[i].adj.has(v.key)));
-  // P1応手用: 各 i について T1(i,j) 昇順の j リスト
-  const sorted = Array.from({ length: m }, (_, i) =>
-    [...Array(m).keys()].filter(j => j !== i && !adj[i][j]).sort((a, b) => T1(i, a) - T1(i, b)));
-  let best = null;
-  const alts = [];
-  for (let i = 0; i < m; i++) {
-    let bestP2 = null;
-    for (let a = 0; a < m; a++) {
-      if (a === i || adj[a][i]) continue;
-      for (let b = a + 1; b < m; b++) {
-        if (b === i || adj[b][i] || adj[a][b]) continue;
-        // P1の最終手: T1(i,j) 最小の合法 j。無ければ完全封鎖でP1は初手のみ
-        let j = -1;
-        for (const cand of sorted[i]) {
-          if (cand === a || cand === b || adj[cand][a] || adj[cand][b]) continue;
-          j = cand; break;
-        }
-        const p1T = j >= 0 ? T1(i, j) : setVal([cands[i].key], null).turns;
-        const p2 = T2pick(a, b);
-        const diff = p1T - p2.t; // P2目的: 自分が速い = diff(P1遅れ) 最大
-        if (!bestP2 || diff > bestP2.diff + 1e-12) bestP2 = { a, b, j, diff, second: p2.second };
-      }
-    }
-    if (!bestP2) continue;
-    const eq = -bestP2.diff; // P1視点の均衡値（P2到達T − P1到達T）
-    alts.push({ i, eq, line: bestP2 });
-    if (!best || eq > best.eq + 1e-12) best = { i, eq, line: bestP2 };
-  }
-  if (!best) return null; // 合法なドラフトが組めない縮退局面: solveBeam にフォールバック
-  alts.sort((x, y) => y.eq - x.eq);
-  const L = best.line;
-  const mk = (idx, player) => ({ player, vert: cands[idx] });
-  const p2first = L.second === L.a ? L.b : L.a; // 2軒目でない方を先に置く
-  const picks = [mk(best.i, 0), mk(p2first, 1), mk(L.second, 1)];
-  if (L.j >= 0) picks.push(mk(L.j, 0));
-  return {
-    exact: true,
-    picks,
-    alts: alts.map(x => ({ vert: cands[x.i], eq: x.eq })), // 全初手の均衡値（表示側で上位に絞る）
-  };
-}
-
-/* ---- 2人ドラフト・トレーニング用: 手番プレイヤーの全候補手を厳密ランキング ---- */
-function trSlots(board, firstPlayer) {
-  const seq = firstPlayer === 0 ? [0, 1, 1, 0] : [1, 0, 0, 1];
-  const used = [0, 0];
-  for (const b of Object.values(board.buildings)) if (b.player < 2) used[b.player]++;
-  const rem = [];
-  for (const p of seq) { if (used[p] > 0) used[p]--; else rem.push(p); }
   return rem;
 }
 // n人スネークのプレイヤーID列（あなた=0が userSeat 番目、他は相手A,B,C…の順で座席に入る）
@@ -1112,73 +1142,301 @@ function trSlotsN(board, n, userSeat) {
   for (const p of trSeqPlayers(n, userSeat)) { if (used[p] > 0) used[p]--; else rem.push(p); }
   return rem;
 }
-// 返り値: 手番プレイヤーの各合法手 {key, label, value}（value = その手を選んだ後の部分ゲーム完全均衡での
-// 自分の優位 = 相手T − 自分T）。残り4手はsolveFresh2、3手以下は構造を使った全数探索（すべて厳密）。
-function trRank(board, firstPlayer, setVal) {
-  const slots = trSlots(board, firstPlayer);
-  if (!slots.length) return null;
-  const cands = draftCandidates(board);
-  const baseOf = p => Object.keys(board.buildings).filter(k => board.buildings[k].player === p);
-  const tOf = (p, extra) => {
-    const m = baseOf(p).concat(extra);
-    return setVal(m, m.length >= 2 ? m[1] : null).turns;
-  };
-  // 価値はすべて「手番プレイヤーの優位 = 相手T − 自分T」で統一
-  const legalVs = usedKeys => cands.filter(v =>
-    !usedKeys.has(v.key) && ![...v.adj].some(k => usedKeys.has(k)));
-  const P = slots[0];
+function draftCandidates(board) {
+  const pm = boardPips(board);
+  const free = GEO.verts.filter(v =>
+    !board.buildings[v.key] && ![...v.adj].some(k => board.buildings[k]));
+  const cands = free.filter(v => {
+    const e = pm.get(v.key);
+    return (e && e.total > 0) || board.ports[v.key];
+  });
+  return cands.length >= 8 ? cands : free; // 縮退盤面では全合法頂点にフォールバック
+}
 
-  if (slots.length === 4) { // 未配置: solveFresh2 の全初手評価をそのまま利用（先手の優位）
-    const r = solveFresh2(board, cands, setVal);
-    if (!r) return [];
-    return r.alts.map(a => ({ key: a.vert.key, label: a.vert.label, value: a.eq }));
-  }
-  if (slots.length === 3) { // [A,A,B]: Aの初手aを評価。Bの応手は自己T最小なので事前ソートで即引き
-    const B = slots[2];
-    const jList = cands.map(v => ({ v, t: tOf(B, [v.key]) })).sort((x, y) => x.t - y.t);
+/* ================= 探索エンジン（勝率ベース） =================
+   各プレイヤーの価値は「自分が最初に10VPへ到達する確率」。合計1の定和ゲームなので、
+   2人はゼロ和 → α-β で厳密に解ける。3〜4人は max^n（相手の到達時間も自分の勝率に効くので
+   ブロックの価値も自然に評価に入る）をビーム幅つきで解く。 */
+const ABORT = Symbol("search-abort");
+const nowMs = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+const ROOT_TOPK = 16; // ルート層で比較する候補数（打ち切りで最善手を落とさないよう広めに取る）
+const RANK_TOPK = 14; // ランキングで厳密評価する上位候補数（静的評価順。これ以外は要求時に個別評価）
+function makeSearch(board, n) {
+  const preOcc = Object.keys(board.buildings);
+  const leafCache = new Map(), soloCache = new Map();
+  const cands = draftCandidates(board);
+  const m = cands.length;
+  const solo = keys => { // 並べ替え用: その頂点集合だけを持つプレイヤーの到達T
+    const k = keys.join(",");
+    let v = soloCache.get(k);
+    if (v === undefined) {
+      v = draftValue(board, keys, keys.length >= 2 ? keys[1] : null, new Set(keys));
+      soloCache.set(k, v);
+    }
+    return v;
+  };
+  // インデックス化: 合法手の列挙をアロケーションなしで行う（探索の最内ループ）
+  const idxOf = new Map(cands.map((v, i) => [v.key, i]));
+  const adjIdx = cands.map(v => {
+    const a = [];
+    for (const k of v.adj) { const j = idxOf.get(k); if (j !== undefined) a.push(j); }
+    return a;
+  });
+  const soloT = cands.map(v => solo([v.key]).turns);
+  const orderIdx = cands.map((v, i) => i).sort((a, b) => soloT[a] - soloT[b]);
+  const taken = new Uint8Array(m), blockN = new Int16Array(m);
+  const place = i => { taken[i] = 1; for (const j of adjIdx[i]) blockN[j]++; };
+  const unplace = i => { taken[i] = 0; for (const j of adjIdx[i]) blockN[j]--; };
+  const leaf = sets => { // 葉評価: 全員の到達時間 → 勝率ベクトル
+    const key = sets.map(s => s.join(",")).join("|");
+    let v = leafCache.get(key);
+    if (v === undefined) {
+      const occ = new Set();
+      for (const s of sets) for (const k of s) occ.add(k);
+      const vals = sets.map(s => draftValue(board, s, s.length >= 2 ? s[1] : null, occ));
+      v = { vals, wins: winProbs(vals) };
+      leafCache.set(key, v);
+    }
+    return v;
+  };
+  // 合法手インデックス列（静的順）。dynamic=true なら自分の到達T昇順に並べ替える
+  const legalIdx = (mover, sets, dynamic, cap) => {
     const out = [];
-    for (const a of legalVs(new Set())) {
-      const usedA = new Set([a.key]);
-      let best = -Infinity;
-      for (const b of legalVs(usedA)) {
-        const used2 = new Set([a.key, b.key]);
-        let tB = null;
-        for (const j of jList) {
-          if (used2.has(j.v.key) || [...j.v.adj].some(k => used2.has(k))) continue;
-          tB = j.t; break;
+    for (const i of orderIdx) if (!taken[i] && !blockN[i]) out.push(i);
+    if (dynamic && out.length > 1) {
+      const base = sets[mover];
+      const sc = new Map(out.map(i => [i, solo(base.concat(cands[i].key)).turns]));
+      out.sort((a, b) => sc.get(a) - sc.get(b));
+    }
+    return cap && out.length > cap ? out.slice(0, cap) : out;
+  };
+  let nodes = 0, deadline = Infinity;
+  const tick = () => { if ((++nodes & 511) === 0 && nowMs() > deadline) throw ABORT; };
+  const tt = new Map(), ttN = new Map();
+  const stateKey = (idx, sets) => { let s = idx + "#"; for (const a of sets) { s += a.join(",") + "|"; } return s; };
+  /* --- 2人: α-β（P0が wins[0] を最大化・P1が最小化）+ 置換表 --- */
+  function ab(sets, slots, idx, alpha, beta) {
+    tick();
+    if (idx === slots.length) return leaf(sets).wins[0];
+    const last = idx === slots.length - 1;
+    let key = null;
+    if (!last) {
+      key = stateKey(idx, sets);
+      const hit = tt.get(key);
+      if (hit) {
+        if (hit.flag === 0) return hit.v;
+        if (hit.flag === 1 && hit.v >= beta) return hit.v;
+        if (hit.flag === 2 && hit.v <= alpha) return hit.v;
+      }
+    }
+    const p = slots[idx];
+    const moves = legalIdx(p, sets, idx <= 1);
+    if (!moves.length) return leaf(sets).wins[0];
+    const a0 = alpha, b0 = beta;
+    let best = p === 0 ? -Infinity : Infinity;
+    for (const i of moves) {
+      sets[p].push(cands[i].key); place(i);
+      const s = ab(sets, slots, idx + 1, alpha, beta);
+      sets[p].pop(); unplace(i);
+      if (p === 0) {
+        if (s > best) best = s;
+        if (best > alpha) alpha = best;
+      } else {
+        if (s < best) best = s;
+        if (best < beta) beta = best;
+      }
+      if (alpha >= beta) break;
+    }
+    if (key) tt.set(key, { v: best, flag: best <= a0 ? 2 : best >= b0 ? 1 : 0 });
+    return best;
+  }
+  /* --- 3〜4人: max^n（ビーム幅つき・置換表・最終手は葉を直接比較） --- */
+  function maxn(sets, slots, idx, beam) {
+    tick();
+    if (idx === slots.length) return { wins: leaf(sets).wins, picks: [] };
+    const p = slots[idx];
+    const last = idx === slots.length - 1;
+    let key = null;
+    if (!last) {
+      key = beam + "@" + stateKey(idx, sets);
+      const hit = ttN.get(key);
+      if (hit) return hit;
+    }
+    const cap = beam === Infinity ? 0 : (idx === 0 ? Math.max(beam, ROOT_TOPK) : beam);
+    const moves = legalIdx(p, sets, true, cap);
+    if (!moves.length) return { wins: leaf(sets).wins, picks: [] };
+    let best = null;
+    for (const i of moves) {
+      sets[p].push(cands[i].key);
+      let sub;
+      if (last) sub = { wins: leaf(sets).wins, picks: [] };
+      else { place(i); sub = maxn(sets, slots, idx + 1, beam); unplace(i); }
+      sets[p].pop();
+      if (!best || sub.wins[p] > best.wins[p] + 1e-12)
+        best = { wins: sub.wins, picks: [{ player: p, vert: cands[i] }].concat(sub.picks) };
+    }
+    if (key) ttN.set(key, best);
+    return best;
+  }
+  const reset = baseSets => {
+    taken.fill(0); blockN.fill(0);
+    const sets = baseSets.map(s => s.slice());
+    for (const s of sets) for (const k of s) { const i = idxOf.get(k); if (i !== undefined) place(i); }
+    return sets;
+  };
+  return {
+    cands, leaf, solo,
+    nodeCount: () => nodes,
+    setDeadline: t => { deadline = t; },
+    // 指定した手を打った後の手番プレイヤーの価値（勝率）
+    evalMove(slots, baseSets, key, beam, mover) {
+      const sets = reset(baseSets);
+      const p = mover !== undefined ? mover : slots[0];
+      const i = idxOf.get(key);
+      if (i === undefined) return null;
+      sets[p].push(key); place(i);
+      let val;
+      if (n === 2) {
+        const s = ab(sets, slots, 1, -Infinity, Infinity);
+        val = p === 0 ? s : 1 - s;
+      } else val = maxn(sets, slots, 1, beam).wins[p];
+      sets[p].pop(); unplace(i);
+      return { key, label: cands[i].label, vert: cands[i], value: val };
+    },
+    // 各手番が「自分の到達Tが最短になる手」を順に選ぶだけの手順（探索なし・常に返る）
+    greedyLine(slots, baseSets) {
+      const sets = reset(baseSets);
+      const picks = [];
+      for (let idx = 0; idx < slots.length; idx++) {
+        const p = slots[idx];
+        const moves = legalIdx(p, sets, true);
+        if (!moves.length) break;
+        const i = moves[0];
+        sets[p].push(cands[i].key); place(i);
+        picks.push({ player: p, vert: cands[i] });
+      }
+      return picks;
+    },
+    // 静的評価順の候補（フォールバック用・常に非空）
+    staticRank(slots, baseSets, mover, topK) {
+      const sets = reset(baseSets);
+      const p = mover !== undefined ? mover : slots[0];
+      return legalIdx(p, sets, true, topK || RANK_TOPK).map((i, r) => ({
+        key: cands[i].key, label: cands[i].label, vert: cands[i], value: 1 / (1 + r), static: true }));
+    },
+    // 手番プレイヤーの候補手ランキング（静的上位 topK ＋ must の手を厳密/ビーム評価）
+    rankRoot(slots, baseSets, beam, mover, topK, must) {
+      const sets = reset(baseSets);
+      const p = mover !== undefined ? mover : slots[0];
+      const moves = legalIdx(p, sets, true, topK || RANK_TOPK);
+      for (const k of (must || [])) { // ブロック手など静的順で埋もれる手を必ず含める
+        const i = idxOf.get(k);
+        if (i !== undefined && !moves.includes(i) && !taken[i] && !blockN[i]) moves.push(i);
+      }
+      const out = [];
+      for (const i of moves) {
+        sets[p].push(cands[i].key); place(i);
+        let val;
+        if (n === 2) {
+          const s = ab(sets, slots, 1, -Infinity, Infinity);
+          val = p === 0 ? s : 1 - s;
+        } else val = maxn(sets, slots, 1, beam).wins[p];
+        sets[p].pop(); unplace(i);
+        out.push({ key: cands[i].key, label: cands[i].label, vert: cands[i], value: val });
+      }
+      out.sort((x, y) => y.value - x.value);
+      return out;
+    },
+    // 最善応手列（PV）。n>=3 は maxn が返す手順をそのまま使う。
+    // prefix を渡すと、その手順を確定させた上で残りのPVを続ける（ルート走査の二重実行を避けるため）。
+    principalLine(slots, baseSets, beam, prefix) {
+      if (n !== 2) {
+        const sets = reset(baseSets);
+        return { picks: maxn(sets, slots, 0, beam).picks };
+      }
+      const sets = reset(baseSets);
+      const picks = [];
+      for (const pk of (prefix || [])) {
+        const i = idxOf.get(pk.vert.key);
+        if (i === undefined) break;
+        sets[pk.player].push(pk.vert.key); place(i);
+        picks.push(pk);
+      }
+      for (let idx = picks.length; idx < slots.length; idx++) {
+        const p = slots[idx];
+        const moves = legalIdx(p, sets, idx <= 1);
+        if (!moves.length) break;
+        // ルート層でもα-βの窓を絞る（手番プレイヤーの最善手は厳密に決まる）
+        let bi = -1, alpha = -Infinity, beta = Infinity;
+        for (const i of moves) {
+          sets[p].push(cands[i].key); place(i);
+          const s = ab(sets, slots, idx + 1, alpha, beta);
+          sets[p].pop(); unplace(i);
+          if (p === 0) { if (bi < 0 || s > alpha) { alpha = s; bi = i; } }
+          else { if (bi < 0 || s < beta) { beta = s; bi = i; } }
         }
-        if (tB === null) tB = tOf(B, []); // 完全封鎖: Bは応手なし
-        const tA = tOf(P, [a.key, b.key]);
-        const adv = tB - tA; // 相手T − 自分T
-        if (adv > best) best = adv;
+        if (bi < 0) break;
+        sets[p].push(cands[bi].key); place(bi);
+        picks.push({ player: p, vert: cands[bi] });
       }
-      if (best > -Infinity) out.push({ key: a.key, label: a.label, value: best });
+      return { picks };
+    },
+  };
+}
+// メイン: 残りドラフトを解く。2人は厳密（α-β）、3〜4人は時間予算内でビーム幅を拡げる。
+function solveDraft(board, n, opts) {
+  const t0 = nowMs();
+  const budget = (opts && opts.budgetMs) || 4000;
+  const slots = remainingSlots(board, n);
+  const baseSets = Array.from({ length: n }, (_, p) =>
+    Object.keys(board.buildings).filter(k => board.buildings[k].player === p));
+  const S = makeSearch(board, n);
+  const finish = (picks, extra) => {
+    const sets = baseSets.map(s => s.slice());
+    for (const pk of picks) sets[pk.player].push(pk.vert.key);
+    const lf = S.leaf(sets);
+    return Object.assign({ slots, picks, turns: lf.vals, wins: lf.wins,
+      ms: nowMs() - t0, nodes: S.nodeCount() }, extra);
+  };
+  if (!slots.length) return finish([], { exact: true, alts: [] });
+  S.setDeadline(t0 + budget);
+  try {
+    if (n === 2) {
+      const pl = S.principalLine(slots, baseSets, Infinity); // 厳密PV（全幅・置換表つき）
+      const must = pl.picks.length ? [pl.picks[0].vert.key] : [];
+      let alts = [];
+      // ランキングが時間切れでも、完成済みの厳密PVは捨てない
+      try { alts = S.rankRoot(slots, baseSets, Infinity, undefined, undefined, must); }
+      catch (e) { if (e !== ABORT) throw e; }
+      return finish(pl.picks, { exact: true, alts });
     }
-    return out.sort((x, y) => y.value - x.value);
-  }
-  if (slots.length === 2) { // [P,Q]: Pの手vに対しQが最適応手
-    const Q = slots[1];
-    const out = [];
-    for (const v of legalVs(new Set())) {
-      const used = new Set([v.key]);
-      const tP = tOf(P, [v.key]);
-      let bestQAdv = -Infinity, tQBest = null;
-      for (const w of legalVs(used)) {
-        const tQ = tOf(Q, [w.key]);
-        const adv = tP - tQ; // Qの優位 = 相手(P)のT − 自分(Q)のT
-        if (adv > bestQAdv) { bestQAdv = adv; tQBest = tQ; }
-      }
-      if (tQBest === null) tQBest = tOf(Q, []);
-      out.push({ key: v.key, label: v.label, value: tQBest - tP });
+    let beam = 4, best = null, converged = false, lastMs = 0;
+    const exp = Math.max(2, slots.length - 1); // 最終手は直接比較なので実効深さは slots-1
+    while (true) {
+      const tb = nowMs();
+      const pl = S.principalLine(slots, baseSets, beam);
+      lastMs = Math.max(1, nowMs() - tb);
+      const sig = pl.picks.map(x => x.vert.key).join(",");
+      converged = !!best && best.sig === sig;
+      best = { picks: pl.picks, sig, beam };
+      solveDraft._partial = best;
+      const next = beam + 2;
+      const est = lastMs * Math.pow(next / beam, exp); // 次の幅の所要時間見積り
+      if (next > 20 || (nowMs() - t0) + est > budget * 0.62) break;
+      beam = next;
     }
-    return out.sort((x, y) => y.value - x.value);
-  }
-  // slots.length === 1: 最終手
-  const tOpp = tOf(1 - P, []);
-  return legalVs(new Set()).map(v => {
-    const tP = tOf(P, [v.key]);
-    return { key: v.key, label: v.label, value: tOpp - tP };
-  }).sort((x, y) => y.value - x.value);
+    let alts = [];
+    const must3 = best.picks.length ? [best.picks[0].vert.key] : [];
+    try { alts = S.rankRoot(slots, baseSets, best.beam, undefined, ROOT_TOPK, must3); }
+    catch (e) { if (e !== ABORT) throw e; }
+    return finish(best.picks, { exact: false, beamUsed: best.beam, converged, alts });
+  } catch (e) {
+    if (e !== ABORT) throw e;
+    let picks = (solveDraft._partial && solveDraft._partial.picks) || [];
+    if (!picks.length) picks = S.greedyLine(slots, baseSets); // 予算切れでも必ず手順は返す
+    return finish(picks, { exact: false, beamUsed: (solveDraft._partial || {}).beam || 4,
+                           converged: false, alts: [], timedOut: true });
+  } finally { solveDraft._partial = null; }
 }
 // ソフトマックス方策（ミスありエンジン）: 上位12手から exp(value/τ) に比例して選ぶ
 function softmaxPick(ranking, tau, rand) {
@@ -1189,39 +1447,6 @@ function softmaxPick(ranking, tau, rand) {
   let r = rand() * ws.reduce((a, b) => a + b, 0);
   for (let i = 0; i < pool.length; i++) { r -= ws[i]; if (r <= 0) return pool[i]; }
   return pool[pool.length - 1];
-}
-// 一般形: 後ろ向き帰納法（beam=Infinity なら厳密）。
-// 2人はゼロ和（自分−相手 を最大化 = ブロック込み）、3人以上は max^n（各自が自分の値を最大化）。
-// 同一プレイヤーの連続手は順序込みで列挙されるため、2軒目（初期資源）の選択も探索される。
-function solveBeam(board, n, slots, cands, baseSets, setVal, beam) {
-  const sKey = keys => keys.length >= 2 ? keys[1] : null;
-  const single = new Map(cands.map(v => [v.key, setVal([v.key], null).turns]));
-  const orderAll = cands.slice().sort((a, b) => single.get(a.key) - single.get(b.key));
-  const chosen = Array.from({ length: n }, (_, p) => baseSets[p].slice());
-  const used = new Set();
-  const scoreOf = (values, p) => n === 2 ? values[p] - values[1 - p] : values[p];
-  function rec(idx) {
-    if (idx === slots.length)
-      return { values: chosen.map(s => -setVal(s, sKey(s)).turns), picks: [] };
-    const p = slots[idx];
-    let legal = orderAll.filter(v => !used.has(v.key) && ![...v.adj].some(k => used.has(k)));
-    if (idx <= 2) legal = legal.slice().sort((A, B) => { // 浅い層は限界価値順（ビーム質向上）
-      const mA = chosen[p].concat(A.key), mB = chosen[p].concat(B.key);
-      return setVal(mA, sKey(mA)).turns - setVal(mB, sKey(mB)).turns;
-    });
-    if (beam !== Infinity) legal = legal.slice(0, beam);
-    let best = null;
-    for (const v of legal) {
-      chosen[p].push(v.key); used.add(v.key);
-      const sub = rec(idx + 1);
-      chosen[p].pop(); used.delete(v.key);
-      if (!best || scoreOf(sub.values, p) > scoreOf(best.values, p) + 1e-12)
-        best = { values: sub.values, picks: [{ player: p, vert: v }].concat(sub.picks) };
-    }
-    return best || { values: chosen.map(s => -setVal(s, sKey(s)).turns), picks: [] };
-  }
-  const r = rec(0);
-  return { exact: beam === Infinity, picks: r.picks, alts: [], values: r.values };
 }
 
 /* ---- dev cards (hypergeometric) ---- */
@@ -1272,9 +1497,9 @@ function initState() {
     }
   } catch (e) { /* 破損データは無視して標準盤面 */ }
   ui = { mode: "inspect", player: 0, tab: "solver", paintRes: "wood", paintNum: 6,
-         nPlayers: 2, solverRes: null, solverPicks: null, deepSearch: false, showVLabels: true,
+         nPlayers: 2, solverRes: null, solverPicks: null, showVLabels: true,
          numMode: "spiral", trN: 2, trSeat: 0, trOpp: "gto", tr: null, seatAdv: null,
-         setup: null, setupSel: null,
+         setup: null, setupSel: null, effort: "fast", solverBusy: false,
          strategy: "balanced", useScarcity: true, useDimin: true, usePorts: true,
          placeRobber: false, prodRobber: true,
          hand: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
@@ -1639,8 +1864,7 @@ function renderSolver() {
   const n = ui.nPlayers;
   const slots = remainingSlots(board, n);
   const cands = draftCandidates(board);
-  const cheap = slots.length === 0 || (n === 2) || slots.length <= 3;
-  const exactExpected = n === 2 || slots.length <= 3;
+  const exactExpected = n === 2;
   el.innerHTML = `
     <h3>初期配置ドラフトの均衡解<span class="m">スネークドラフトを後ろ向き帰納法で解く</span></h3>
     <div class="opts">
@@ -1651,14 +1875,16 @@ function renderSolver() {
       <span>候補頂点: ${cands.length}</span>
     </div>
     <p class="note">${exactExpected
-      ? "<b>厳密解:</b> この条件では全候補を完全探索します（2人=全数、残り3手以下=全数）。"
-      : "<b>近似:</b> 3〜4人のフル読みは分岐が大きいため、時間予算内でビーム幅を自動拡幅する探索です（拡幅しても結果が変わらなければ「安定」と表示）。"}
-      評価関数はレースモデル: 各プレイヤーは自分の<b>10VP到達ターン数</b>（段階的流体モデル: 都市化・入植による生産成長、2軒目の初期資源、港レート、発展カードの厳密な期待購入枚数を含む、下記3プランの最速）を最小化し、2人の場合は到達時間差のゼロ和ゲームとして解きます。既に置かれた建物は消化済みの手として扱うので、途中局面からの「相手の最善はどこか」にも使えます。</p>
+      ? "<b>厳密解:</b> 2人はゼロ和ゲームなので、全合法手をα-β探索（置換表つき）で完全に読み切ります。"
+      : "<b>近似:</b> 3〜4人は分岐が大きいため、時間予算内でビーム幅を自動拡幅する探索です（拡幅しても結果が変わらなければ「拡幅安定」と表示。ルート層だけは広く読みます）。"}
+      「探索」は計算時間の上限です（標準／徹底／最大）。評価は<b>勝率</b>（自分が最初に10VPへ到達する確率）です。各プレイヤーの10VP到達を平均T・標準偏差σの分布として扱い、「誰が最初に着くか」を計算します。合計1の定和ゲームなので2人はゼロ和 → <b>α-βで厳密</b>、3〜4人は max^n をビーム幅つきで解きます（相手の到達時間も自分の勝率に効くため、ブロックの価値も自然に評価に入ります）。既に置かれた建物は消化済みの手として扱うので、途中局面からの「相手の最善はどこか」にも使えます。</p>
     <div class="opts">
-      <button id="btn-solve" class="on">${cheap ? "再計算" : "計算する（数秒かかります）"}</button>
-      ${exactExpected ? "" : `<label><input type="checkbox" id="ck-deep" ${ui.deepSearch ? "checked" : ""}> 徹底探索（〜10秒）</label>`}
-      ${ui.solverRes ? `<span class="note">計算時間 ${ui.solverRes.ms.toFixed(0)}ms / ${ui.solverRes.exact ? "厳密解"
-        : `ビーム近似（幅${ui.solverRes.beamUsed}${ui.solverRes.converged ? "・拡幅安定" : ""}）`}</span>` : ""}
+      <button id="btn-solve" class="on">${ui.solverBusy ? "計算中…" : "計算する"}</button>
+      <span>探索:</span>
+      <span class="seg">${[["fast", "標準"], ["deep", "徹底"], ["max", "最大"]].map(([k, ja]) =>
+        `<button data-eff="${k}" class="${ui.effort === k ? "on" : ""}">${ja}</button>`).join("")}</span>
+      ${ui.solverRes ? `<span class="note">${ui.solverRes.ms.toFixed(0)}ms・${(ui.solverRes.nodes / 1000).toFixed(0)}k局面 / ${ui.solverRes.exact ? "<b>厳密解</b>"
+        : `ビーム幅${ui.solverRes.beamUsed}${ui.solverRes.converged ? "・拡幅安定" : ""}${ui.solverRes.timedOut ? "・時間切れ" : ""}`}</span>` : ""}
     </div>
     <div id="solver-out"></div>
     <h3 style="margin-top:18px">手番の有利不利<span class="m">この盤面での2〜4人それぞれの均衡比較</span></h3>
@@ -1671,28 +1897,29 @@ function renderSolver() {
     ui.nPlayers = +b.dataset.np; ui.solverRes = null; ui.solverPicks = null; renderAll();
   }));
   $("#btn-solve").addEventListener("click", () => { runSolver(); });
-  const deep = $("#ck-deep");
-  if (deep) deep.addEventListener("change", e => { ui.deepSearch = e.target.checked; });
+  el.querySelectorAll("[data-eff]").forEach(b => b.addEventListener("click", () => {
+    ui.effort = b.dataset.eff; renderAll();
+  }));
   $("#btn-seats").addEventListener("click", runSeatAdvantage);
-  if (!ui.solverRes && cheap && slots.length > 0) runSolver();
+  if (!ui.solverRes && !ui.solverBusy && !(ui.seatAdv && ui.seatAdv.running) && n === 2 && slots.length > 0) runSolver();
   else renderSolverOut();
 }
 function seatTableHTML(job) {
   return `<div class="tscroll"><table>
     <thead><tr><th>人数</th>${[1, 2, 3, 4].map(i => `<th class="num">${i}番手</th>`).join("")}<th>最有利</th><th>精度</th></tr></thead>
     <tbody>${job.rows.map(r => {
-      const best = r.ts.indexOf(Math.min(...r.ts));
+      const best = r.wins ? r.wins.indexOf(Math.max(...r.wins)) : r.ts.indexOf(Math.min(...r.ts));
       return `<tr><td class="num">${r.n}人</td>${[0, 1, 2, 3].map(i => {
         if (i >= r.n) return '<td class="num">—</td>';
-        const d = r.ts[i] - r.ts[best];
-        const v = r.ts[i] >= 9999 ? "—" : r.ts[i].toFixed(1);
-        return `<td class="num">${i === best ? `<b>${v}</b> ★` : v}${d > 0.05 ? `<br><span style="color:var(--bad);font-size:10.5px">+${d.toFixed(1)}T</span>` : ""}</td>`;
+        const wv = r.wins ? fmtP(r.wins[i]) : "—";
+        return `<td class="num">${i === best ? `<b>${wv}</b> ★` : wv}<br><span style="font-size:10.5px;color:var(--sub)">${r.ts[i] >= 9999 ? "—" : r.ts[i].toFixed(1)}T</span></td>`;
       }).join("")}<td><b>${best + 1}番手</b></td>
       <td>${r.exact ? "厳密" : `ビーム幅${r.beamUsed || "—"}${r.converged ? "・安定" : ""}`}</td></tr>`;
     }).join("")}</tbody></table></div>
-    <p class="note">値は各手番の10VP到達ターン（小さいほど有利）。+x.xT は最有利手番との差。スネークドラフト（例: 4人は 1→2→3→4→4→3→2→1）を前提に、2人は厳密解、3〜4人は反復拡幅ビームの近似（各自が自分の到達Tを最大化する max^n）。盤面を編集すると結果はクリアされます。</p>`;
+    <p class="note">上段は均衡での勝率（最初に10VPへ到達する確率）、下段は10VP到達ターン。3〜4人はビーム近似のため、幅が変わると結果が動くことがあります（「拡幅安定」表示なら幅を広げても不変）。より安定させるには探索を「徹底」「最大」にしてください。スネークドラフト（例: 4人は 1→2→3→4→4→3→2→1）を前提に、2人は厳密解、3〜4人は反復拡幅ビームの近似（各自が自分の到達Tを最大化する max^n）。盤面を編集すると結果はクリアされます。</p>`;
 }
 function runSeatAdvantage() {
+  if (ui.solverBusy || (ui.seatAdv && ui.seatAdv.running)) return;
   const job = { rows: [], running: true };
   ui.seatAdv = job;
   renderAll();
@@ -1700,20 +1927,30 @@ function runSeatAdvantage() {
   const step = i => {
     if (ui.seatAdv !== job) return; // 盤面変更などで中断
     if (i >= ns.length) { job.running = false; renderAll(); return; }
-    const res = solveDraft(board, ns[i], { budgetMs: ns[i] === 2 ? 1500 : ns[i] === 3 ? 2600 : 6500 });
-    job.rows.push({ n: ns[i], ts: res.turns.map(t => t.turns), exact: res.exact,
+    const res = solveDraft(board, ns[i], { budgetMs: effortBudget(ns[i]) });
+    job.rows.push({ n: ns[i], ts: res.turns.map(t => t.turns), wins: res.wins, exact: res.exact,
                     beamUsed: res.beamUsed, converged: res.converged });
     renderAll();
     setTimeout(() => step(i + 1), 30);
   };
   setTimeout(() => step(0), 30);
 }
+const EFFORT_MS = { fast: { 2: 20000, 3: 12000, 4: 15000 },
+                    deep: { 2: 60000, 3: 45000, 4: 60000 },
+                    max:  { 2: 180000, 3: 120000, 4: 150000 } };
+function effortBudget(n) { return (EFFORT_MS[ui.effort] || EFFORT_MS.fast)[n] || 8000; }
 function runSolver() {
+  if (ui.solverBusy || (ui.seatAdv && ui.seatAdv.running)) return; // 探索の二重起動を防ぐ
   const n = ui.nPlayers;
-  const res = solveDraft(board, n, { budgetMs: ui.deepSearch ? 10000 : 2500 });
-  ui.solverRes = res;
-  ui.solverPicks = res.picks.map((p, i) => ({ key: p.vert.key, player: p.player, order: i + 1 }));
+  ui.solverBusy = true;
   renderAll();
+  setTimeout(() => { // 先に「計算中…」を描画してから重い計算に入る
+    try {
+      const res = solveDraft(board, n, { budgetMs: effortBudget(n) });
+      ui.solverRes = res;
+      ui.solverPicks = res.picks.map((p, i) => ({ key: p.vert.key, player: p.player, order: i + 1 }));
+    } finally { ui.solverBusy = false; renderAll(); }
+  }, 30);
 }
 function renderSolverOut() {
   const out = $("#solver-out");
@@ -1724,8 +1961,9 @@ function renderSolverOut() {
   if (res.slots.length === 0 && res.picks.length === 0) {
     out.innerHTML = `<div class="tiles">${res.turns.map((t, p) => `
       <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${PLAYER_JA[p]}</span></div>
-      <div class="v">${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}<small> T（${t.ja || "—"}）</small></div></div>`).join("")}</div>
-      <p class="note">全員配置済みのため、現在の配置の到達ターン評価のみ表示しています。</p>`;
+      <div class="v">${res.wins ? fmtP(res.wins[p]) : "—"}<small> 勝率</small></div>
+      <div class="k">10VP到達 ${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}±${(t.sd || 0).toFixed(1)}T</div></div>`).join("")}</div>
+      <p class="note">全員配置済みのため、現在の配置の評価のみ表示しています。</p>`;
     return;
   }
   out.innerHTML = `
@@ -1742,23 +1980,25 @@ function renderSolverOut() {
           <td>${board.ports[p.vert.key] ? (board.ports[p.vert.key] === "any" ? "3:1" : RES_JA[board.ports[p.vert.key]] + " 2:1") : "—"}</td></tr>`;
       }).join("")}</tbody></table></div>
     <div class="tiles">${res.turns.slice(0, n).map((t, p) => `
-      <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${PLAYER_JA[p]} の10VP到達</span></div>
-      <div class="v">${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}<small> T（${t.ja || "—"}）</small></div></div>`).join("")}</div>
+      <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${PLAYER_JA[p]}</span></div>
+      <div class="v">${res.wins ? fmtP(res.wins[p]) : "—"}<small> 勝率</small></div>
+      <div class="k">10VP到達 ${t.turns >= 9999 ? "—" : t.turns.toFixed(1)}±${(t.sd || 0).toFixed(1)}T（${t.ja || "—"}）</div></div>`).join("")}</div>
     ${res.turns.slice(0, n).some(t => t.detail) ? `
       <h3>勝ち筋の行程<span class="m">段階的レースモデルの内訳（累積ターン）</span></h3>
       ${res.turns.slice(0, n).map((t, p) => t.detail ? `
         <p class="note"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span><b>${PLAYER_JA[p]}</b></span>（${t.ja}）:
         ${t.detail.map(d => `${esc(d.label)} <b>${d.t.toFixed(1)}T</b>`).join(" → ")}</p>` : "").join("")}` : ""}
     ${res.alts && res.alts.length ? `
-      <h3>初手の候補比較<span class="m">均衡値 = 相手の到達T − 自分の到達T（大きいほど有利）</span></h3>
+      <h3>この手番の候補比較<span class="m">値 = その手を選んだときの自分の勝率（均衡想定）</span></h3>
       <div class="tscroll"><table>
-        <thead><tr><th>#</th><th>初手</th><th class="num">均衡値</th><th></th></tr></thead>
-        <tbody>${res.alts.slice(0, 8).map((a, i) => {
-          const w = Math.max(...res.alts.slice(0, 8).map(x => Math.abs(x.eq)), 0.001);
-          return `<tr class="clickable" data-selv="${a.vert.key}">
-            <td class="num">${i + 1}</td><td>${a.vert.label}</td>
-            <td class="num"><b>${a.eq >= 0 ? "+" : ""}${a.eq.toFixed(2)}</b></td>
-            <td><div class="barslot"><div class="scorebar" style="width:${(100 * Math.abs(a.eq) / w).toFixed(0)}%;${a.eq < 0 ? "background:var(--bad)" : ""}"></div></div></td></tr>`;
+        <thead><tr><th>#</th><th>候補</th><th class="num">勝率</th><th class="num">損失</th><th></th></tr></thead>
+        <tbody>${res.alts.slice(0, 10).map((a, i) => {
+          const top = res.alts[0].value, w = Math.max(top, 0.001);
+          return `<tr class="clickable" data-selv="${a.key}">
+            <td class="num">${i + 1}</td><td>${a.label}</td>
+            <td class="num"><b>${fmtP(a.value)}</b></td>
+            <td class="num">${i === 0 ? "—" : "−" + fmtP(top - a.value)}</td>
+            <td><div class="barslot"><div class="scorebar" style="width:${(100 * a.value / w).toFixed(0)}%"></div></div></td></tr>`;
         }).join("")}</tbody></table></div>` : ""}
     <p class="note">前提: 2軒目の初期資源、都市化・入植による生産成長、発展カードの期待購入枚数は評価に<b>含みます</b>。街道の位置取り・盗賊/騎士の妨害・最大騎士力/最長交易路の競争・サイコロの分散は含みません（詳細は「計算モデルの説明」）。</p>`;
   out.querySelectorAll("[data-selv]").forEach(tr => tr.addEventListener("click", () => {
@@ -1773,13 +2013,41 @@ const OPP_MODELS = {
   miss: { ja: "ときどきミス", tau: 1.2 },
   blunder: { ja: "ミス多め", tau: 3 },
 };
-function trSetVal(tr) {
-  return (keys, sec) => {
-    const key = keys.slice().sort().join("|") + "#" + (sec || "");
-    let v = tr.cache.get(key);
-    if (v === undefined) { v = draftValue(board, keys, sec); tr.cache.set(key, v); }
-    return v;
-  };
+// 現在局面のランキング（勝率）。2人=α-βで厳密、3〜4人=ビーム。結果は局面キーでキャッシュ。
+function trRanking(tr) {
+  const p = trTurn();
+  if (p === null) return [];
+  const slots = trSlotsN(board, tr.n, tr.seat);
+  const key = slots.length + "#" + Object.entries(board.buildings)
+    .map(([k, b]) => k + ":" + b.player).sort().join("|");
+  if (tr.rankKey === key && tr.rank) return tr.rank;
+  const baseSets = Array.from({ length: tr.n }, (_, q) =>
+    Object.keys(board.buildings).filter(k => board.buildings[k].player === q));
+  const budget = tr.budgetMs || 8000;
+  // 重い設定から順に試し、時間切れなら軽い設定へ。最後は静的順（必ず非空）
+  const tries = tr.n === 2 ? [[Infinity, 28], [Infinity, 12]]
+                           : [[6, 16], [4, 10], [3, 6]];
+  let out = null;
+  for (let i = 0; i < tries.length && !out; i++) {
+    const S = makeSearch(board, tr.n);
+    S.setDeadline(nowMs() + budget * (i === 0 ? 0.6 : 0.25));
+    try {
+      let must = [];
+      if (tr.n === 2 && i === 0) { // 全幅α-βで真の最善手を確定させ、必ずランキングに含める
+        const pv = S.principalLine(slots, baseSets, Infinity);
+        if (pv.picks.length) must = [pv.picks[0].vert.key];
+      }
+      out = S.rankRoot(slots, baseSets, tries[i][0], p, tries[i][1], must);
+      if (out.length) { tr.search = S; tr.searchSlots = slots; tr.searchBase = baseSets; tr.searchBeam = tries[i][0]; }
+    } catch (e) { if (e !== ABORT) throw e; }
+  }
+  if (!out || !out.length) {
+    const S = makeSearch(board, tr.n);
+    S.setDeadline(nowMs() + 3000);
+    out = S.staticRank(slots, baseSets, p, 12);
+  }
+  tr.rank = out; tr.rankKey = key;
+  return out;
 }
 function trTurn() { return ui.tr ? (trSlotsN(board, ui.tr.n, ui.tr.seat)[0] ?? null) : null; }
 function trName(tr, p) {
@@ -1800,9 +2068,9 @@ function trLogHTML(tr) {
     <thead><tr><th>#</th><th>手番</th><th>頂点</th><th>評価${tr.n > 2 ? "（近似）" : ""}</th></tr></thead>
     <tbody>${tr.log.map((l, i) => {
       let ev;
-      if (l.loss < 0.05) ev = `<span style="color:var(--good)">最善 ✓</span>`;
-      else if (l.engine) ev = `<span style="color:var(--warn)">ミス −${l.loss.toFixed(2)}T</span>`;
-      else ev = `<span style="color:var(--bad)">損失 −${l.loss.toFixed(2)}T</span>（最善: ${l.best ? l.best.label : "—"}）`;
+      if (l.loss < 0.002) ev = `<span style="color:var(--good)">最善 ✓</span>`;
+      else if (l.engine) ev = `<span style="color:var(--warn)">ミス −${fmtP(l.loss)}</span>`;
+      else ev = `<span style="color:var(--bad)">損失 −${fmtP(l.loss)}</span>（最善: ${l.best ? l.best.label : "—"}）`;
       return `<tr class="clickable" data-selv="${l.key}">
         <td class="num">${i + 1}</td>
         <td><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[l.p]}"></span>${trName(tr, l.p)}</span></td>
@@ -1813,21 +2081,18 @@ function trSummaryHTML(tr) {
   const f = tr.final;
   if (!f) return "";
   const totalLoss = tr.log.filter(l => l.p === 0 && !l.engine && !tr.watch).reduce((a, l) => a + l.loss, 0);
-  const userT = f[0].turns;
-  const opps = f.slice(1, tr.n).map(x => x.turns);
-  const d = opps.length ? Math.min(...opps) - userT : 0;
   const verdict = tr.watch ? "" :
-    totalLoss < 0.01 ? "完璧です — 全手がエンジンの最善と一致しました。" :
-    totalLoss < 1 ? "ほぼ最善のドラフトです。" :
-    totalLoss < 3 ? "小さなロスがあります。ログの「最善」と比べてみてください。" :
+    totalLoss < 0.002 ? "完璧です — 全手がエンジンの最善と一致しました。" :
+    totalLoss < 0.03 ? "ほぼ最善のドラフトです。" :
+    totalLoss < 0.10 ? "小さなロスがあります。ログの「最善」と比べてみてください。" :
     "大きなロスがあります。行にカーソルを乗せて盤面で最善手を確認しましょう。";
   return `
     <div class="tiles">
       ${f.slice(0, tr.n).map((x, p) => `
-        <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${trName(tr, p)}の10VP到達</span></div>
-        <div class="v">${x.turns >= 9999 ? "—" : x.turns.toFixed(1)}<small> T（${x.ja || "—"}）</small></div></div>`).join("")}
-      ${tr.watch ? "" : `<div class="tile"><div class="k">最速の相手との差（+であなた先着）</div><div class="v">${d >= 0 ? "+" : ""}${d.toFixed(2)}<small> T</small></div></div>
-      <div class="tile"><div class="k">あなたの合計損失${tr.n > 2 ? "（近似）" : ""}</div><div class="v">${totalLoss.toFixed(2)}<small> T</small></div></div>`}
+        <div class="tile"><div class="k"><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p]}"></span>${trName(tr, p)}</span></div>
+        <div class="v">${tr.finalWins ? fmtP(tr.finalWins[p]) : "—"}<small> 勝率</small></div>
+        <div class="k">10VP到達 ${x.turns >= 9999 ? "—" : x.turns.toFixed(1)}±${(x.sd || 0).toFixed(1)}T（${x.ja || "—"}）</div></div>`).join("")}
+      ${tr.watch ? "" : `<div class="tile"><div class="k">あなたの合計損失${tr.n > 2 ? "（近似）" : ""}</div><div class="v">${fmtP(totalLoss)}</div></div>`}
     </div>
     ${verdict ? `<p class="note"><b>${verdict}</b></p>` : ""}`;
 }
@@ -1857,7 +2122,7 @@ function renderTraining() {
     <p class="note" id="tr-status"><b>${trStatusText()}</b></p>
     ${tr && tr.log.length ? trLogHTML(tr) : ""}
     ${tr && tr.done ? trSummaryHTML(tr) : ""}
-    <p class="note">採点: <b>2人は部分ゲーム完全均衡による厳密採点</b>、<b>3〜4人は近似採点</b>（静的評価の上位10候補を仮置きし、それぞれ残りドラフトのビーム局所解で評価。max^n・各自が自分の到達Tを最大化）。損失＝最善手との差（ターン）。行にカーソルで盤面の頂点をハイライト。盤面を編集すると対局は中断されます。「ミスあり」エンジンは候補から exp(価値/τ) のソフトマックスで着手します（ときどきミス τ=1.2 / ミス多め τ=3）。</p>`;
+    <p class="note">採点: <b>2人はα-βによる厳密採点</b>（全合法手を評価）、<b>3〜4人はビーム近似</b>。値は「その手を選んだときの自分の勝率」で、損失＝最善手との勝率差。行にカーソルで盤面の頂点をハイライト。盤面を編集すると対局は中断されます。「ミスあり」エンジンは候補から exp(価値/τ) のソフトマックスで着手します（ときどきミス τ=1.2 / ミス多め τ=3）。</p>`;
   el.querySelectorAll("[data-trn]").forEach(b => b.addEventListener("click", () => { ui.trN = +b.dataset.trn; renderTraining(); }));
   el.querySelectorAll("[data-trs]").forEach(b => b.addEventListener("click", () => { ui.trSeat = +b.dataset.trs; renderTraining(); }));
   el.querySelectorAll("[data-tro]").forEach(b => b.addEventListener("click", () => { ui.trOpp = b.dataset.tro; renderTraining(); }));
@@ -1880,8 +2145,9 @@ function startTraining(watch) {
   board.buildings = {};
   ui.solverRes = null; ui.solverPicks = null; persistBoard();
   ui.tr = { active: true, watch, n, seat, seatPl, seatOf, opp: ui.trOpp, log: [],
-            cache: new Map(), done: false, thinking: false, final: null,
-            preRank: null, preRankAt: -1, evalBudget: 260 };
+            done: false, thinking: false, final: null, finalWins: null,
+            rank: null, rankKey: null, beam: 8,
+            budgetMs: effortBudget(n) };
   ui.mode = "settle"; ui.player = 0; ui.selV = null; ui.tab = "train";
   renderAll();
   trAdvance();
@@ -1897,13 +2163,10 @@ function trAdvance() {
     setTimeout(() => trEngineMove(tr), 350);
   } else {
     renderAll();
-    if (tr.n > 2 && tr.preRankAt !== tr.log.length) { // あなたの手番のうちに裏で採点表を用意
-      setTimeout(() => {
-        if (ui.tr !== tr || tr.done || trTurn() !== 0) return;
-        tr.preRank = trRankN(tr);
-        tr.preRankAt = tr.log.length;
-      }, 80);
-    }
+    setTimeout(() => { // あなたが考えている間に採点表を用意しておく
+      if (ui.tr !== tr || tr.done || trTurn() !== 0) return;
+      trRanking(tr);
+    }, 60);
   }
 }
 function trEngineMove(tr) {
@@ -1911,16 +2174,11 @@ function trEngineMove(tr) {
   const p = trTurn();
   if (p === null) { trFinish(); return; }
   if (!tr.watch && p === 0) return; // 安全弁: ユーザーの手番でエンジンは動かない
-  const rank = tr.n === 2 ? trRank(board, tr.seatPl[0], trSetVal(tr)) : trRankN(tr);
+  const rank = trRanking(tr);
   if (!rank || !rank.length) { trFinish(); return; }
   const tau = tr.watch ? 0 : OPP_MODELS[tr.opp].tau;
   const mv = tau > 0 ? softmaxPick(rank, tau) : rank[0];
-  board.buildings[mv.key] = { player: p, level: 1 };
-  tr.log.push({ p, key: mv.key, label: mv.label, loss: Math.max(0, rank[0].value - mv.value), engine: !tr.watch, best: rank[0] });
-  tr.thinking = false;
-  ui.selV = mv.key;
-  ui.solverRes = null; ui.solverPicks = null; persistBoard();
-  trAdvance();
+  trPlay(tr, p, mv, rank, !tr.watch);
 }
 function trUserMove(vkey) {
   const tr = ui.tr;
@@ -1929,73 +2187,41 @@ function trUserMove(vkey) {
   const v = GEO.vmap.get(vkey);
   if (board.buildings[vkey] || [...v.adj].some(k => board.buildings[k]))
     return flashHint("そこには置けません（距離ルール）");
-  let rank, chosen;
-  if (tr.n === 2) {
-    rank = trRank(board, tr.seatPl[0], trSetVal(tr));
-    chosen = rank.find(m => m.key === vkey);
-    if (!chosen) return flashHint("生産も港もない頂点は候補外です");
-  } else {
-    rank = (tr.preRankAt === tr.log.length && tr.preRank) ? tr.preRank : trRankN(tr);
-    chosen = rank.find(m => m.key === vkey);
-    if (!chosen) {
-      if (!draftCandidates(board).some(c => c.key === vkey))
-        return flashHint("生産も港もない頂点は候補外です");
-      chosen = trEvalMove(tr, vkey, 0); // 上位10候補の外: 個別に評価
-    }
+  const rank = trRanking(tr);
+  let chosen = rank.find(m => m.key === vkey);
+  if (!chosen && tr.search) { // 表示上位に無い手でも、その場で評価して正しく採点する
+    try {
+      tr.search.setDeadline(nowMs() + 5000); // 期限切れの探索オブジェクトを使い回すので張り直す
+      chosen = tr.search.evalMove(tr.searchSlots, tr.searchBase, vkey,
+                                  tr.searchBeam !== undefined ? tr.searchBeam : Infinity, 0);
+    } catch (e) { if (e !== ABORT) throw e; }
   }
-  board.buildings[vkey] = { player: 0, level: 1 };
-  tr.log.push({ p: 0, key: vkey, label: chosen.label, loss: Math.max(0, rank[0].value - chosen.value), engine: false, best: rank[0] });
-  ui.selV = vkey;
+  if (!chosen) {
+    return flashHint(draftCandidates(board).some(c => c.key === vkey)
+      ? "その手の評価が間に合いませんでした。もう一度クリックしてください"
+      : "生産も港もない頂点は候補外です");
+  }
+  trPlay(tr, 0, chosen, rank, false);
+}
+function trPlay(tr, p, mv, rank, engine) {
+  board.buildings[mv.key] = { player: p, level: 1 };
+  tr.log.push({ p, key: mv.key, label: mv.label,
+                loss: Math.max(0, rank[0].value - mv.value), engine, best: rank[0] });
+  tr.thinking = false;
+  tr.rank = null; tr.rankKey = null;
+  ui.selV = mv.key;
   ui.solverRes = null; ui.solverPicks = null; persistBoard();
   trAdvance();
-}
-/* 3〜4人用: 残りドラフトのビーム局所解（時間予算つき） */
-function trBeamSolve(tr, budgetMs) {
-  const n = tr.n;
-  const slots = trSlotsN(board, n, tr.seat);
-  const baseSets = Array.from({ length: n }, (_, pl) =>
-    Object.keys(board.buildings).filter(k => board.buildings[k].player === pl));
-  const setVal = trSetVal(tr);
-  const sK = s => s.length >= 2 ? s[1] : null;
-  if (!slots.length) return { picks: [], values: baseSets.map(s => -setVal(s, sK(s)).turns) };
-  const cands = draftCandidates(board);
-  if (slots.length <= 3) return solveBeam(board, n, slots, cands, baseSets, setVal, Infinity);
-  const t0 = performance.now();
-  let beam = 4, last = null;
-  while (true) {
-    last = solveBeam(board, n, slots, cands, baseSets, setVal, beam);
-    if (performance.now() - t0 > budgetMs || beam >= 10) break;
-    beam += 2;
-  }
-  return last;
-}
-function trEvalMove(tr, key, p) {
-  board.buildings[key] = { player: p, level: 1 };
-  const sub = trBeamSolve(tr, tr.evalBudget || 260);
-  delete board.buildings[key];
-  return { key, label: (GEO.vmap.get(key) || {}).label || "?", value: sub.values[p] };
-}
-function trRankN(tr) {
-  const p = trTurn();
-  if (p === null) return [];
-  const setVal = trSetVal(tr);
-  const baseK = Object.keys(board.buildings).filter(k => board.buildings[k].player === p);
-  const marg = v => {
-    const m = baseK.concat(v.key);
-    return setVal(m, m.length >= 2 ? m[1] : null).turns;
-  };
-  const pool = draftCandidates(board).slice().sort((a, b) => marg(a) - marg(b)).slice(0, 10);
-  return pool.map(v => trEvalMove(tr, v.key, p)).sort((x, y) => y.value - x.value);
 }
 function trFinish() {
   const tr = ui.tr;
   if (!tr || tr.done) return;
   tr.done = true; tr.active = false;
-  const sv = trSetVal(tr);
-  tr.final = Array.from({ length: tr.n }, (_, p) => {
-    const m = tr.log.filter(l => l.p === p).map(l => l.key);
-    return sv(m, m.length >= 2 ? m[1] : null);
-  });
+  const S = makeSearch(board, tr.n);
+  const sets = Array.from({ length: tr.n }, (_, p) => tr.log.filter(l => l.p === p).map(l => l.key));
+  const lf = S.leaf(sets);
+  tr.final = lf.vals;
+  tr.finalWins = lf.wins;
   renderAll();
 }
 
@@ -2556,6 +2782,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
