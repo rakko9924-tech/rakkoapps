@@ -61,6 +61,7 @@ export const apps = [
   { folder: "shark-clicker",   name: "Shark Clicker",            id: "6791277136", cat: "casual",  game: true,  featured: false, desc: "タップで育てて海を制覇するサメ進化クリッカー。", kw: "サメ shark clicker 進化 放置" },
   { folder: "god-gacha",       name: "ゴッドガチャ∞",            id: "6787273550", cat: "casual",  game: true,  featured: false, desc: "神々を引き集めるコレクションガチャ。", kw: "ガチャ gacha コレクション 神" },
   { folder: "pill-asmr-ios",   name: "おくすりプチプチ",         id: "6783921551", cat: "casual",  game: false, featured: false, desc: "薬のシートをプチッと押し出す気持ちいいASMR。", kw: "ASMR プチプチ 暇つぶし 薬 pop" },
+  { folder: "fuwamoko",        name: "ふわもこ性格診断",         id: "6796685127", cat: "casual",  game: false, featured: true,  desc: "15問・約1分。結果はふわもこ動物の16タイプ性格診断。", kw: "性格診断 診断 16タイプ 動物 心理テスト 無料" },
 
   // ---- 実用・ツール ----
   { folder: "koyaku-counter",  name: "ShareHistory 収支共有&子役カウント", id: "6790613177", cat: "utility", game: false, featured: false, desc: "パチスロ収支を仲間と共有＆子役カウント。", kw: "パチスロ 収支 子役 カウント 共有" },
