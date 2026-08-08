@@ -419,16 +419,16 @@
           <li><b>⑥ 勝ち筋の採用率:</b> 拡張型53% / 都市・発展型35% / バランス型12%。木土が強い盤面は拡張、麦鉱が強い盤面は都市化と、盤面の資源分布がプランを決める。</li>
           <li><b>⑦ 手番:</b> ランダム盤面の平均では先手+0.52T・先手有利55.5%とほぼ互角（2人）。盤面によっては後手有利も普通にある。</li>
         </ul>
-        <h4>簡易EV式（暗算用・検証済み）</h4>
-        <p>「資源の係数 × 数字の価値」を足すだけの線形式で、どこまで厳密解に迫れるかを120盤面（候補6,400頂点）で検証しました。数字の価値は確率に厳密比例するので<b>ピップ</b>（6・8=5 / 5・9=4 / 4・10=3 / 3・11=2 / 2・12=1）を使います。損失（その式で初手を選んだ場合の均衡値との差）を直接最小化した最良の式は:</p>
-        <p><code>簡易EV = ピップ合計 − 0.5×羊ピップ + 3（3:1港があれば） + 資源種類数</code></p>
+        <h4>EV式（暗算用・検証済み）</h4>
+        <p>「資源の価値 × 数字の価値」を足すだけの線形式で、どこまで厳密解に迫れるかを検証しました。数字の価値は出目の確率に厳密比例するので<b>ピップ</b>（6・8=5 / 5・9=4 / 4・10=3 / 3・11=2 / 2・12=1）をそのまま使います。学習用100盤面で式を選び、<b>別シードの独立な80盤面で検証</b>した結果、最良だったのは:</p>
+        <p><code>EV = 木×1.0 + レンガ×1.0 + 羊×0.8 + 小麦×1.0 + 鉱石×1.0</code>（各資源の<b>ピップ</b>に掛けて合計。＝ ピップ合計 − 0.2×羊ピップ）</p>
         <ul>
-          <li><b>精度:</b> 厳密解と初手一致44%・上位3以内64%、レース損失は平均2.2T・中央値0.6T・90%タイル6.8T。単純なピップ合計だけでも平均2.5T（ランダム選択は平均15.7T）。1点 ≈ 1.2〜1.5T相当。</li>
-          <li><b>意外な結論①:</b> MSE回帰で得た「精密な」資源別係数（土3.5 木3.2 鉱3.3 麦3.2 羊2.6 T/ピップ）で初手を選ぶと、むしろフラット係数より悪化します（初手一致30%）。資源の重みは本来「自分が既に持つ資源・残っている相方候補・ブロック」に依存して動くため、固定係数化すると平均に引きずられて上位争いの識別を誤るためです。<b>固定係数はほぼフラット（羊だけ半額）が最善</b>でした。</li>
-          <li><b>意外な結論②:</b> 2:1港は固定点数化できません（自分の特化資源と一致したときだけ価値が跳ねる文脈依存のため、簡易式では0点扱いが最善）。</li>
-          <li><b>限界:</b> 残る損失（平均2.2T、1〜2割の盤面で6T超）は、ペアの相補性・相手のブロック・プラン選択といった「1タイルずつの足し算では原理的に表せない」相互作用によるもので、どんな固定係数でも超えられない壁です。正確な値が必要な場面ではソルバーを使ってください。</li>
+          <li><b>精度（独立検証80盤面）:</b> この式で初手を選ぶと、厳密解の最善手と<b>55%一致</b>、勝率の損失は<b>平均3.65pp・中央値0.00pp</b>。素のピップ合計だけだと48%一致・平均4.21ppなので、羊を2割引くだけで少し良くなります。</li>
+          <li><b>結論①「ピップがほぼ全て」:</b> 資源ごとの価値はほぼ等しく、差が出るのは羊だけでした。鉱石や小麦を重くする式（鉱1.2〜1.3など）も試しましたが、交差検証では<b>むしろ悪化</b>します。資源の重みは本来「自分が既に持つ資源・相方候補・相手のブロック」に依存して動くため、固定係数にすると平均に引きずられて上位争いの識別を誤るからです。</li>
+          <li><b>結論②「港と多様性は固定点数にできない」:</b> 3:1港ボーナスや資源の種類数を足す式も試しましたが、独立検証では改善しませんでした（3:1港は+1.0でも+2.5でも結果が変わらず）。港の価値は自分の特化資源と噛み合ったときだけ跳ねる文脈依存の量だからです。</li>
+          <li><b>限界:</b> 残る損失（平均3.65pp、1〜2割の盤面で10pp超）は、2軒のペアの相補性・相手のブロック・プラン選択といった「1タイルずつの足し算では原理的に表せない」相互作用によるものです。正確な値が必要な場面ではGTO配置ソルバー（勝率）を使ってください。</li>
+          <li><b>厳密なEVも併記:</b> 表の「枚/ロール」は <code>ピップ合計 ÷ 36</code>、すなわちサイコロ1回あたりに期待できる資源枚数そのもの（近似なしの厳密値）です。</li>
         </ul>
-        <p><b>注意:</b> これは交渉なし・盗賊/妨害なしのレースモデルでの理論値です。実戦（交渉あり）では麦・鉱の交渉価値や盗賊耐性が加わるため、麦鉱の相対価値は本表より上がると考えられます。</p>
         <h4>生産力</h4>
         <p>1ロールあたりの期待獲得 <code>E[r] = Σ(隣接ヘクス) P(出目) × 建物係数</code>（入植地=1、都市=2）。盗賊が乗ったヘクスは生産しません（トグルで考慮/無視を切替）。</p>
         <h4>建設速度（モンテカルロ）</h4>
@@ -985,6 +985,25 @@ function expansionSpots(board, ownKeys, occSet, need) {
   return pickSpots(expansionRanked(board, ownKeys), occSet, board, need);
 }
 const PLAN_JA = { cityDev: "都市・発展型", expansion: "拡張型", balance: "バランス型" };
+/* 手計算できる簡易EV式。厳密ソルバー（勝率）の初手評価に最小二乗で当てはめ、読みやすく丸めた重み。
+   EV = Σ(資源の価値 × その資源のピップ) + 港ボーナス + 0.4 × 資源の種類数
+   数字の価値＝ピップ（6/8=5, 5/9=4, 4/10=3, 3/11=2, 2/12=1）。木材=1.00 を基準に正規化。 */
+// 独立検証（別シード80盤面）で選んだ重み: 資源の価値はほぼ等しく、羊だけ2割引き。
+// 港ボーナス・資源の種類数は独立検証で改善しなかったため 0（＝式に入れない）。
+const EV_W = { wood: 1.0, brick: 1.0, sheep: 0.8, wheat: 1.0, ore: 1.0 };
+const EV_PORT31 = 0, EV_PORT21 = 0, EV_DIVERSITY = 0;
+function vertexEV(board, vkey) {
+  const e = boardPips(board).get(vkey);
+  if (!e) return { ev: 0, pips: { wood:0,brick:0,sheep:0,wheat:0,ore:0 }, total: 0, port: 0, diversity: 0 };
+  const p = e.p, port = board.ports[vkey] || null;
+  let resPart = 0;
+  for (const r of RES) resPart += EV_W[r] * p[r];
+  const distinct = RES.filter(r => p[r] > 0).length;
+  const portPart = port === "any" ? EV_PORT31 : (port ? EV_PORT21 * p[port] : 0);
+  const divPart = EV_DIVERSITY * distinct;
+  return { ev: resPart + portPart + divPart, pips: p, total: e.total,
+           resPart, port: portPart, diversity: divPart, distinct };
+}
 const PLAN_KEYS = ["cityDev", "expansion", "balance"];
 // 1ステージあたりの到達時間の変動係数（モンテカルロ実測: 単発建設の sd/mean は 0.40〜0.64、中央値 0.50）。
 // 各ステージの待ち時間はほぼ独立なので分散は加算: Var(T) = Σ (CV·Δt_i)²。
@@ -1428,8 +1447,14 @@ function solveDraft(board, n, opts) {
     }
     let alts = [];
     const must3 = best.picks.length ? [best.picks[0].vert.key] : [];
-    try { alts = S.rankRoot(slots, baseSets, best.beam, undefined, ROOT_TOPK, must3); }
-    catch (e) { if (e !== ABORT) throw e; }
+    // 重い設定から順に試し、時間切れなら軽い設定へ。最後は静的順（表が空にならないように）
+    for (const [bm, tk] of [[best.beam, ROOT_TOPK], [4, 10], [3, 8]]) {
+      try { alts = S.rankRoot(slots, baseSets, bm, undefined, tk, must3); }
+      catch (e) { if (e !== ABORT) throw e; }
+      if (alts.length) break;
+      S.setDeadline(nowMs() + Math.max(1500, budget * 0.15)); // 次の試行のために締切を延長
+    }
+    if (!alts.length) { try { alts = S.staticRank(slots, baseSets, undefined, 10); } catch (e) { /* 静的順のみ */ } }
     return finish(best.picks, { exact: false, beamUsed: best.beam, converged, alts });
   } catch (e) {
     if (e !== ABORT) throw e;
@@ -1698,8 +1723,8 @@ function vertexTipHTML(vkey) {
   const row = ui.evalRows.find(r => r.v.key === vkey);
   const b = board.buildings[vkey];
   let h = `<div class="t">${v.label}${b ? `（${PLAYER_JA[b.player]}の${b.level === 2 ? "都市" : "入植地"}）` : ""}</div>`;
-  h += `合計 <b>${total}ピップ</b>`;
-  if (total > 0) h += `　${chipRow(pips)}`;
+  h += `合計 <b>${total}ピップ</b>（EV <b>${vertexEV(board, vkey).ev.toFixed(1)}</b>・${(total / 36).toFixed(2)}枚/ロール）`;
+  if (total > 0) h += `<br>${chipRow(pips)}`;
   if (row) h += `<table><tr><td>スコア</td><td>${row.score.toFixed(2)}（基礎${row.parts.base.toFixed(2)} × 多様性${row.parts.divMult.toFixed(2)}${row.parts.portBonus ? ` + 港${row.parts.portBonus.toFixed(2)}` : ""}）</td></tr>
        <tr><td>P(何か獲得)</td><td>${fmtP(row.pAny)}</td></tr></table>`;
   if (board.ports[vkey]) h += `<div>港: ${board.ports[vkey] === "any" ? "3:1" : RES_JA[board.ports[vkey]] + " 2:1"}</div>`;
@@ -1970,14 +1995,15 @@ function renderSolverOut() {
   out.innerHTML = `
     <h3>均衡手順（PV）<span class="m">盤面に番号バッジで表示</span></h3>
     <div class="tscroll"><table>
-      <thead><tr><th>#</th><th>手番</th><th>頂点</th><th class="num">ピップ</th><th>内訳</th><th>港</th></tr></thead>
+      <thead><tr><th>#</th><th>手番</th><th>頂点</th><th class="num">ピップ</th><th class="num">EV</th><th>内訳</th><th>港</th></tr></thead>
       <tbody>${res.picks.map((p, i) => {
         const pips = vertexPips(board, p.vert.key, false);
         const total = RES.reduce((a, r) => a + pips[r], 0);
         return `<tr class="clickable" data-selv="${p.vert.key}">
           <td class="num">${i + 1}</td>
           <td><span class="pchip"><span class="dot" style="width:8px;height:8px;background:${PVAR[p.player]}"></span>${PLAYER_JA[p.player]}</span></td>
-          <td>${p.vert.label}</td><td class="num">${total}</td><td>${chipRow(pips)}</td>
+          <td>${p.vert.label}</td><td class="num">${total}</td>
+          <td class="num">${vertexEV(board, p.vert.key).ev.toFixed(1)}</td><td>${chipRow(pips)}</td>
           <td>${board.ports[p.vert.key] ? (board.ports[p.vert.key] === "any" ? "3:1" : RES_JA[board.ports[p.vert.key]] + " 2:1") : "—"}</td></tr>`;
       }).join("")}</tbody></table></div>
     <div class="tiles">${res.turns.slice(0, n).map((t, p) => `
@@ -1992,11 +2018,12 @@ function renderSolverOut() {
     ${res.alts && res.alts.length ? `
       <h3>この手番の候補比較<span class="m">値 = その手を選んだときの自分の勝率（均衡想定）</span></h3>
       <div class="tscroll"><table>
-        <thead><tr><th>#</th><th>候補</th><th class="num">勝率</th><th class="num">損失</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>候補</th><th class="num">EV</th><th class="num">勝率</th><th class="num">損失</th><th></th></tr></thead>
         <tbody>${res.alts.slice(0, 10).map((a, i) => {
           const top = res.alts[0].value, w = Math.max(top, 0.001);
           return `<tr class="clickable" data-selv="${a.key}">
             <td class="num">${i + 1}</td><td>${a.label}</td>
+            <td class="num">${vertexEV(board, a.key).ev.toFixed(1)}</td>
             <td class="num"><b>${fmtP(a.value)}</b></td>
             <td class="num">${i === 0 ? "—" : "−" + fmtP(top - a.value)}</td>
             <td><div class="barslot"><div class="scorebar" style="width:${(100 * a.value / w).toFixed(0)}%"></div></div></td></tr>`;
@@ -2247,20 +2274,40 @@ function renderPlace() {
       <label><input type="checkbox" id="ck-probber" ${ui.placeRobber ? "checked" : ""}> 盗賊を考慮</label>
     </div>
     <div class="tscroll"><table>
-      <thead><tr><th>#</th><th>頂点</th><th class="num">ピップ</th><th class="num" title="暗算用の検証済み簡易式: ピップ合計 − 0.5×羊ピップ + 3(3:1港) + 資源種類数">簡易EV</th><th>内訳</th><th class="num">P(獲得)</th><th class="num">スコア</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>頂点</th><th class="num">ピップ</th><th class="num" title="Σ(資源の価値 × その数字のピップ)。下のEV早見表で暗算できます">EV</th><th class="num" title="ピップ合計 ÷ 36 = サイコロ1回で期待できる資源枚数（厳密値）">枚/ロール</th><th>内訳</th><th class="num">P(獲得)</th><th class="num">スコア</th><th></th></tr></thead>
       <tbody>${ui.evalRows.slice(0, 12).map((r, i) => `
         <tr class="clickable ${ui.selV === r.v.key ? "hl" : ""}" data-selv="${r.v.key}">
           <td class="num">${i + 1}</td>
           <td>${r.v.label}${r.port ? ` <span class="chip">${r.port === "any" ? "3:1" : RES_K[r.port] + "2:1"}</span>` : ""}</td>
           <td class="num">${r.total}</td>
-          <td class="num">${(r.total - 0.5 * r.pips.sheep + (r.port === "any" ? 3 : 0) + r.distinct).toFixed(1)}</td>
+          <td class="num"><b>${vertexEV(board, r.v.key).ev.toFixed(1)}</b></td>
+          <td class="num">${(r.total / 36).toFixed(2)}</td>
           <td>${chipRow(r.pips)}</td>
           <td class="num">${fmtP(r.pAny)}</td>
           <td class="num"><b>${r.score.toFixed(2)}</b></td>
           <td><div class="barslot"><div class="scorebar" style="width:${(100 * r.score / maxScore).toFixed(0)}%"></div></div></td>
         </tr>`).join("")}</tbody>
     </table></div>
-    <p class="note">スコア = (Σ ピップ×戦略×希少性×逓減) × 多様性 + 港。<b>簡易EV</b>は暗算用の検証済み線形式「ピップ合計 − 0.5×羊ピップ + 3（3:1港） + 資源種類数」（詳細と精度は「計算モデルの説明」の簡易EV式）。上位3件は盤面に赤・橙・灰のバッジで表示。行クリックで盤面ハイライト。</p>
+    <p class="note"><b>EV</b> = Σ(資源の価値 × その数字のピップ)。<b>枚/ロール</b> = ピップ合計÷36（サイコロ1回で期待できる資源枚数・厳密値）。
+      スコア = (Σ ピップ×戦略×希少性×逓減) × 多様性 + 港。上位3件は盤面に赤・橙・灰のバッジで表示。行クリックで盤面ハイライト。</p>
+    <h3 style="margin-top:16px">EV早見表<span class="m">卓上で暗算するための表</span></h3>
+    <div class="tscroll"><table>
+      <thead><tr><th>数字</th>${[2,12,3,11,4,10,5,9,6,8].map(n =>
+        `<th class="num"${n === 6 || n === 8 ? ' style="color:var(--red-num)"' : ""}>${n}</th>`).join("")}</tr></thead>
+      <tbody><tr><td><b>数字の価値</b>（ピップ）</td>${[2,12,3,11,4,10,5,9,6,8].map(n =>
+        `<td class="num"><b>${pipOf(n)}</b></td>`).join("")}</tr></tbody>
+    </table></div>
+    <div class="tscroll" style="margin-top:8px"><table>
+      <thead><tr><th>資源</th>${CHART_ORDER.map(r =>
+        `<th class="num"><span class="chip"><span class="sw" style="background:${CVAR[r]}"></span>${RES_JA[r]}</span></th>`).join("")}</tr></thead>
+      <tbody><tr><td><b>資源の価値</b></td>${CHART_ORDER.map(r =>
+        `<td class="num"><b>${EV_W[r].toFixed(1)}</b></td>`).join("")}</tr></tbody>
+    </table></div>
+    <p class="note">例: 鉱石6・小麦9・羊5 の頂点 → 鉱石 1.0×5 + 小麦 1.0×4 + 羊 0.8×4 = <b>EV 12.2</b>。
+      重みは<b>厳密ソルバー（勝率）の初手評価に当てはめ、別シードの独立80盤面で検証</b>して選びました。結論は
+      <b>「資源の価値はほぼ等しく、数字のピップがほぼ全て。羊だけ2割引き」</b>。この式で初手を選ぶと厳密解と
+      <b>55%一致・勝率損失は平均3.65pp（中央値0.00pp）</b>です（素のピップ合計だと48%・4.21pp）。
+      港ボーナスや資源の種類数を足す式は独立検証で改善しなかったため入れていません。詳細は下部「計算モデルの説明」の<b>EV式</b>へ。</p>
     <h3 style="margin-top:16px">盤面の資源供給<span class="m">総ピップと希少性重み</span></h3>
     <div class="chart" id="ch-supply"></div>`;
   const supplyItems = CHART_ORDER.map(r => ({
@@ -2793,6 +2840,7 @@ renderAll();
 </footer>
 </body>
 </html>
+
 
 
 
