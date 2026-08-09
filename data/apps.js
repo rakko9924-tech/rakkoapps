@@ -53,6 +53,7 @@ export const apps = [
   { folder: "insider",         name: "インサイダーを暴け",       id: "6787274172", cat: "party",   game: true,  featured: false, desc: "答えを操る内通者を探すワード推理ゲーム。", kw: "インサイダー 推理 ワード party" },
   { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
+  { folder: "monosashi",       name: "意図あわせ",               id: "6794969956", cat: "party",   game: true,  featured: false, desc: "数字を言わずに、ことばで小さい順にならべる協力ゲーム。", kw: "協力 数字 パーティー 会話 飲み会 価値観" },
   { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を挟んで向かい合って遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
   { folder: "drink-game",      name: "のみゲー ルーレット",      play: "/play/drink-game/", cat: "party", game: true, featured: false, desc: "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。", kw: "飲みゲー のみゲー ルーレット 罰ゲーム 飲み会 合コン 二次会 王様ゲーム" },
 
@@ -65,6 +66,7 @@ export const apps = [
 
   // ---- 実用・ツール ----
   { folder: "koyaku-counter",  name: "ShareHistory 収支共有&子役カウント", id: "6790613177", cat: "utility", game: false, featured: false, desc: "パチスロ収支を仲間と共有＆子役カウント。", kw: "パチスロ 収支 子役 カウント 共有" },
+  { folder: "gyaku-hosuu",     name: "逆歩数計",                 id: "6794137697", cat: "utility", game: false, featured: false, desc: "歩かなかった分が溜まっていく、逆転の発想の歩数計。", kw: "歩数計 万歩計 ウォーキング 運動不足 健康" },
   { folder: "blindflow",       name: "BlindFlow",                id: "6786809043", cat: "utility", game: false, featured: false, desc: "アミューズメントポーカー店舗の会員向け公式アプリ。", kw: "会員 ポーカー 店舗 amusement" },
   { folder: "gto-draw",        name: "72＆バドゥーギ GTO道場",   id: "6787277262", cat: "utility", game: false, featured: false, desc: "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。", kw: "GTO ポーカー ドロー badugi 学習" },
   { folder: "ofc-solver",      name: "チャイポEVアシスト",       id: "6783852074", cat: "utility", game: false, featured: false, desc: "チャイポのEVを計算するアシストツール。", kw: "OFC EV solver チャイポ 計算" },
