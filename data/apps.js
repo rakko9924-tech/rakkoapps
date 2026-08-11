@@ -54,6 +54,7 @@ export const apps = [
   { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
   { folder: "monosashi",       name: "意図あわせ",               id: "6794969956", cat: "party",   game: true,  featured: false, desc: "数字を言わずに、ことばで小さい順にならべる協力ゲーム。", kw: "協力 数字 パーティー 会話 飲み会 価値観" },
+  { folder: "nanda-koitsu",    name: "なんだこいつは！",         id: "6785054359", cat: "party",   game: true,  featured: false, desc: "謎のモンスターに名前をつけ、また出たら早押しで総取り。1台を囲む記憶ゲーム。", kw: "記憶 早押し カード パーティー 大人数 飲み会 家族 オフライン" },
   { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を挟んで向かい合って遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
   { folder: "drink-game",      name: "のみゲー ルーレット",      play: "/play/drink-game/", cat: "party", game: true, featured: false, desc: "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。", kw: "飲みゲー のみゲー ルーレット 罰ゲーム 飲み会 合コン 二次会 王様ゲーム" },
 

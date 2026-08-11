@@ -1,0 +1,314 @@
+[
+  {
+    "folder": "anakui",
+    "name": "穴喰いバトル",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "街ごと吸い込む「穴」になって競うオンライン対戦。",
+    "featured": true
+  },
+  {
+    "folder": "orochi-battle",
+    "name": "大蛇バトル",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "玉を食べて大蛇を育て、相手を狩るオンライン対戦。",
+    "featured": false
+  },
+  {
+    "folder": "oekaki-online",
+    "name": "らくがきオンライン",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "みんなで遊ぶリアルタイムお絵かき当てゲーム。",
+    "featured": false
+  },
+  {
+    "folder": "super-tap-battle",
+    "name": "スーパータップ対戦",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "現れるボールを割るだけ。超シンプル早押し対戦。",
+    "featured": false
+  },
+  {
+    "folder": "issen",
+    "name": "ISSEN 一閃",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "コンマ数秒の反応速度を競う早撃ちオンライン対戦。",
+    "featured": false
+  },
+  {
+    "folder": "PineappleOFC",
+    "name": "チャイポオンライン",
+    "cat": "online",
+    "catLabel": "オンライン対戦",
+    "desc": "十三張パイナップルOFCをオンラインで手軽に。",
+    "featured": false
+  },
+  {
+    "folder": "pika-tensei",
+    "name": "ピカピカ転生",
+    "cat": "action",
+    "catLabel": "アクション",
+    "desc": "指でこする物理演算のおそうじ×転生ゲーム。",
+    "featured": true
+  },
+  {
+    "folder": "hero30",
+    "name": "30秒の勇者",
+    "cat": "action",
+    "catLabel": "アクション",
+    "desc": "制限時間30秒で魔王を討つドット絵スピードRPG。",
+    "featured": false
+  },
+  {
+    "folder": "dekoboko-rider",
+    "name": "デコボコライダー",
+    "cat": "action",
+    "catLabel": "アクション",
+    "desc": "バイクで丘を駆け抜けるかんたん物理アクション。",
+    "featured": false
+  },
+  {
+    "folder": "rakugaki-oukoku",
+    "name": "おえかきモンスターバトル",
+    "cat": "action",
+    "catLabel": "アクション",
+    "desc": "描いた絵が3Dモンスターになって戦う。",
+    "featured": false
+  },
+  {
+    "folder": "escape-room",
+    "name": "密室100",
+    "cat": "puzzle",
+    "catLabel": "パズル・脱出",
+    "desc": "100室すべてが別コンセプトの本格脱出ゲーム。",
+    "featured": true
+  },
+  {
+    "folder": "aqualux",
+    "name": "AQUALUX",
+    "cat": "puzzle",
+    "catLabel": "パズル・脱出",
+    "desc": "色の水をびんに仕分ける爽快ソートパズル。",
+    "featured": false
+  },
+  {
+    "folder": "quadle",
+    "name": "Quadle",
+    "cat": "puzzle",
+    "catLabel": "パズル・脱出",
+    "desc": "スワイプで数字を合体、2048を目指すパズル。",
+    "featured": false
+  },
+  {
+    "folder": "leadtheway",
+    "name": "Lead the Way",
+    "cat": "puzzle",
+    "catLabel": "パズル・脱出",
+    "desc": "えんぴつ描き風のやさしい矢印パズル。",
+    "featured": false
+  },
+  {
+    "folder": "mochiusa",
+    "name": "もちうさ うさぎ育成",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "自分だけのうさぎを育てる、癒しの育成ゲーム。",
+    "featured": true
+  },
+  {
+    "folder": "auto-factory",
+    "name": "オートファクトリー",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "採掘から自動化する本格工場づくり。",
+    "featured": false
+  },
+  {
+    "folder": "maou-inc",
+    "name": "魔王株式会社",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "瘴気で異世界を侵略する戦略シミュレーション。",
+    "featured": false
+  },
+  {
+    "folder": "horihori",
+    "name": "ほりほり魔王",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "地面を掘って魔物を育てる育成ディフェンス。",
+    "featured": false
+  },
+  {
+    "folder": "ojisan-farm",
+    "name": "おじさん畑",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "おじさんを育てて収穫する、のんびり栽培コレクション。",
+    "featured": false
+  },
+  {
+    "folder": "deck-hime",
+    "name": "デッキ姫 〜王国カード戦記〜",
+    "cat": "sim",
+    "catLabel": "育成・戦略",
+    "desc": "10枚から最強デッキを育てるデッキ構築カード。",
+    "featured": false
+  },
+  {
+    "folder": "wordwolf",
+    "name": "ワードウルフ - 嘘つきは誰だ？",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "スマホ1台で盛り上がる正体隠しトークゲーム。",
+    "featured": true
+  },
+  {
+    "folder": "insider",
+    "name": "インサイダーを暴け",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "答えを操る内通者を探すワード推理ゲーム。",
+    "featured": false
+  },
+  {
+    "folder": "bomb-defuse",
+    "name": "サイレント・ボム",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "声を頼りに時限爆弾を解除する協力ゲーム。",
+    "featured": false
+  },
+  {
+    "folder": "hoshizora",
+    "name": "ほしぞら探検隊",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "声を出さずに夜空を旅する協力トリックテイキング。",
+    "featured": false
+  },
+  {
+    "folder": "monosashi",
+    "name": "意図あわせ",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "数字を言わずに、ことばで小さい順にならべる協力ゲーム。",
+    "featured": false
+  },
+  {
+    "folder": "heads-up-nlh",
+    "name": "Heads-Up NLH ポーカー",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "スマホ1台を挟んで向かい合って遊ぶ対面ヘッズアップ・ポーカー。",
+    "featured": false
+  },
+  {
+    "folder": "drink-game",
+    "name": "のみゲー ルーレット",
+    "cat": "party",
+    "catLabel": "パーティー・推理",
+    "desc": "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。",
+    "featured": false
+  },
+  {
+    "folder": "money-clicker",
+    "name": "マネークリッカー",
+    "cat": "casual",
+    "catLabel": "カジュアル・放置",
+    "desc": "タップでお金の帝国を築く放置クリッカー。",
+    "featured": true
+  },
+  {
+    "folder": "shark-clicker",
+    "name": "Shark Clicker",
+    "cat": "casual",
+    "catLabel": "カジュアル・放置",
+    "desc": "タップで育てて海を制覇するサメ進化クリッカー。",
+    "featured": false
+  },
+  {
+    "folder": "god-gacha",
+    "name": "ゴッドガチャ∞",
+    "cat": "casual",
+    "catLabel": "カジュアル・放置",
+    "desc": "神々を引き集めるコレクションガチャ。",
+    "featured": false
+  },
+  {
+    "folder": "pill-asmr-ios",
+    "name": "おくすりプチプチ",
+    "cat": "casual",
+    "catLabel": "カジュアル・放置",
+    "desc": "薬のシートをプチッと押し出す気持ちいいASMR。",
+    "featured": false
+  },
+  {
+    "folder": "fuwamoko",
+    "name": "ふわもこ性格診断",
+    "cat": "casual",
+    "catLabel": "カジュアル・放置",
+    "desc": "15問・約1分。結果はふわもこ動物の16タイプ性格診断。",
+    "featured": true
+  },
+  {
+    "folder": "koyaku-counter",
+    "name": "ShareHistory 収支共有&子役カウント",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "パチスロ収支を仲間と共有＆子役カウント。",
+    "featured": false
+  },
+  {
+    "folder": "gyaku-hosuu",
+    "name": "逆歩数計",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "歩かなかった分が溜まっていく、逆転の発想の歩数計。",
+    "featured": false
+  },
+  {
+    "folder": "blindflow",
+    "name": "BlindFlow",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "アミューズメントポーカー店舗の会員向け公式アプリ。",
+    "featured": false
+  },
+  {
+    "folder": "gto-draw",
+    "name": "72＆バドゥーギ GTO道場",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。",
+    "featured": false
+  },
+  {
+    "folder": "ofc-solver",
+    "name": "チャイポEVアシスト",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "チャイポのEVを計算するアシストツール。",
+    "featured": false
+  },
+  {
+    "folder": "poker-shot-clock",
+    "name": "ポーカーショットクロック",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "ライブポーカーの持ち時間を管理するタイマー。",
+    "featured": false
+  },
+  {
+    "folder": "PokerEquityCalc",
+    "name": "Poker Equity Calc",
+    "cat": "utility",
+    "catLabel": "実用・ツール",
+    "desc": "NLHの勝率（エクイティ）を計算するツール。",
+    "featured": false
+  }
+]

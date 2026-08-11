@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>らっこアプリ 紹介動画ステージ</title>
+<style>
+  /* 縦(9:16=1080x1920)と横(16:9=1920x1080)の両対応。?ratio=wide で横になる。
+     アニメは全部 window.__render(t) で決まる＝1コマずつ撮っても崩れない。 */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { overflow:hidden; background:#fff7ef; }
+  body { font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif; color:#2a1c14; -webkit-font-smoothing:antialiased; }
+  #stage { position:relative; width:var(--W); height:var(--H); overflow:hidden; }
+
+  #bg { position:absolute; inset:0; background:linear-gradient(160deg,#fffaf4 0%,#ffeede 45%,#ffe0cc 100%); }
+  .blob { position:absolute; border-radius:50%; filter:blur(110px); }
+  #b1 { width:900px; height:900px; background:rgba(255,166,102,.55); }
+  #b2 { width:700px; height:700px; background:rgba(255,110,110,.34); }
+  #b3 { width:760px; height:760px; background:rgba(120,200,170,.26); }
+
+  /* キャプション */
+  #cap { position:absolute; left:60px; right:60px; top:var(--capTop); text-align:center; }
+  #kicker { display:inline-block; padding:10px 28px; border-radius:999px;
+    background:#2a1c14; color:#ffeede; font-size:var(--kick); font-weight:800; letter-spacing:.04em; }
+  #title { margin-top:20px; font-size:var(--titleSize); font-weight:800; line-height:1.22; letter-spacing:-.02em; }
+  #title em { font-style:normal; color:#c0392b; }
+  .tline { display:block; }
+  #sub { margin-top:16px; font-size:var(--subSize); font-weight:700; color:#6b5346; line-height:1.5; }
+
+  /* アイコンの壁 */
+  #wall { position:absolute; left:50%; top:var(--wallTop); transform:translateX(-50%);
+    display:grid; grid-template-columns:repeat(var(--wallCols),1fr); gap:var(--wallGap); width:var(--wallW); }
+  #wall .cell { aspect-ratio:1; }
+  #wall img { width:100%; height:100%; border-radius:24%; box-shadow:0 10px 26px rgba(120,60,30,.20); display:block; }
+  #counter { position:absolute; left:0; right:0; top:var(--counterTop); text-align:center;
+    font-size:var(--counter); font-weight:900; color:#c0392b; letter-spacing:-.02em; }
+  #counter span { font-size:.42em; color:#6b5346; margin-left:.2em; }
+
+  /* カテゴリ紹介 */
+  #cats { position:absolute; left:50%; top:var(--catsTop); transform:translateX(-50%);
+    display:grid; grid-template-columns:repeat(var(--catCols),1fr); gap:var(--catGap); width:var(--catW); }
+  #cats .c { text-align:center; }
+  #cats img { width:var(--catIcon); height:var(--catIcon); border-radius:24%;
+    box-shadow:0 14px 32px rgba(120,60,30,.22); display:block; margin:0 auto; }
+  #cats .n { margin-top:12px; font-size:var(--catName); font-weight:800; line-height:1.3; color:#3b2a20; }
+
+  /* 端末（サイトの画面） */
+  #phone { position:absolute; left:50%; top:var(--phoneTop); width:var(--phoneW); margin-left:calc(var(--phoneW) / -2);
+    border-radius:52px; background:linear-gradient(160deg,#efe2d6,#c9b6a6 45%,#e6d6c8);
+    padding:12px; box-shadow:0 40px 90px rgba(120,60,30,.35), 0 0 0 2px rgba(255,255,255,.5) inset; }
+  #screen { position:relative; width:100%; border-radius:44px; overflow:hidden; background:#fff; }
+  #screen img { width:100%; display:block; }
+
+  /* ヒーロー（フック / CTA） */
+  #hero { position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+  #hero .wrap { width:var(--heroW); padding:0 60px; text-align:center; }
+  #hero .icon { width:var(--heroIcon); height:var(--heroIcon); border-radius:26%; margin:0 auto 40px; display:block;
+    box-shadow:0 26px 64px rgba(120,60,30,.34); }
+  #hero .h1 { font-size:var(--heroH1); font-weight:800; line-height:1.2; letter-spacing:-.02em; }
+  #hero .h1 em { font-style:normal; color:#c0392b; }
+  #hero .h2 { margin-top:26px; font-size:var(--heroH2); font-weight:700; color:#6b5346; line-height:1.5; }
+  #hero .badge { display:inline-block; margin-top:38px; padding:18px 44px; border-radius:999px;
+    background:#c0392b; color:#fff; font-size:var(--heroBadge); font-weight:900; }
+  #hero .note { margin-top:22px; font-size:var(--heroNote); font-weight:800; color:#6b5346; }
+
+  #wm { position:absolute; left:0; right:0; bottom:var(--wmBottom); display:flex; align-items:center; justify-content:center; gap:14px;
+    font-size:var(--wmSize); font-weight:800; color:rgba(60,40,28,.5); }
+  #wm img { width:calc(var(--wmSize) * 1.7); height:calc(var(--wmSize) * 1.7); border-radius:26%; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div class="blob" id="b1"></div>
+  <div class="blob" id="b2"></div>
+  <div class="blob" id="b3"></div>
+
+  <div id="cap"><div id="kicker"></div><div id="title"></div><div id="sub"></div></div>
+  <div id="wall"></div>
+  <div id="counter"></div>
+  <div id="cats"></div>
+  <div id="phone"><div id="screen"><img id="shot" src="shots/site_top.png" alt=""></div></div>
+  <div id="hero"><div class="wrap"></div></div>
+  <div id="wm"><img src="/assets/brand/icon-1024.png" alt="">らっこアプリ</div>
+</div>
+
+<script>
+const WIDE = new URLSearchParams(location.search).get('ratio') === 'wide';
+const V = WIDE ? {
+  W:'1920px', H:'1080px', capTop:'70px', kick:'30px', titleSize:'70px', subSize:'31px',
+  wallCols:10, wallGap:'20px', wallW:'1200px', wallTop:'385px', counterTop:'880px', counter:'80px',
+  catCols:6, catGap:'26px', catW:'1620px', catsTop:'450px', catIcon:'200px', catName:'23px',
+  phoneW:'330px', phoneTop:'300px', heroW:'1500px', heroIcon:'230px', heroH1:'84px', heroH2:'38px',
+  heroBadge:'36px', heroNote:'30px', wmBottom:'40px', wmSize:'26px',
+} : {
+  W:'1080px', H:'1920px', capTop:'130px', kick:'30px', titleSize:'76px', subSize:'33px',
+  wallCols:6, wallGap:'24px', wallW:'900px', wallTop:'580px', counterTop:'1650px', counter:'104px',
+  catCols:3, catGap:'44px', catW:'940px', catsTop:'760px', catIcon:'268px', catName:'28px',
+  phoneW:'470px', phoneTop:'620px', heroW:'980px', heroIcon:'260px', heroH1:'86px', heroH2:'38px',
+  heroBadge:'38px', heroNote:'31px', wmBottom:'74px', wmSize:'27px',
+};
+for (const k in V) document.documentElement.style.setProperty('--' + k, V[k]);
+document.documentElement.style.setProperty('--W', V.W);
+document.documentElement.style.setProperty('--H', V.H);
+document.body.style.width = V.W; document.body.style.height = V.H;
+
+const E = { out: x => 1 - Math.pow(1 - x, 3), inOut: x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2 };
+const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
+const seg = (t, a, b) => clamp01((t - a) / (b - a));
+const $ = q => document.querySelector(q);
+
+let APPS = [];
+const pick = (cats, names) => APPS.filter(a => cats.includes(a.cat))
+  .sort((x, y) => names.indexOf(x.name) - names.indexOf(y.name)).slice(0, WIDE ? 6 : 6);
+
+/* ---- シーン ---- */
+let SCENES = [];
+function buildScenes() {
+  const G = (cats, n) => APPS.filter(a => cats.includes(a.cat)).slice(0, n);
+  SCENES = [
+    { id:'hook', dur:3.2, kind:'hero',
+      hero:`<img class="icon" src="/assets/brand/icon-1024.png" alt="">
+            <div class="h1">個人開発で<br>iPhoneアプリ <em>${APPS.length}本</em>。</div>
+            <div class="h2">ゲームも、実用ツールも。<br>ぜんぶ無料でダウンロードできます。</div>` },
+
+    { id:'wall', dur:6.0, kind:'wall',
+      kicker:'らっこアプリ', title:'${n}本、<em>ぜんぶひとり</em>で。', sub:'App Store で配信中' },
+
+    { id:'online', dur:4.0, kind:'cats', cats:['online'],
+      kicker:'オンライン対戦', title:'知らない誰かと<br><em>すぐ対戦</em>', sub:'穴喰い・大蛇・お絵かき・OFCポーカー' },
+
+    { id:'game', dur:4.0, kind:'cats', cats:['action','puzzle'],
+      kicker:'アクション・パズル', title:'ひまな5分を<br><em>つぶす</em>ゲーム', sub:'こする・走る・脱出する・そろえる' },
+
+    { id:'sim', dur:4.0, kind:'cats', cats:['sim','party','casual'],
+      kicker:'育成・パーティー', title:'ひとりでも<br><em>みんな</em>でも', sub:'育成・放置・人狼系のワイワイ系まで' },
+
+    { id:'tool', dur:4.0, kind:'cats', cats:['utility'],
+      kicker:'実用・ツール', title:'記録も計算も<br><em>アプリまかせ</em>', sub:'収支管理・歩数・ポーカーの計算ツール' },
+
+    { id:'site', dur:4.4, kind:'site',
+      kicker:'一覧サイト', title:'全部まとめて<br><em>rakkoapps.com</em>', sub:'カテゴリから探して、そのままApp Storeへ' },
+
+    { id:'cta', dur:4.0, kind:'hero',
+      hero:`<img class="icon" src="/assets/brand/icon-1024.png" alt="">
+            <div class="h1"><em>らっこアプリ</em></div>
+            <div class="h2">新作を出すたびに、ここで紹介します。</div>
+            <div class="badge">チャンネル登録 @rakkoapp</div>
+            <div class="note">アプリ一覧 → rakkoapps.com</div>` },
+  ];
+  SCENES.forEach(s => { if (s.cats) s.list = G(s.cats, 6); });
+  let acc = 0;
+  for (const s of SCENES) { s.start = acc; acc += s.dur; s.end = acc; }
+  window.__TOTAL = acc;
+  window.__CUES = {
+    taps: [],
+    switches: SCENES.map(s => s.start).filter(x => x > 0),
+    pops: SCENES.filter(s => s.kind === 'wall' || s.kind === 'cats')
+      .flatMap(s => s.kind === 'wall'
+        ? APPS.map((_, i) => s.start + 0.55 + i * 0.085).filter((_, i) => i % 4 === 0)
+        : s.list.map((_, i) => s.start + 0.5 + i * 0.12)),
+    cta: (SCENES.find(s => s.id === 'cta') || {}).start ?? null,
+  };
+}
+
+/* ---- 描画 ---- */
+let cur = null;
+const wall = $('#wall'), cats = $('#cats'), phone = $('#phone'), hero = $('#hero'),
+      heroWrap = $('#hero .wrap'), cap = $('#cap'), kicker = $('#kicker'),
+      title = $('#title'), sub = $('#sub'), counter = $('#counter');
+
+function setCaption(s) {
+  kicker.innerHTML = s.kicker || '';
+  const t = (s.title || '').replace('${n}', APPS.length);
+  title.innerHTML = t.split('<br>').map(l => `<span class="tline">${l}</span>`).join('');
+  sub.innerHTML = s.sub || '';
+}
+
+function render(t) {
+  t = Math.max(0, Math.min(window.__TOTAL - 0.001, t));
+  const s = SCENES.find(x => t >= x.start && t < x.end) || SCENES[SCENES.length - 1];
+  const u = t - s.start;
+  const isHero = s.kind === 'hero';
+
+  if (cur !== s.id) {
+    cur = s.id;
+    hero.style.display = isHero ? 'flex' : 'none';
+    cap.style.display = isHero ? 'none' : 'block';
+    wall.style.display = s.kind === 'wall' ? 'grid' : 'none';
+    counter.style.display = s.kind === 'wall' ? 'block' : 'none';
+    cats.style.display = s.kind === 'cats' ? 'grid' : 'none';
+    phone.style.display = s.kind === 'site' ? 'block' : 'none';
+    $('#wm').style.display = isHero ? 'none' : 'flex';
+    if (isHero) heroWrap.innerHTML = s.hero; else setCaption(s);
+    if (s.kind === 'cats') {
+      cats.innerHTML = s.list.map(a =>
+        `<div class="c"><img src="/assets/icons/${a.folder}.png" alt=""><div class="n">${a.name.replace(/[ 　].*$/, '')}</div></div>`).join('');
+    }
+  }
+
+  $('#b1').style.transform = `translate(${-120 + Math.sin(t*0.4)*130}px, ${-160 + Math.cos(t*0.31)*90}px)`;
+  $('#b2').style.transform = `translate(${(WIDE?1400:640) + Math.cos(t*0.27)*120}px, ${(WIDE?620:1420) + Math.sin(t*0.35)*110}px)`;
+  $('#b3').style.transform = `translate(${(WIDE?700:-120) + Math.sin(t*0.22)*100}px, ${(WIDE?300:800) + Math.cos(t*0.3)*90}px)`;
+
+  const inA = E.out(seg(u, 0, 0.5));
+  const outA = 1 - E.out(seg(u, s.dur - 0.3, s.dur));
+
+  if (isHero) {
+    heroWrap.style.opacity = inA * outA;
+    heroWrap.style.transform = `translateY(${(1-inA)*44 - (1-outA)*22}px) scale(${0.97 + inA*0.03})`;
+    const ic = heroWrap.querySelector('.icon');
+    if (ic) ic.style.transform = `translateY(${Math.sin(u*1.7)*7}px) rotate(${Math.sin(u*0.9)*2}deg)`;
+    const bd = heroWrap.querySelector('.badge');
+    if (bd) bd.style.transform = `scale(${1 + Math.sin(Math.max(0,u-0.6)*4.2)*0.035})`;
+    return;
+  }
+
+  /* キャプション */
+  const kA = E.out(seg(u, 0.04, 0.46));
+  kicker.style.opacity = kA * outA;
+  kicker.style.transform = `translateY(${(1-kA)*-16}px)`;
+  title.querySelectorAll('.tline').forEach((el, i) => {
+    const a = E.out(seg(u, 0.14 + i*0.1, 0.62 + i*0.1));
+    el.style.opacity = a * outA;
+    el.style.transform = `translateY(${(1-a)*24}px)`;
+  });
+  const sA = E.out(seg(u, 0.4, 0.9));
+  sub.style.opacity = sA * outA;
+  sub.style.transform = `translateY(${(1-sA)*16}px)`;
+
+  if (s.kind === 'wall') {
+    let shown = 0;
+    [...wall.children].forEach((cell, i) => {
+      const at = 0.55 + i * 0.085;
+      const a = E.out(seg(u, at, at + 0.42));
+      if (u >= at) shown++;
+      cell.style.opacity = a * outA;
+      cell.style.transform = `scale(${0.55 + a*0.45}) rotate(${(1-a) * (i % 2 ? 8 : -8)}deg)`;
+    });
+    counter.style.opacity = outA;
+    counter.innerHTML = shown + '<span>本</span>';
+    counter.style.transform = `scale(${1 + (shown ? 0.03 * Math.max(0, 1 - ((u - (0.55 + (shown-1)*0.085)) / 0.2)) : 0)})`;
+    return;
+  }
+
+  if (s.kind === 'cats') {
+    [...cats.children].forEach((c, i) => {
+      const at = 0.5 + i * 0.12;
+      const a = E.out(seg(u, at, at + 0.5));
+      c.style.opacity = a * outA;
+      c.style.transform = `translateY(${(1-a)*40}px) scale(${0.85 + a*0.15})`;
+    });
+    return;
+  }
+
+  if (s.kind === 'site') {
+    const drift = -16 * E.inOut(clamp01(u / s.dur));
+    phone.style.opacity = inA * outA;
+    phone.style.transform = `translateY(${(1-inA)*60 + drift - (1-outA)*20}px) scale(${0.96 + inA*0.04})`;
+    const pan = 120 * E.inOut(clamp01((u - 0.5) / (s.dur - 0.8)));
+    $('#shot').style.transform = `translateY(${-pan}px)`;
+  }
+}
+window.__render = render;
+
+window.__ready = false;
+(async () => {
+  APPS = await fetch('/promo/apps.json').then(r => r.json());
+  wall.innerHTML = APPS.map(a => `<div class="cell"><img src="/assets/icons/${a.folder}.png" alt=""></div>`).join('');
+  buildScenes();
+  await document.fonts.ready;
+  await Promise.all([...document.images].map(im => im.decode().catch(() => {})));
+  render(0);
+  window.__ready = true;
+})();
+</script>
+</body>
+</html>

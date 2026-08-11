@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>らっこアプリ YouTube バナー</title>
+<style>
+  /* YouTube チャンネルアート = 2048x1152。
+     どの端末でも必ず見える「セーフエリア」は中央 1235x338 なので、文字は全部そこに収める。
+     外側（PCでだけ見える帯）にはアプリアイコンを流して賑やかしにする。 */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:2048px; height:1152px; overflow:hidden; }
+  body { font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif; color:#2a1c14;
+    background:linear-gradient(135deg,#fff6ec 0%,#ffe7d3 42%,#ffd9c2 70%,#ffcbb4 100%); }
+  #wrap { position:relative; width:2048px; height:1152px; }
+  .glow { position:absolute; border-radius:50%; filter:blur(120px); }
+  #g1 { width:900px; height:900px; left:-160px; top:-220px; background:rgba(255,168,110,.55); }
+  #g2 { width:760px; height:760px; right:-120px; bottom:-240px; background:rgba(255,120,110,.38); }
+
+  /* 外側の帯に流すアプリアイコン */
+  #strip { position:absolute; left:0; right:0; top:96px; display:flex; gap:26px; padding:0 40px; opacity:.55; }
+  #strip2 { position:absolute; left:0; right:0; bottom:96px; display:flex; gap:26px; padding:0 40px; opacity:.55; }
+  .ic { width:112px; height:112px; border-radius:26px; box-shadow:0 10px 24px rgba(120,60,30,.18); flex:none; }
+
+  /* セーフエリア（中央 1235x338） */
+  #safe { position:absolute; left:50%; top:50%; width:1235px; height:338px; margin:-169px 0 0 -617px;
+    display:flex; align-items:center; gap:44px; }
+  #safe .otter { width:270px; height:270px; border-radius:64px; flex:none;
+    box-shadow:0 20px 50px rgba(120,60,30,.28), 0 0 0 6px rgba(255,255,255,.75); }
+  .t1 { font-size:96px; font-weight:800; letter-spacing:-.02em; line-height:1.05; }
+  .t2 { margin-top:16px; font-size:40px; font-weight:800; color:#c0392b; }
+  .t3 { margin-top:14px; font-size:27px; white-space:nowrap; font-weight:700; color:#6b5346; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="glow" id="g1"></div>
+  <div class="glow" id="g2"></div>
+  <div id="strip"></div>
+  <div id="strip2"></div>
+  <div id="safe">
+    <img class="otter" src="/assets/brand/icon-1024.png" alt="">
+    <div>
+      <div class="t1">らっこアプリ</div>
+      <div class="t2">個人開発の iPhone アプリを 39本 公開中</div>
+      <div class="t3">新作の紹介ショートを毎回ここに投稿　|　rakkoapps.com</div>
+    </div>
+  </div>
+</div>
+<script>
+  fetch('/promo/apps.json').then(r => r.json()).then(apps => {
+    const put = (el, list) => list.forEach(a => {
+      const im = document.createElement('img');
+      im.className = 'ic'; im.src = '/assets/icons/' + a.folder + '.png';
+      el.appendChild(im);
+    });
+    put(document.getElementById('strip'), apps.slice(0, 15));
+    put(document.getElementById('strip2'), apps.slice(15, 30));
+    window.__ready = true;
+  });
+</script>
+</body>
+</html>
