@@ -47,6 +47,7 @@ export const apps = [
   { folder: "horihori",        name: "ほりほり魔王",             id: "6784198043", cat: "sim",     game: true,  featured: false, desc: "地面を掘って魔物を育てる育成ディフェンス。", kw: "掘る 魔王 ディフェンス 育成" },
   { folder: "ojisan-farm",     name: "おじさん畑",               id: "6792156972", cat: "sim",     game: true,  featured: false, desc: "おじさんを育てて収穫する、のんびり栽培コレクション。", kw: "栽培 収穫 おじさん コレクション のんびり" },
   { folder: "deck-hime",       name: "デッキ姫 〜王国カード戦記〜", id: "6787432448", cat: "sim",  game: true,  featured: false, desc: "10枚から最強デッキを育てるデッキ構築カード。", kw: "デッキ構築 カード deckbuilding 王国" },
+  { folder: "create-rpg",      name: "CreateRPG",                id: "6785066134", cat: "sim",     game: true,  featured: false, desc: "マップもイベントも自分で作れる、RPG作成ツール。", kw: "RPG 作成 自作 ゲーム制作 マップ イベント" },
 
   // ---- パーティー・推理 ----
   { folder: "wordwolf",        name: "ワードウルフ - 嘘つきは誰だ？", id: "6781790636", cat: "party", game: true, featured: true, desc: "スマホ1台で盛り上がる正体隠しトークゲーム。", kw: "人狼 word wolf 正体隠し パーティー" },
@@ -55,6 +56,8 @@ export const apps = [
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
   { folder: "monosashi",       name: "意図あわせ",               id: "6794969956", cat: "party",   game: true,  featured: false, desc: "数字を言わずに、ことばで小さい順にならべる協力ゲーム。", kw: "協力 数字 パーティー 会話 飲み会 価値観" },
   { folder: "nanda-koitsu",    name: "なんだこいつは！",         id: "6785054359", cat: "party",   game: true,  featured: false, desc: "謎のモンスターに名前をつけ、また出たら早押しで総取り。1台を囲む記憶ゲーム。", kw: "記憶 早押し カード パーティー 大人数 飲み会 家族 オフライン" },
+  { folder: "renai-dice",      name: "恋愛話題サイコロ",         id: "6794709695", cat: "party",   game: false, featured: false, desc: "振るだけで恋バナのお題が決まる、会話のきっかけアプリ。", kw: "恋愛 恋バナ 話題 お題 デート カップル 会話" },
+  { folder: "wadai-dice",      name: "話題サイコロ",             id: "6798408636", cat: "party",   game: false, featured: false, desc: "相手に合わせて雑談のお題を出す、会話が続くサイコロ。", kw: "話題 雑談 会話 お題 職場 初対面 コミュニケーション" },
   { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を挟んで向かい合って遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
   { folder: "drink-game",      name: "のみゲー ルーレット",      play: "/play/drink-game/", cat: "party", game: true, featured: false, desc: "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。", kw: "飲みゲー のみゲー ルーレット 罰ゲーム 飲み会 合コン 二次会 王様ゲーム" },
 
@@ -68,6 +71,10 @@ export const apps = [
   // ---- 実用・ツール ----
   { folder: "koyaku-counter",  name: "ShareHistory 収支共有&子役カウント", id: "6790613177", cat: "utility", game: false, featured: false, desc: "パチスロ収支を仲間と共有＆子役カウント。", kw: "パチスロ 収支 子役 カウント 共有" },
   { folder: "gyaku-hosuu",     name: "逆歩数計",                 id: "6794137697", cat: "utility", game: false, featured: false, desc: "歩かなかった分が溜まっていく、逆転の発想の歩数計。", kw: "歩数計 万歩計 ウォーキング 運動不足 健康" },
+  { folder: "eigo-zume",       name: "英語づめこみ",             id: "6800135827", cat: "utility", game: false, featured: true,  desc: "英語のあとに日本語。耳だけで覚える聞き流し英単語・英会話。", kw: "英語 英単語 英会話 リスニング 聞き流し 学習 TOEIC" },
+  { folder: "koori-toke",      name: "こおりがとけるまで",       id: "6798429736", cat: "utility", game: false, featured: false, desc: "氷がとけるまで集中する、育成つきの勉強タイマー。", kw: "勉強 タイマー 集中 自習 育成 ポモドーロ" },
+  { folder: "shizuka-reminder",name: "静音リマインダー",         id: "6794036987", cat: "utility", game: false, featured: false, desc: "音を鳴らさず静かに知らせる、通知だけのリマインダー。", kw: "リマインダー 通知 タスク 無音 静か 予定" },
+  { folder: "icm-calc",        name: "ICM計算機",                id: "6797420824", cat: "utility", game: false, featured: false, desc: "ポーカーMTTの賞金期待値・ディール金額を計算するツール。", kw: "ICM ポーカー MTT ディール 賞金 バウンティ 計算" },
   { folder: "blindflow",       name: "BlindFlow",                id: "6786809043", cat: "utility", game: false, featured: false, desc: "アミューズメントポーカー店舗の会員向け公式アプリ。", kw: "会員 ポーカー 店舗 amusement" },
   { folder: "gto-draw",        name: "72＆バドゥーギ GTO道場",   id: "6787277262", cat: "utility", game: false, featured: false, desc: "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。", kw: "GTO ポーカー ドロー badugi 学習" },
   { folder: "ofc-solver",      name: "チャイポEVアシスト",       id: "6783852074", cat: "utility", game: false, featured: false, desc: "チャイポのEVを計算するアシストツール。", kw: "OFC EV solver チャイポ 計算" },
