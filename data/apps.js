@@ -72,6 +72,7 @@ export const apps = [
   { folder: "koyaku-counter",  name: "ShareHistory 収支共有&子役カウント", id: "6790613177", cat: "utility", game: false, featured: false, desc: "パチスロ収支を仲間と共有＆子役カウント。", kw: "パチスロ 収支 子役 カウント 共有" },
   { folder: "gyaku-hosuu",     name: "逆歩数計",                 id: "6794137697", cat: "utility", game: false, featured: false, desc: "歩かなかった分が溜まっていく、逆転の発想の歩数計。", kw: "歩数計 万歩計 ウォーキング 運動不足 健康" },
   { folder: "eigo-zume",       name: "英語づめこみ",             id: "6800135827", cat: "utility", game: false, featured: true,  desc: "英語のあとに日本語。耳だけで覚える聞き流し英単語・英会話。", kw: "英語 英単語 英会話 リスニング 聞き流し 学習 TOEIC" },
+  { folder: "nagara-zatsugaku",name: "ながら雑学",               id: "6800154155", cat: "utility", game: false, featured: true,  desc: "1000話の雑学を耳で聞き流す、読み上げトリビア。", kw: "雑学 トリビア 聞き流し 読み上げ 音声 豆知識 寝る前" },
   { folder: "koori-toke",      name: "こおりがとけるまで",       id: "6798429736", cat: "utility", game: false, featured: false, desc: "氷がとけるまで集中する、育成つきの勉強タイマー。", kw: "勉強 タイマー 集中 自習 育成 ポモドーロ" },
   { folder: "shizuka-reminder",name: "静音リマインダー",         id: "6794036987", cat: "utility", game: false, featured: false, desc: "音を鳴らさず静かに知らせる、通知だけのリマインダー。", kw: "リマインダー 通知 タスク 無音 静か 予定" },
   { folder: "icm-calc",        name: "ICM計算機",                id: "6797420824", cat: "utility", game: false, featured: false, desc: "ポーカーMTTの賞金期待値・ディール金額を計算するツール。", kw: "ICM ポーカー MTT ディール 賞金 バウンティ 計算" },
