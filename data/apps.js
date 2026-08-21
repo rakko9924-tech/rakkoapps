@@ -27,6 +27,8 @@ export const apps = [
   { folder: "super-tap-battle",name: "スーパータップ対戦",       id: "6784173258", cat: "online",  game: true,  featured: false, desc: "現れるボールを割るだけ。超シンプル早押し対戦。", kw: "タップ 早押し reaction" },
   { folder: "issen",           name: "ISSEN 一閃",               id: "6781177113", cat: "online",  game: true,  featured: false, desc: "コンマ数秒の反応速度を競う早撃ちオンライン対戦。", kw: "居合 早撃ち reaction 反射" },
   { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: false, desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
+  { folder: "aun-poker",       name: "あうんポーカー",           id: "6800081243", cat: "online",  game: true,  featured: false, desc: "話さず気持ちを合わせて役を作る、賭けなしの協力ポーカー。", kw: "ポーカー 協力 オンライン 無言 チーム パーティー" },
+  { folder: "flash-shinkei",   name: "フラッシュ神経衰弱",       id: "6800191287", cat: "online",  game: true,  featured: false, desc: "順番なしで同時にめくる、リアルタイム神経衰弱のオンライン対戦。", kw: "神経衰弱 トランプ 記憶 対戦 オンライン ランキング" },
 
   // ---- アクション ----
   { folder: "pika-tensei",     name: "ピカピカ転生",             id: "6793157994", cat: "action",  game: true,  featured: true,  desc: "指でこする物理演算のおそうじ×転生ゲーム。", kw: "掃除 そうじ こすり ASMR 転生" },
@@ -64,6 +66,7 @@ export const apps = [
   // ---- カジュアル・放置 ----
   { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: true,  desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },
   { folder: "shark-clicker",   name: "Shark Clicker",            id: "6791277136", cat: "casual",  game: true,  featured: false, desc: "タップで育てて海を制覇するサメ進化クリッカー。", kw: "サメ shark clicker 進化 放置" },
+  { folder: "speed-trump",     name: "スピード（トランプ）",     id: "6800083294", cat: "casual",  game: true,  featured: false, desc: "トランプの定番「スピード」をCPU4段階でひとり遊び。", kw: "スピード トランプ カード ひとり CPU 暇つぶし" },
   { folder: "god-gacha",       name: "ゴッドガチャ∞",            id: "6787273550", cat: "casual",  game: true,  featured: false, desc: "神々を引き集めるコレクションガチャ。", kw: "ガチャ gacha コレクション 神" },
   { folder: "pill-asmr-ios",   name: "おくすりプチプチ",         id: "6783921551", cat: "casual",  game: false, featured: false, desc: "薬のシートをプチッと押し出す気持ちいいASMR。", kw: "ASMR プチプチ 暇つぶし 薬 pop" },
   { folder: "fuwamoko",        name: "ふわもこ性格診断",         id: "6796685127", cat: "casual",  game: false, featured: true,  desc: "15問・約1分。結果はふわもこ動物の16タイプ性格診断。", kw: "性格診断 診断 16タイプ 動物 心理テスト 無料" },
