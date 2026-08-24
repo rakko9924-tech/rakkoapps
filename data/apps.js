@@ -29,6 +29,7 @@ export const apps = [
   { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: false, desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
   { folder: "aun-poker",       name: "あうんポーカー",           id: "6800081243", cat: "online",  game: true,  featured: false, desc: "話さず気持ちを合わせて役を作る、賭けなしの協力ポーカー。", kw: "ポーカー 協力 オンライン 無言 チーム パーティー" },
   { folder: "flash-shinkei",   name: "フラッシュ神経衰弱",       id: "6800191287", cat: "online",  game: true,  featured: false, desc: "順番なしで同時にめくる、リアルタイム神経衰弱のオンライン対戦。", kw: "神経衰弱 トランプ 記憶 対戦 オンライン ランキング" },
+  { folder: "menjin",          name: "麺神アリーナ",             id: "6801415984", cat: "online",  game: true,  featured: false, desc: "箸で麺を振り回してぶつけ合う、3D物理のオンライン対戦。", kw: "麺 ラーメン 3D 物理 対戦 オンライン ガチャ ランキング" },
 
   // ---- アクション ----
   { folder: "pika-tensei",     name: "ピカピカ転生",             id: "6793157994", cat: "action",  game: true,  featured: true,  desc: "指でこする物理演算のおそうじ×転生ゲーム。", kw: "掃除 そうじ こすり ASMR 転生" },
