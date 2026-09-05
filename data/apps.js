@@ -85,5 +85,6 @@ export const apps = [
   { folder: "gto-draw",        name: "72＆バドゥーギ GTO道場",   id: "6787277262", cat: "utility", game: false, featured: false, desc: "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。", kw: "GTO ポーカー ドロー badugi 学習" },
   { folder: "ofc-solver",      name: "チャイポEVアシスト",       id: "6783852074", cat: "utility", game: false, featured: false, desc: "チャイポのEVを計算するアシストツール。", kw: "OFC EV solver チャイポ 計算" },
   { folder: "poker-shot-clock",name: "ポーカーショットクロック", id: "6787194138", cat: "utility", game: false, featured: false, desc: "ライブポーカーの持ち時間を管理するタイマー。", kw: "ポーカー タイマー shot clock 時間" },
+  { folder: "split-browser",   name: "ナラベル｜分割ブラウザ",   id: "6806876394", cat: "utility", game: false, featured: true,  desc: "最大4画面を同時にひらける分割ブラウザ。仕切りをドラッグして大きさ自在。", kw: "分割ブラウザ 画面分割 2画面 マルチウィンドウ 見比べ ながら見 ブラウザ" },
   { folder: "PokerEquityCalc", name: "Poker Equity Calc",        id: "6781158293", cat: "utility", game: false, featured: false, desc: "NLHの勝率（エクイティ）を計算するツール。", kw: "equity 勝率 poker calc 計算" },
 ];
