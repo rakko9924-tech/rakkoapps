@@ -43,8 +43,11 @@ export const apps = [
   { folder: "aqualux",         name: "AQUALUX",                  id: "6780931848", cat: "puzzle",  game: true,  featured: false, desc: "色の水をびんに仕分ける爽快ソートパズル。", kw: "water sort 水 仕分け パズル" },
   { folder: "quadle",          name: "Quadle",                   id: "6780867060", cat: "puzzle",  game: true,  featured: false, desc: "スワイプで数字を合体、2048を目指すパズル。", kw: "2048 merge 数字 マージ" },
   { folder: "leadtheway",      name: "Lead the Way",             id: "6780805979", cat: "puzzle",  game: true,  featured: false, desc: "えんぴつ描き風のやさしい矢印パズル。", kw: "矢印 arrow 道 パズル" },
+  { folder: "aratame",         name: "あらため｜関所の書類審査", id: "6808353202", cat: "puzzle",  game: true,  featured: true,  desc: "壁の触書と旅人の手形を照らし、通すか戻すか捕らえるかを決める関所の十日間。", kw: "審査 判定 書類 関所 手形 和風 江戸 時代劇 ドット絵 レトロ 推理 観察 間違い探し 選択 物語 結末" },
 
   // ---- 育成・戦略 ----
+  { folder: "mochidashi",      name: "もちだし｜60秒サバイバル", id: "6808693825", cat: "sim",     game: true,  featured: true,  desc: "閉じる基地から六十秒で担ぎ出し、運び込んだものだけで二十日を越冬する。結末は16。", kw: "サバイバル 生存 防災 備蓄 選択 分岐 マルチエンディング 結末 ドット絵 レトロ シミュレーション 越冬 雪山 脱出 ノベル" },
+  { folder: "tonosama-kessai", name: "殿さまの決断",             id: "6808563905", cat: "sim",     game: true,  featured: true,  desc: "右で承認、左で却下。齢十七の若殿として戦国の小国を治めるスワイプ選択もの。", kw: "戦国 武将 城 殿様 シミュレーション 選択 分岐 アドベンチャー ノベル 物語 スワイプ 歴史 オフライン" },
   { folder: "mochiusa",        name: "もちうさ うさぎ育成",      id: "6784304463", cat: "sim",     game: true,  featured: true,  desc: "自分だけのうさぎを育てる、癒しの育成ゲーム。", kw: "うさぎ 育成 癒し かわいい raise" },
   { folder: "auto-factory",    name: "オートファクトリー",       id: "6785677430", cat: "sim",     game: true,  featured: false, desc: "採掘から自動化する本格工場づくり。", kw: "工場 自動化 生産 ベルト 資源" },
   { folder: "maou-inc",        name: "魔王株式会社",             id: "6784162519", cat: "sim",     game: true,  featured: false, desc: "瘴気で異世界を侵略する戦略シミュレーション。", kw: "魔王 侵略 戦略 シミュレーション 異世界" },
