@@ -29,7 +29,7 @@ export const apps = [
   { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: false, desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
   { folder: "aun-poker",       name: "あうんポーカー",           id: "6800081243", cat: "online",  game: true,  featured: false, desc: "話さず気持ちを合わせて役を作る、賭けなしの協力ポーカー。", kw: "ポーカー 協力 オンライン 無言 チーム パーティー" },
   { folder: "flash-shinkei",   name: "フラッシュ神経衰弱",       id: "6800191287", cat: "online",  game: true,  featured: false, desc: "順番なしで同時にめくる、リアルタイム神経衰弱のオンライン対戦。", kw: "神経衰弱 トランプ 記憶 対戦 オンライン ランキング" },
-  { folder: "menjin",          name: "麺神アリーナ",             id: "6801415984", cat: "online",  game: true,  featured: false, desc: "箸で麺を振り回してぶつけ合う、3D物理のオンライン対戦。", kw: "麺 ラーメン 3D 物理 対戦 オンライン ガチャ ランキング" },
+  { folder: "menjin",          name: "麺神アリーナ",             id: "6801415984", cat: "online",  game: true,  featured: false, desc: "狙って離すと麺が突き出す、3D物理のオンライン対戦。箸は動かない。", kw: "麺 ラーメン 3D 物理 対戦 オンライン ガチャ ランキング" },
   { folder: "tamen-shogi",     name: "多面将棋",                 id: "6804466843", cat: "online",  game: true,  featured: false, desc: "最大4局を同時に打てるオンライン将棋。待ち時間なく指し続けられる。", kw: "将棋 shogi 多面指し オンライン 対局 レート 棋譜" },
 
   // ---- アクション ----
