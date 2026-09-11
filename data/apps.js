@@ -44,6 +44,7 @@ export const apps = [
   { folder: "quadle",          name: "Quadle",                   id: "6780867060", cat: "puzzle",  game: true,  featured: false, desc: "スワイプで数字を合体、2048を目指すパズル。", kw: "2048 merge 数字 マージ" },
   { folder: "leadtheway",      name: "Lead the Way",             id: "6780805979", cat: "puzzle",  game: true,  featured: false, desc: "えんぴつ描き風のやさしい矢印パズル。", kw: "矢印 arrow 道 パズル" },
   { folder: "aratame",         name: "あらため｜関所の書類審査", id: "6808353202", cat: "puzzle",  game: true,  featured: true,  desc: "壁の触書と旅人の手形を照らし、通すか戻すか捕らえるかを決める関所の十日間。", kw: "審査 判定 書類 関所 手形 和風 江戸 時代劇 ドット絵 レトロ 推理 観察 間違い探し 選択 物語 結末" },
+  { folder: "osuna",           name: "押すなよ 深夜の気象管制室", id: "6808355388", cat: "puzzle", game: true,  featured: true,  desc: "「なにも触るな」と言われた深夜の管制室。盤を触るほど結末が増える一画面ゲーム。結末は28。", kw: "謎解き 脱出 一画面 ドット絵 レトロ マルチエンディング 結末 コレクション 天気 ボタン 暇つぶし 短時間 不思議" },
 
   // ---- 育成・戦略 ----
   { folder: "mochidashi",      name: "もちだし｜60秒サバイバル", id: "6808693825", cat: "sim",     game: true,  featured: true,  desc: "閉じる基地から六十秒で担ぎ出し、運び込んだものだけで二十日を越冬する。結末は16。", kw: "サバイバル 生存 防災 備蓄 選択 分岐 マルチエンディング 結末 ドット絵 レトロ シミュレーション 越冬 雪山 脱出 ノベル" },
@@ -84,6 +85,7 @@ export const apps = [
   { folder: "koori-toke",      name: "こおりがとけるまで",       id: "6798429736", cat: "utility", game: false, featured: false, desc: "氷がとけるまで集中する、育成つきの勉強タイマー。", kw: "勉強 タイマー 集中 自習 育成 ポモドーロ" },
   { folder: "shizuka-reminder",name: "静音リマインダー",         id: "6794036987", cat: "utility", game: false, featured: false, desc: "音を鳴らさず静かに知らせる、通知だけのリマインダー。", kw: "リマインダー 通知 タスク 無音 静か 予定" },
   { folder: "icm-calc",        name: "ICM計算機",                id: "6797420824", cat: "utility", game: false, featured: false, desc: "ポーカーMTTの賞金期待値・ディール金額を計算するツール。", kw: "ICM ポーカー MTT ディール 賞金 バウンティ 計算" },
+  { folder: "icm-deal",        name: "ポーカーディール計算機",   id: "6809194866", cat: "utility", game: false, featured: false, price: 500, desc: "決勝卓の賞金とスタックから、ディール（チョップ）の取り分をICMとチップ比で出す電卓。", kw: "ポーカー ディール チョップ 山分け 賞金 分配 ICM チップ比 トーナメント 決勝卓 ファイナルテーブル MTT" },
   { folder: "blindflow",       name: "BlindFlow",                id: "6786809043", cat: "utility", game: false, featured: false, desc: "アミューズメントポーカー店舗の会員向け公式アプリ。", kw: "会員 ポーカー 店舗 amusement" },
   { folder: "gto-draw",        name: "72＆バドゥーギ GTO道場",   id: "6787277262", cat: "utility", game: false, featured: false, desc: "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。", kw: "GTO ポーカー ドロー badugi 学習" },
   { folder: "ofc-solver",      name: "チャイポEVアシスト",       id: "6783852074", cat: "utility", game: false, featured: false, desc: "チャイポのEVを計算するアシストツール。", kw: "OFC EV solver チャイポ 計算" },

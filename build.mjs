@@ -42,6 +42,7 @@ const detailPath = (folder) => `/apps/${folder}/`;
 const detailAbs = (folder) => `${BASE}${detailPath(folder)}`;
 // `play` を持つアプリは iOS 版が無い Web 専用（導線はブラウザで遊ぶリンクのみ）。
 const isWeb = (app) => !!app.play;
+const priceOf = (app) => Number(app.price) || 0;   // 有料（買い切り）アプリだけ apps.js に price（円）を書く
 const playAbs = (app) => `${BASE}${app.play}`;
 const appType = (app) => (isWeb(app) ? "WebApplication" : app.game ? "MobileApplication" : "SoftwareApplication");
 const appCat = (app) => (app.game ? "GameApplication" : "UtilitiesApplication");
@@ -110,7 +111,7 @@ const homeJsonld = {
           image: iconAbs(a.folder),
           operatingSystem: appOs(a),
           applicationCategory: appCat(a),
-          offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+          offers: { "@type": "Offer", price: String(priceOf(a)), priceCurrency: "JPY" },
         },
       })),
     },
@@ -171,11 +172,16 @@ function detailPage(app) {
   const c = catMap[app.cat];
   const kind = app.game ? "ゲーム" : "アプリ";
   const web = isWeb(app);
-  const headline = web ? `${c.label}のブラウザ無料${kind}` : `${c.label}の無料iPhone${kind}`;
+  // 有料（買い切り）アプリは apps.js に price を持たせる。無料前提の文言を出さない
+  const price = priceOf(app);
+  const yen = `¥${price.toLocaleString("ja-JP")}`;
+  const headline = web ? `${c.label}のブラウザ無料${kind}` : price ? `${c.label}のiPhone${kind}` : `${c.label}の無料iPhone${kind}`;
   const title = `${app.name}｜${headline} - らっこアプリ`;
   const metaDesc = web
     ? `${app.desc} インストール不要、ブラウザですぐ無料で遊べます。${app.name}は個人開発のWeb${kind}（らっこアプリ）。`
-    : `${app.desc} iPhoneで無料でダウンロードできます。${app.name}は個人開発のiOS${kind}（らっこアプリ）。`;
+    : price
+      ? `${app.desc} iPhone向けの買い切り（${yen}）です。${app.name}は個人開発のiOS${kind}（らっこアプリ）。`
+      : `${app.desc} iPhoneで無料でダウンロードできます。${app.name}は個人開発のiOS${kind}（らっこアプリ）。`;
   const url = detailAbs(app.folder);
   const img = iconAbs(app.folder);
 
@@ -194,7 +200,7 @@ function detailPage(app) {
         operatingSystem: appOs(app),
         applicationCategory: appCat(app),
         inLanguage: "ja",
-        offers: { "@type": "Offer", price: "0", priceCurrency: "JPY" },
+        offers: { "@type": "Offer", price: String(price), priceCurrency: "JPY" },
         publisher: { "@type": "Organization", name: "らっこアプリ", url: `${BASE}/` },
       },
       {
@@ -258,22 +264,22 @@ ${navHtml}
         <h1>${esc(app.name)}</h1>
         <p class="detail-hero__lead">${esc(app.desc)}</p>
         <div class="detail-cta">
-          <a class="btn btn--primary btn--lg" href="${getUrl(app)}"${web ? "" : ' target="_blank" rel="noopener"'}>${web ? "ブラウザで遊ぶ（無料）" : "App Storeで入手（無料）"}${arrowBtn}</a>
+          <a class="btn btn--primary btn--lg" href="${getUrl(app)}"${web ? "" : ' target="_blank" rel="noopener"'}>${web ? "ブラウザで遊ぶ（無料）" : price ? `App Storeで入手（${yen}）` : "App Storeで入手（無料）"}${arrowBtn}</a>
         </div>
-        <p class="detail-cta__note">${web ? "インストール不要・無料（スマホ／PCのブラウザで遊べます）" : "iPhone対応・ダウンロード無料（一部アプリ内課金がある場合があります）"}</p>
+        <p class="detail-cta__note">${web ? "インストール不要・無料（スマホ／PCのブラウザで遊べます）" : price ? `iPhone対応・買い切り（${yen}）` : "iPhone対応・ダウンロード無料（一部アプリ内課金がある場合があります）"}</p>
       </div>
     </article>
 
     <section class="detail-body">
       <div class="detail-prose">
         <h2>${esc(app.name)}ってどんな${kind}？</h2>
-        <p>${esc(app.name)}は、${esc(c.label)}の${kind}です。${esc(app.desc)}${web ? "インストール不要で、スマホでもPCでもブラウザを開くだけで無料で遊べます。" : "iPhoneに対応し、App Storeから無料でダウンロードできます。"}</p>
+        <p>${esc(app.name)}は、${esc(c.label)}の${kind}です。${esc(app.desc)}${web ? "インストール不要で、スマホでもPCでもブラウザを開くだけで無料で遊べます。" : price ? `iPhoneに対応し、App Storeから買い切り（${yen}）で入手できます。` : "iPhoneに対応し、App Storeから無料でダウンロードできます。"}</p>
       </div>
       <aside class="detail-facts">
         <dl>
           <div><dt>ジャンル</dt><dd>${esc(c.label)}</dd></div>
           <div><dt>対応</dt><dd>${web ? "ブラウザ（スマホ／PC）" : "iPhone（iOS）"}</dd></div>
-          <div><dt>価格</dt><dd>無料</dd></div>
+          <div><dt>価格</dt><dd>${price ? `${yen}（買い切り）` : "無料"}</dd></div>
           <div><dt>配信</dt><dd>${web ? `<a href="${app.play}">ブラウザで遊ぶ</a>` : `<a href="${storeUrl(app.id)}" target="_blank" rel="noopener">App Store</a>`}</dd></div>
         </dl>
       </aside>
@@ -295,6 +301,7 @@ ${footerHtml}
 let html = readFileSync(join(__dir, "index.template.html"), "utf8");
 html = html
   .replaceAll("{{APP_COUNT}}", String(apps.length))
+  .replaceAll("{{FREE_COUNT}}", String(apps.filter((a) => !priceOf(a)).length))
   .replaceAll("{{CAT_COUNT}}", String(activeCats.length))
   .replace("<!-- JSONLD -->", `<script type="application/ld+json">\n${JSON.stringify(homeJsonld, null, 2)}\n</script>`)
   .replace("<!-- CHIPS -->", chipsHtml.trimStart())
