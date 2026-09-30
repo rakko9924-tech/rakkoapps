@@ -1,6 +1,8 @@
 // らっこアプリ — 掲載アプリのデータ（配信中のみ）
 // 新しいアプリを追加/更新したら `node build.mjs` を実行してサイトを再生成する。
-// cat のキーは categories の key と一致させること。featured:true で「注目」枠に表示。
+// cat のキーは categories の key と一致させること。
+// featured に数字（1が先頭）を書くと「注目」枠にその順で出る。枠は12本（2列・3列・4列のどれでも行が埋まる数）。
+// 「人気・イチオシ」と書いてあるので、ASC の直近30日DLが多い順を基本に、配信直後の新作を足して選ぶ（2026-09-30 見直し）。
 //
 // 導線のルール:
 //   - App Store で配信中のアプリ … `id`（App Store の数値ID）を持たせる。導線は App Store のみで、
@@ -21,35 +23,35 @@ export const categories = [
 // id = App Store の数値ID。game=false のものは非ゲーム（構造化データで区別）。
 export const apps = [
   // ---- オンライン対戦 ----
-  { folder: "anakui",          name: "穴喰いバトル",             id: "6790614376", cat: "online",  game: true,  featured: true,  desc: "街ごと吸い込む「穴」になって競うオンライン対戦。", kw: "穴 吸い込む 街 対戦 オンライン" },
+  { folder: "anakui",          name: "穴喰いバトル",             id: "6790614376", cat: "online",  game: true,  featured: 12,    desc: "街ごと吸い込む「穴」になって競うオンライン対戦。", kw: "穴 吸い込む 街 対戦 オンライン" },
   { folder: "orochi-battle",   name: "大蛇バトル",               id: "6790615872", cat: "online",  game: true,  featured: false, desc: "玉を食べて大蛇を育て、相手を狩るオンライン対戦。", kw: "ヘビ 蛇 成長 対戦 オンライン" },
   { folder: "oekaki-online",   name: "らくがきオンライン",       id: "6783932279", cat: "online",  game: true,  featured: false, desc: "みんなで遊ぶリアルタイムお絵かき当てゲーム。", kw: "お絵かき drawing お絵描き 当てっこ" },
   { folder: "super-tap-battle",name: "スーパータップ対戦",       id: "6784173258", cat: "online",  game: true,  featured: false, desc: "現れるボールを割るだけ。超シンプル早押し対戦。", kw: "タップ 早押し reaction" },
   { folder: "issen",           name: "ISSEN 一閃",               id: "6781177113", cat: "online",  game: true,  featured: false, desc: "コンマ数秒の反応速度を競う早撃ちオンライン対戦。", kw: "居合 早撃ち reaction 反射" },
-  { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: false, desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
+  { folder: "PineappleOFC",    name: "チャイポオンライン",       id: "6781688872", cat: "online",  game: true,  featured: 4,     desc: "十三張パイナップルOFCをオンラインで手軽に。", kw: "OFC ポーカー poker pineapple チャイニーズ" },
   { folder: "aun-poker",       name: "あうんポーカー",           id: "6800081243", cat: "online",  game: true,  featured: false, desc: "話さず気持ちを合わせて役を作る、賭けなしの協力ポーカー。", kw: "ポーカー 協力 オンライン 無言 チーム パーティー" },
   { folder: "flash-shinkei",   name: "フラッシュ神経衰弱",       id: "6800191287", cat: "online",  game: true,  featured: false, desc: "順番なしで同時にめくる、リアルタイム神経衰弱のオンライン対戦。", kw: "神経衰弱 トランプ 記憶 対戦 オンライン ランキング" },
   { folder: "menjin",          name: "麺神アリーナ",             id: "6801415984", cat: "online",  game: true,  featured: false, desc: "狙って離すと麺が突き出す、3D物理のオンライン対戦。箸は動かない。", kw: "麺 ラーメン 3D 物理 対戦 オンライン ガチャ ランキング" },
   { folder: "tamen-shogi",     name: "多面将棋",                 id: "6804466843", cat: "online",  game: true,  featured: false, desc: "最大4局を同時に打てるオンライン将棋。待ち時間なく指し続けられる。", kw: "将棋 shogi 多面指し オンライン 対局 レート 棋譜" },
 
   // ---- アクション ----
-  { folder: "pika-tensei",     name: "ピカピカ転生",             id: "6793157994", cat: "action",  game: true,  featured: true,  desc: "指でこする物理演算のおそうじ×転生ゲーム。", kw: "掃除 そうじ こすり ASMR 転生" },
+  { folder: "pika-tensei",     name: "ピカピカ転生",             id: "6793157994", cat: "action",  game: true,  featured: false, desc: "指でこする物理演算のおそうじ×転生ゲーム。", kw: "掃除 そうじ こすり ASMR 転生" },
   { folder: "hero30",          name: "30秒の勇者",               id: "6784219090", cat: "action",  game: true,  featured: false, desc: "制限時間30秒で魔王を討つドット絵スピードRPG。", kw: "RPG 勇者 魔王 ドット" },
   { folder: "dekoboko-rider",  name: "デコボコライダー",         id: "6785051153", cat: "action",  game: true,  featured: false, desc: "バイクで丘を駆け抜けるかんたん物理アクション。", kw: "バイク 物理 レース 丘 アクション" },
   { folder: "rakugaki-oukoku", name: "おえかきモンスターバトル", id: "6784171825", cat: "action",  game: true,  featured: false, desc: "描いた絵が3Dモンスターになって戦う。", kw: "お絵かき モンスター バトル 落書き" },
 
   // ---- パズル・脱出 ----
-  { folder: "escape-room",     name: "密室100",                  id: "6785661257", cat: "puzzle",  game: true,  featured: true,  desc: "100室すべてが別コンセプトの本格脱出ゲーム。", kw: "脱出 escape 謎解き 密室" },
+  { folder: "escape-room",     name: "密室100",                  id: "6785661257", cat: "puzzle",  game: true,  featured: 11,    desc: "100室すべてが別コンセプトの本格脱出ゲーム。", kw: "脱出 escape 謎解き 密室" },
   { folder: "aqualux",         name: "AQUALUX",                  id: "6780931848", cat: "puzzle",  game: true,  featured: false, desc: "色の水をびんに仕分ける爽快ソートパズル。", kw: "water sort 水 仕分け パズル" },
   { folder: "quadle",          name: "Quadle",                   id: "6780867060", cat: "puzzle",  game: true,  featured: false, desc: "スワイプで数字を合体、2048を目指すパズル。", kw: "2048 merge 数字 マージ" },
   { folder: "leadtheway",      name: "Lead the Way",             id: "6780805979", cat: "puzzle",  game: true,  featured: false, desc: "えんぴつ描き風のやさしい矢印パズル。", kw: "矢印 arrow 道 パズル" },
-  { folder: "aratame",         name: "あらため｜関所の書類審査", id: "6808353202", cat: "puzzle",  game: true,  featured: true,  desc: "壁の触書と旅人の手形を照らし、通すか戻すか捕らえるかを決める関所の十日間。", kw: "審査 判定 書類 関所 手形 和風 江戸 時代劇 ドット絵 レトロ 推理 観察 間違い探し 選択 物語 結末" },
-  { folder: "osuna",           name: "押すなよ 深夜の気象管制室", id: "6808355388", cat: "puzzle", game: true,  featured: true,  desc: "「なにも触るな」と言われた深夜の管制室。盤を触るほど結末が増える一画面ゲーム。結末は28。", kw: "謎解き 脱出 一画面 ドット絵 レトロ マルチエンディング 結末 コレクション 天気 ボタン 暇つぶし 短時間 不思議" },
+  { folder: "aratame",         name: "あらため｜関所の書類審査", id: "6808353202", cat: "puzzle",  game: true,  featured: 9,     desc: "壁の触書と旅人の手形を照らし、通すか戻すか捕らえるかを決める関所の十日間。", kw: "審査 判定 書類 関所 手形 和風 江戸 時代劇 ドット絵 レトロ 推理 観察 間違い探し 選択 物語 結末" },
+  { folder: "osuna",           name: "押すなよ 深夜の気象管制室", id: "6808355388", cat: "puzzle", game: true,  featured: 8,     desc: "「なにも触るな」と言われた深夜の管制室。盤を触るほど結末が増える一画面ゲーム。結末は28。", kw: "謎解き 脱出 一画面 ドット絵 レトロ マルチエンディング 結末 コレクション 天気 ボタン 暇つぶし 短時間 不思議" },
 
   // ---- 育成・戦略 ----
-  { folder: "mochidashi",      name: "もちだし｜60秒サバイバル", id: "6808693825", cat: "sim",     game: true,  featured: true,  desc: "閉じる基地から六十秒で担ぎ出し、運び込んだものだけで二十日を越冬する。結末は16。", kw: "サバイバル 生存 防災 備蓄 選択 分岐 マルチエンディング 結末 ドット絵 レトロ シミュレーション 越冬 雪山 脱出 ノベル" },
-  { folder: "tonosama-kessai", name: "殿さまの決断",             id: "6808563905", cat: "sim",     game: true,  featured: true,  desc: "右で承認、左で却下。齢十七の若殿として戦国の小国を治めるスワイプ選択もの。", kw: "戦国 武将 城 殿様 シミュレーション 選択 分岐 アドベンチャー ノベル 物語 スワイプ 歴史 オフライン" },
-  { folder: "mochiusa",        name: "もちうさ うさぎ育成",      id: "6784304463", cat: "sim",     game: true,  featured: true,  desc: "自分だけのうさぎを育てる、癒しの育成ゲーム。", kw: "うさぎ 育成 癒し かわいい raise" },
+  { folder: "mochidashi",      name: "もちだし｜60秒サバイバル", id: "6808693825", cat: "sim",     game: true,  featured: 10,    desc: "閉じる基地から六十秒で担ぎ出し、運び込んだものだけで二十日を越冬する。結末は16。", kw: "サバイバル 生存 防災 備蓄 選択 分岐 マルチエンディング 結末 ドット絵 レトロ シミュレーション 越冬 雪山 脱出 ノベル" },
+  { folder: "tonosama-kessai", name: "殿さまの決断",             id: "6808563905", cat: "sim",     game: true,  featured: false, desc: "右で承認、左で却下。齢十七の若殿として戦国の小国を治めるスワイプ選択もの。", kw: "戦国 武将 城 殿様 シミュレーション 選択 分岐 アドベンチャー ノベル 物語 スワイプ 歴史 オフライン" },
+  { folder: "mochiusa",        name: "もちうさ うさぎ育成",      id: "6784304463", cat: "sim",     game: true,  featured: false, desc: "自分だけのうさぎを育てる、癒しの育成ゲーム。", kw: "うさぎ 育成 癒し かわいい raise" },
   { folder: "auto-factory",    name: "オートファクトリー",       id: "6785677430", cat: "sim",     game: true,  featured: false, desc: "採掘から自動化する本格工場づくり。", kw: "工場 自動化 生産 ベルト 資源" },
   { folder: "maou-inc",        name: "魔王株式会社",             id: "6784162519", cat: "sim",     game: true,  featured: false, desc: "瘴気で異世界を侵略する戦略シミュレーション。", kw: "魔王 侵略 戦略 シミュレーション 異世界" },
   { folder: "horihori",        name: "ほりほり魔王",             id: "6784198043", cat: "sim",     game: true,  featured: false, desc: "地面を掘って魔物を育てる育成ディフェンス。", kw: "掘る 魔王 ディフェンス 育成" },
@@ -58,30 +60,30 @@ export const apps = [
   { folder: "create-rpg",      name: "CreateRPG",                id: "6785066134", cat: "sim",     game: true,  featured: false, desc: "マップもイベントも自分で作れる、RPG作成ツール。", kw: "RPG 作成 自作 ゲーム制作 マップ イベント" },
 
   // ---- パーティー・推理 ----
-  { folder: "wordwolf",        name: "ワードウルフ - 嘘つきは誰だ？", id: "6781790636", cat: "party", game: true, featured: true, desc: "スマホ1台で盛り上がる正体隠しトークゲーム。", kw: "人狼 word wolf 正体隠し パーティー" },
-  { folder: "insider",         name: "インサイダーを暴け",       id: "6787274172", cat: "party",   game: true,  featured: false, desc: "答えを操る内通者を探すワード推理ゲーム。", kw: "インサイダー 推理 ワード party" },
-  { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: false, desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
+  { folder: "wordwolf",        name: "ワードウルフ - 嘘つきは誰だ？", id: "6781790636", cat: "party", game: true, featured: 6,     desc: "スマホ1台で盛り上がる正体隠しトークゲーム。", kw: "人狼 word wolf 正体隠し パーティー" },
+  { folder: "insider",         name: "インサイダーを暴け",       id: "6787274172", cat: "party",   game: true,  featured: 3,     desc: "答えを操る内通者を探すワード推理ゲーム。", kw: "インサイダー 推理 ワード party" },
+  { folder: "bomb-defuse",     name: "サイレント・ボム",         id: "6783998499", cat: "party",   game: true,  featured: 1,     desc: "声を頼りに時限爆弾を解除する協力ゲーム。", kw: "爆弾 協力 解除 co-op 声" },
   { folder: "hoshizora",       name: "ほしぞら探検隊",           id: "6792155109", cat: "party",   game: true,  featured: false, desc: "声を出さずに夜空を旅する協力トリックテイキング。", kw: "協力 トリテ トリックテイキング カード 夜空" },
   { folder: "monosashi",       name: "意図あわせ",               id: "6794969956", cat: "party",   game: true,  featured: false, desc: "数字を言わずに、ことばで小さい順にならべる協力ゲーム。", kw: "協力 数字 パーティー 会話 飲み会 価値観" },
   { folder: "nanda-koitsu",    name: "なんだこいつは！",         id: "6785054359", cat: "party",   game: true,  featured: false, desc: "謎のモンスターに名前をつけ、また出たら早押しで総取り。1台を囲む記憶ゲーム。", kw: "記憶 早押し カード パーティー 大人数 飲み会 家族 オフライン" },
-  { folder: "renai-dice",      name: "恋愛話題サイコロ",         id: "6794709695", cat: "party",   game: false, featured: false, desc: "振るだけで恋バナのお題が決まる、会話のきっかけアプリ。", kw: "恋愛 恋バナ 話題 お題 デート カップル 会話" },
-  { folder: "wadai-dice",      name: "話題サイコロ",             id: "6798408636", cat: "party",   game: false, featured: false, desc: "相手に合わせて雑談のお題を出す、会話が続くサイコロ。", kw: "話題 雑談 会話 お題 職場 初対面 コミュニケーション" },
+  { folder: "renai-dice",      name: "恋愛話題サイコロ",         id: "6794709695", cat: "party",   game: false, featured: 2,     desc: "振るだけで恋バナのお題が決まる、会話のきっかけアプリ。", kw: "恋愛 恋バナ 話題 お題 デート カップル 会話" },
+  { folder: "wadai-dice",      name: "話題サイコロ",             id: "6798408636", cat: "party",   game: false, featured: 5,     desc: "相手に合わせて雑談のお題を出す、会話が続くサイコロ。", kw: "話題 雑談 会話 お題 職場 初対面 コミュニケーション" },
   { folder: "heads-up-nlh",    name: "Heads-Up NLH ポーカー",    play: "/play/nlh/", cat: "party", game: true, featured: false, desc: "スマホ1台を挟んで向かい合って遊ぶ対面ヘッズアップ・ポーカー。", kw: "ポーカー poker テキサスホールデム NLH ヘッズアップ 2人" },
   { folder: "drink-game",      name: "のみゲー ルーレット",      play: "/play/drink-game/", cat: "party", game: true, featured: false, desc: "長押しして離すと罰ゲームやお題が決まる飲み会ルーレット。", kw: "飲みゲー のみゲー ルーレット 罰ゲーム 飲み会 合コン 二次会 王様ゲーム" },
 
   // ---- カジュアル・放置 ----
-  { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: true,  desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },
+  { folder: "money-clicker",   name: "マネークリッカー",         id: "6783945758", cat: "casual",  game: true,  featured: false, desc: "タップでお金の帝国を築く放置クリッカー。", kw: "clicker 放置 お金 idle タップ" },
   { folder: "shark-clicker",   name: "Shark Clicker",            id: "6791277136", cat: "casual",  game: true,  featured: false, desc: "タップで育てて海を制覇するサメ進化クリッカー。", kw: "サメ shark clicker 進化 放置" },
   { folder: "speed-trump",     name: "スピード（トランプ）",     id: "6800083294", cat: "casual",  game: true,  featured: false, desc: "トランプの定番「スピード」をCPU4段階でひとり遊び。", kw: "スピード トランプ カード ひとり CPU 暇つぶし" },
   { folder: "god-gacha",       name: "ゴッドガチャ∞",            id: "6787273550", cat: "casual",  game: true,  featured: false, desc: "神々を引き集めるコレクションガチャ。", kw: "ガチャ gacha コレクション 神" },
   { folder: "pill-asmr-ios",   name: "おくすりプチプチ",         id: "6783921551", cat: "casual",  game: false, featured: false, desc: "薬のシートをプチッと押し出す気持ちいいASMR。", kw: "ASMR プチプチ 暇つぶし 薬 pop" },
-  { folder: "fuwamoko",        name: "ふわもこ性格診断",         id: "6796685127", cat: "casual",  game: false, featured: true,  desc: "15問・約1分。結果はふわもこ動物の16タイプ性格診断。", kw: "性格診断 診断 16タイプ 動物 心理テスト 無料" },
+  { folder: "fuwamoko",        name: "ふわもこ性格診断",         id: "6796685127", cat: "casual",  game: false, featured: false, desc: "15問・約1分。結果はふわもこ動物の16タイプ性格診断。", kw: "性格診断 診断 16タイプ 動物 心理テスト 無料" },
 
   // ---- 実用・ツール ----
   { folder: "koyaku-counter",  name: "ShareHistory 収支共有&子役カウント", id: "6790613177", cat: "utility", game: false, featured: false, desc: "パチスロ収支を仲間と共有＆子役カウント。", kw: "パチスロ 収支 子役 カウント 共有" },
   { folder: "gyaku-hosuu",     name: "逆歩数計",                 id: "6794137697", cat: "utility", game: false, featured: false, desc: "歩かなかった分が溜まっていく、逆転の発想の歩数計。", kw: "歩数計 万歩計 ウォーキング 運動不足 健康" },
-  { folder: "eigo-zume",       name: "英語づめこみ",             id: "6800135827", cat: "utility", game: false, featured: true,  desc: "英語のあとに日本語。耳だけで覚える聞き流し英単語・英会話。", kw: "英語 英単語 英会話 リスニング 聞き流し 学習 TOEIC" },
-  { folder: "nagara-zatsugaku",name: "ながら雑学",               id: "6800154155", cat: "utility", game: false, featured: true,  desc: "1000話の雑学を耳で聞き流す、読み上げトリビア。", kw: "雑学 トリビア 聞き流し 読み上げ 音声 豆知識 寝る前" },
+  { folder: "eigo-zume",       name: "英語づめこみ",             id: "6800135827", cat: "utility", game: false, featured: 7,     desc: "英語のあとに日本語。耳だけで覚える聞き流し英単語・英会話。", kw: "英語 英単語 英会話 リスニング 聞き流し 学習 TOEIC" },
+  { folder: "nagara-zatsugaku",name: "ながら雑学",               id: "6800154155", cat: "utility", game: false, featured: false, desc: "1000話の雑学を耳で聞き流す、読み上げトリビア。", kw: "雑学 トリビア 聞き流し 読み上げ 音声 豆知識 寝る前" },
   { folder: "koori-toke",      name: "こおりがとけるまで",       id: "6798429736", cat: "utility", game: false, featured: false, desc: "氷がとけるまで集中する、育成つきの勉強タイマー。", kw: "勉強 タイマー 集中 自習 育成 ポモドーロ" },
   { folder: "shizuka-reminder",name: "静音リマインダー",         id: "6794036987", cat: "utility", game: false, featured: false, desc: "音を鳴らさず静かに知らせる、通知だけのリマインダー。", kw: "リマインダー 通知 タスク 無音 静か 予定" },
   { folder: "icm-calc",        name: "ICM計算機",                id: "6797420824", cat: "utility", game: false, featured: false, desc: "ポーカーMTTの賞金期待値・ディール金額を計算するツール。", kw: "ICM ポーカー MTT ディール 賞金 バウンティ 計算" },
@@ -90,6 +92,6 @@ export const apps = [
   { folder: "gto-draw",        name: "72＆バドゥーギ GTO道場",   id: "6787277262", cat: "utility", game: false, featured: false, desc: "2-7＆バドゥーギのGTO戦略を学ぶトレーニング。", kw: "GTO ポーカー ドロー badugi 学習" },
   { folder: "ofc-solver",      name: "チャイポEVアシスト",       id: "6783852074", cat: "utility", game: false, featured: false, desc: "チャイポのEVを計算するアシストツール。", kw: "OFC EV solver チャイポ 計算" },
   { folder: "poker-shot-clock",name: "ポーカーショットクロック", id: "6787194138", cat: "utility", game: false, featured: false, desc: "ライブポーカーの持ち時間を管理するタイマー。", kw: "ポーカー タイマー shot clock 時間" },
-  { folder: "split-browser",   name: "ナラベル｜分割ブラウザ",   id: "6806876394", cat: "utility", game: false, featured: true,  desc: "最大4画面を同時にひらける分割ブラウザ。仕切りをドラッグして大きさ自在。", kw: "分割ブラウザ 画面分割 2画面 マルチウィンドウ 見比べ ながら見 ブラウザ" },
+  { folder: "split-browser",   name: "ナラベル｜分割ブラウザ",   id: "6806876394", cat: "utility", game: false, featured: false, desc: "最大4画面を同時にひらける分割ブラウザ。仕切りをドラッグして大きさ自在。", kw: "分割ブラウザ 画面分割 2画面 マルチウィンドウ 見比べ ながら見 ブラウザ" },
   { folder: "PokerEquityCalc", name: "Poker Equity Calc",        id: "6781158293", cat: "utility", game: false, featured: false, desc: "NLHの勝率（エクイティ）を計算するツール。", kw: "equity 勝率 poker calc 計算" },
 ];

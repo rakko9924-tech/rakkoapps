@@ -5,7 +5,7 @@
 //   - apps/<folder>/index.html（アプリ個別ページ・1アプリ1ページ）
 //   - sitemap.xml
 // を生成する。
-import { readFileSync, writeFileSync, mkdirSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, statSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { apps, categories } from "./data/apps.js";
@@ -14,7 +14,8 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 
 // ▼ SITE URL — サイトの公開URL（変更時は robots.txt と index.template.html の canonical/OGP も）
 const BASE = "https://rakkoapps.com";
-const TODAY = "2026-08-01";
+// sitemap の lastmod。ビルドした日（日本時間）を入れる。固定値だと更新しても古い日付のまま残る
+const TODAY = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 
 // 攻略ラボ（/lab/ 配下の静的ページ。build 対象外だが sitemap には載せる）
 const LAB_URLS = ["/lab/", "/lab/gobblet-gto/", "/lab/catan-gto/"];
@@ -31,6 +32,15 @@ const CSS_STYLES = `/css/styles.css?v=${assetVer}`;
 const JS_APP = `/js/app.js?v=${assetVer}`;
 
 const catMap = Object.fromEntries(categories.map((c) => [c.key, c]));
+
+// アイコンが無いアプリがあると、トップも個別ページも画像が割れて alt 文字が出る（2026-09 に3本やらかした）。
+// 書き出す前に止める。
+const noIcon = apps.filter((a) => !existsSync(join(__dir, "assets", "icons", `${a.folder}.png`)));
+if (noIcon.length) {
+  console.error(`アイコンがありません: ${noIcon.map((a) => `assets/icons/${a.folder}.png（${a.name}）`).join(", ")}`);
+  console.error("App Store のアイコンを 256px で置いてから再実行してください（README「アプリを追加・更新する」）。");
+  process.exit(1);
+}
 
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -85,7 +95,16 @@ const chipsHtml = [
   ),
 ].join("\n");
 
-const featuredHtml = apps.filter((a) => a.featured).map((a) => cardHtml(a, { featured: true })).join("\n");
+// featured は数字の小さい順（true は末尾扱い）
+const featuredApps = apps
+  .filter((a) => a.featured)
+  .sort((a, b) => (a.featured === true ? 99 : a.featured) - (b.featured === true ? 99 : b.featured));
+const featuredHtml = featuredApps.map((a) => cardHtml(a, { featured: true })).join("\n");
+// ヒーロー右側のアイコン群（飾り。PCだけ表示、リンクは下のカードに任せる）
+const heroIconsHtml = featuredApps
+  .slice(0, 12)
+  .map((a) => `          <li><img src="${iconPath(a.folder)}" width="256" height="256" loading="lazy" decoding="async" alt=""></li>`)
+  .join("\n");
 const cardsHtml = apps.map((a) => cardHtml(a)).join("\n");
 
 // ============ トップページ JSON-LD ============
@@ -137,7 +156,7 @@ const navHtml = `<header class="nav">
 
 const footerHtml = `<footer class="footer">
   <div class="wrap">
-    <p class="footer__statement">つくって、公開して、また next。<br>らっこアプリ。</p>
+    <p class="footer__statement">つくって、公開して、また次へ。<br>らっこアプリ。</p>
     <div class="footer__row">
       <nav class="footer__links" aria-label="フッター">
         <a href="/#featured">注目のアプリ</a>
@@ -306,6 +325,7 @@ html = html
   .replace("<!-- JSONLD -->", `<script type="application/ld+json">\n${JSON.stringify(homeJsonld, null, 2)}\n</script>`)
   .replace("<!-- CHIPS -->", chipsHtml.trimStart())
   .replace("<!-- FEATURED -->", featuredHtml.trimStart())
+  .replace("<!-- HERO_ICONS -->", heroIconsHtml.trimStart())
   .replace("<!-- CARDS -->", cardsHtml.trimStart())
   .replaceAll("/css/tokens.css", CSS_TOKENS)
   .replaceAll("/css/styles.css", CSS_STYLES)

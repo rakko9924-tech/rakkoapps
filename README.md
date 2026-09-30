@@ -16,7 +16,7 @@ css/styles.css        ← レイアウト
 js/app.js             ← カテゴリ絞り込み・検索・スクロール表示（段階的強化）
 assets/icons/*.png    ← 各アプリのアイコン（256px。build時は使わず参照のみ）
 assets/og/            ← OGP画像・apple-touch-icon
-sitemap.xml robots.txt site.webmanifest favicon.svg
+sitemap.xml robots.txt site.webmanifest favicon.png
 ```
 
 すべてのアプリカードは **index.html に静的に書き出される** ため、JavaScript を切っても検索エンジンにインデックスされる（JS は表示切替のみ）。
@@ -27,7 +27,10 @@ sitemap.xml robots.txt site.webmanifest favicon.svg
 
 1. アイコンを用意して `assets/icons/<folder>.png`（正方形・256px 目安）に置く。
    例: `sips -s format png -Z 256 元アイコン.png --out assets/icons/<folder>.png`
+   **App Store に出ているアイコンを使う**（アプリ側でアイコンを差し替えたら、ここも差し替える）。
+   アイコンが無いアプリがあると `node build.mjs` はエラーで止まる。
 2. `data/apps.js` の `apps` 配列に 1 行足す（`cat` は `categories` の `key` と一致させる。非ゲームは `game:false`）。
+   「注目」枠に出すときは `featured` に順位の数字（1 が先頭）を書く。枠は 12 本に保つ（ヒーローのアイコン群も同じ 12 本）。
 3. 再生成:
    ```bash
    node build.mjs

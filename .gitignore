@@ -1,3 +1,12 @@
 .DS_Store
 *.log
 node_modules/
+
+# 紹介動画づくりの作業物（サイトのどのページからも参照しない）。
+# 追跡したままだと GitHub Pages で約600MB（ヘッドレスChromeのプロファイル含む）が公開される。
+promo/frames/
+promo/frames-wide/
+promo/prof-*/
+promo/shots/prof/
+promo/out/
+promo/sample/
