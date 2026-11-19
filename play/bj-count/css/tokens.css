@@ -1,0 +1,78 @@
+/* Hallmark · route: custom (bespoke) · structure: 方眼ノート1冊（目次 → 章ごとの問題ページ） · idea: "印刷された問題に青ペンで答え、赤ペンで丸つけ、鉛筆で途中式"
+ * paper: oklch(98.6% 0.006 95) · accent: oklch(55% 0.21 27) 赤ペン + oklch(42% 0.15 262) 青ペン · display: Klee One · body: Zen Kaku Gothic New
+ * axes: light / handwritten-kyokasho / warm-red · gates: all-pass · studied: no
+ */
+/* Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V5 */
+
+:root {
+  /* 紙と方眼 */
+  --color-paper: oklch(98.6% 0.006 95);
+  --color-paper-2: oklch(96.4% 0.008 95);
+  --color-card: oklch(99.4% 0.003 95);
+  --color-desk: oklch(92.5% 0.012 85);
+  --color-grid: oklch(92.2% 0.024 235);
+  --color-grid-strong: oklch(86.5% 0.036 235);
+  --color-rule: oklch(76% 0.012 258);
+
+  /* 活字と鉛筆 */
+  --color-ink: oklch(24% 0.012 262);
+  --color-pencil: oklch(38% 0.012 262);
+  --color-muted: oklch(47% 0.012 262);
+  --color-faint: oklch(66% 0.012 262);
+
+  /* 3色ボールペンの赤と青 */
+  --color-red: oklch(57% 0.21 27);
+  --color-red-ink: oklch(49% 0.2 27);
+  --color-red-wash: oklch(95% 0.03 27);
+  --color-blue: oklch(42% 0.15 262);
+  --color-blue-wash: oklch(94.5% 0.03 262);
+  --color-focus: oklch(55% 0.2 262);
+  --color-shade: oklch(24% 0.012 262 / 0.5);
+  --color-shadow: oklch(24% 0.012 262 / 0.08);
+
+  --font-hand: "Klee One", "YuKyokasho Yoko", "Hiragino Maru Gothic ProN", "Zen Kaku Gothic New", sans-serif;
+  --font-print: "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+
+  /* 文字の大きさ */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.3125rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.375rem;
+  --text-4xl: 3.25rem;
+
+  /* 余白（4pt） */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+
+  --cell: 1.25rem; /* 方眼1マス */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --rule-thin: 1px;
+  --rule-ink: 1.5px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 20;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+
+  --page-max: 34rem;
+}

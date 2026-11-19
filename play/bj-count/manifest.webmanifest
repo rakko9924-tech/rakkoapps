@@ -1,0 +1,16 @@
+{
+  "name": "カウンティング練習帳｜ブラックジャック",
+  "short_name": "カウント練習帳",
+  "description": "ブラックジャックのカードカウンティングを練習する問題集。数える・割る・賭ける・打つ・実戦。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbfaf6",
+  "theme_color": "#fbfaf6",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

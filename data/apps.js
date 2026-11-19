@@ -94,4 +94,5 @@ export const apps = [
   { folder: "poker-shot-clock",name: "ポーカーショットクロック", id: "6787194138", cat: "utility", game: false, featured: false, desc: "ライブポーカーの持ち時間を管理するタイマー。", kw: "ポーカー タイマー shot clock 時間" },
   { folder: "split-browser",   name: "ナラベル｜分割ブラウザ",   id: "6806876394", cat: "utility", game: false, featured: false, desc: "最大4画面を同時にひらける分割ブラウザ。仕切りをドラッグして大きさ自在。", kw: "分割ブラウザ 画面分割 2画面 マルチウィンドウ 見比べ ながら見 ブラウザ" },
   { folder: "PokerEquityCalc", name: "Poker Equity Calc",        id: "6781158293", cat: "utility", game: false, featured: false, desc: "NLHの勝率（エクイティ）を計算するツール。", kw: "equity 勝率 poker calc 計算" },
+  { folder: "bj-count",        name: "カウンティング練習帳",     play: "/play/bj-count/", cat: "utility", game: false, featured: false, desc: "ブラックジャックのカウンティングを、数える・賭ける・打つ・実戦まで練習する問題集。", kw: "ブラックジャック カウンティング カードカウンティング 練習 トレーナー ハイロー Hi-Lo トゥルーカウント ケリー基準 破産リスク 基本戦略 BJ" },
 ];
